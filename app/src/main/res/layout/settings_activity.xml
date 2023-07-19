@@ -1,0 +1,42 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/settings"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Switch
+                android:id="@+id/switchBatteryOptimization"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Battery optimization" />
+
+            <TextView
+                android:id="@+id/textViewBatteryOptimization"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Use battery optimization for a better recording\nduring background process" />
+
+            <TextView
+                android:id="@+id/textViewAdjustLatLng"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Trim decimal places" />
+
+            <EditText
+                android:id="@+id/editTextNumberSigned"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="numberSigned" />
+
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>
