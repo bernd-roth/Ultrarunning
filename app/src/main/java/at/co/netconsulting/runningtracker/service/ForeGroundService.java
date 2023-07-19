@@ -89,10 +89,13 @@ public class ForeGroundService extends Service {
 
         startLocationListener();
 
-        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if(location==null) {
+            Log.d("TAG: ", "BLA");
+        }
 //      Location via cell phone is not supported
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 5, locationListener);
+//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 5, locationListener);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, locationListener);
 
 //        registerReceiver(receiver, filter);
