@@ -94,6 +94,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/ic_settings"
         android:onClick="onClickRecording"/>
+
+    <android.widget.TextView
+        android:id="@+id/textViewSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Latitude/Longitude"
+        />
 </RelativeLayout>
 
     <!--<?xml version="1.0" encoding="utf-8"?>

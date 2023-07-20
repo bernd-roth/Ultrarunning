@@ -21,6 +21,7 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -55,6 +56,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private boolean isDisableZoomCamera = true;
     private FloatingActionButton fabStartRecording, fabStopRecording;
     private double lastLat, lastLng;
+    private TextView textViewSpeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +91,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
 
                 polylinePoints.add(latLng);
+                textViewSpeed.setText(String.valueOf(latLng));
 
                 if (polyline != null) {
                     polyline.setPoints(polylinePoints);
@@ -144,6 +147,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabStopRecording = findViewById(R.id.fabStopRecording);
         fabStopRecording.setVisibility(View.INVISIBLE);
         polylinePoints = new ArrayList<>();
+        textViewSpeed = findViewById(R.id.textViewSpeed);
         configureReceiver();
     }
 

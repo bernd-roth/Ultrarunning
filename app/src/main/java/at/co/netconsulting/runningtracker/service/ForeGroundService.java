@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,8 +59,9 @@ public class ForeGroundService extends Service {
     private Location location;
     private Timer timer;
     float calc;
+    float speed;
     float[] result;
-    private long minimumSpeedLimit;
+    private float minimumSpeedLimit;
 
     //Polyline
     private ArrayList<LatLng> polylinePoints;
@@ -101,13 +103,17 @@ public class ForeGroundService extends Service {
         if (location == null) {
             Log.d("TAG: ", "BLA");
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
     }
 
     private LocationManager getLocationManager() {
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         Criteria criteria = new Criteria();
-        String bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true)).toString();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
+        criteria.setSpeedRequired(true);
+        String bestProvider = locationManager.getBestProvider(criteria, true);
+        bestProvider="gps";
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -121,7 +127,7 @@ public class ForeGroundService extends Service {
         Location location = locationManager.getLastKnownLocation(bestProvider);
 
         if (location != null) {
-            Log.e("TAG", "GPS is on");
+            Log.i("GPS: ", "GPS is on");
             latitude = location.getLatitude();
             longitude = location.getLongitude();
         }
@@ -129,7 +135,6 @@ public class ForeGroundService extends Service {
     }
 
     private void initObjects() {
-        locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         run = new Run();
         polylinePoints = new ArrayList<>();
         calc = 0;
@@ -146,7 +151,6 @@ public class ForeGroundService extends Service {
 
     private void startLocationListener() {
         locationListener = new LocationListener() {
-
             @Override
             public void onLocationChanged(@NonNull Location location) {
                 latitude = location.getLatitude();
@@ -156,9 +160,10 @@ public class ForeGroundService extends Service {
                 LatLng latLng = new LatLng(latitude, longitude);
                 polylinePoints.add(latLng);
 
-                //get the speed
-                if (location.hasSpeed())
-                    Log.d("ForeGroundService: calculateDistance: ", String.valueOf(location.getSpeed()));
+                //get speed
+                Log.d("SPEED", String.valueOf(location.getSpeed()));
+                //Toast.makeText(getApplicationContext(), "Speed: " + location.getSpeed(), Toast.LENGTH_SHORT).show();
+                speed = (location.getSpeed()/1000)*3600;
             }
 
             @Override
@@ -218,35 +223,29 @@ public class ForeGroundService extends Service {
                         calculateDistance();
                     }
                     manager.notify(NOTIFICATION_ID /* ID of notification */,
-                            notificationBuilder.setContentTitle("Distance covered: " + calc + " meter").build());
+                            notificationBuilder.setContentTitle("Distance covered: " + calc + " meter\n" +
+                                    "Current speed: " + speed + " km/h\n").build());// +
+                                    //"Number of satellites: " + location.getExtras().getInt("satellites")).build());
                 }
             }
         }, 0,1000);
-        return super.onStartCommand(intent, flags, startId);
+        return Service.START_STICKY;
+        //return super.onStartCommand(intent, flags, startId);
     }
 
     private void calculateDistance() {
-        LatLng lastEntry = polylinePoints.get(polylinePoints.size()-2);
-        double startLat = lastEntry.latitude;
-        double startLng = lastEntry.longitude;
+        LatLng penultimatelastEntry = polylinePoints.get(polylinePoints.size()-2);
+        double startLat = penultimatelastEntry.latitude;
+        double startLng = penultimatelastEntry.longitude;
 
-//        String oLat = (String) String.format(Locale.ENGLISH, "%.8f", startLat);
-//        Double oldDoubleLat = Double.parseDouble(oLat);
         Double oldDoubleLat = startLat;
-
-//        String oLng = (String) String.format(Locale.ENGLISH,"%.8f", startLng);
-//        Double oldDoubleLng = Double.parseDouble(oLng);
         Double oldDoubleLng = startLng;
 
-//        String newLat = (String) String.format(Locale.ENGLISH,"%.8f", location.getLatitude());
-//        Double newDoubleLat = Double.parseDouble(newLat);
-        Double newDoubleLat = location.getLatitude();
+        LatLng lastEntry = polylinePoints.get(polylinePoints.size()-1);
+        double newDoubleLat = lastEntry.latitude;
+        double newDoubleLng = lastEntry.longitude;
 
-//        String newLng = (String) String.format(Locale.ENGLISH,"%.8f", location.getLongitude());
-//        Double newDoubleLng = Double.parseDouble(newLng);
-        Double newDoubleLng = location.getLongitude();
-
-        if(location.getSpeed()>minimumSpeedLimit) {
+        if(speed>minimumSpeedLimit) {
             Location.distanceBetween(oldDoubleLat, oldDoubleLng, newDoubleLat, newDoubleLng, result);
             calc += result[0];
             sendBroadcastToMapsActivity(polylinePoints);
@@ -311,7 +310,7 @@ public class ForeGroundService extends Service {
         switch(sharedPrefKey) {
             case StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                minimumSpeedLimit = sh.getLong(sharedPrefKey, Double.valueOf(StaticFields.STATIC_DOUBLE_MINIMUM_SPEED_LIMIT).longValue());
+                minimumSpeedLimit = sh.getFloat(sharedPrefKey, Double.valueOf(StaticFields.STATIC_DOUBLE_MINIMUM_SPEED_LIMIT).floatValue());
                 break;
         }
     }
