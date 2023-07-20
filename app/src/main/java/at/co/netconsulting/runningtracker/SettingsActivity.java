@@ -9,7 +9,10 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Switch;
 
 import androidx.annotation.RequiresApi;
@@ -21,7 +24,11 @@ public class SettingsActivity extends BaseActivity {
 
     private Switch switchBatteryOptimization;
     private boolean isSwitchBatteryOptimization;
+    private long minimumSpeedLimit;
     private SharedPreferences sharedpreferences;
+    private static long minSpeedLimit = (long) 3.5;
+    private EditText editTextNumberDecimalMinimumSpeedLimit;
+    private Button buttonSave;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +37,7 @@ public class SettingsActivity extends BaseActivity {
 
         initObjects();
         loadSharedPreferences(StaticFields.STATIC_BATTERY_OPTIMIZATION);
+        loadSharedPreferences(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         ignoreBatteryOptimization();
     }
 
@@ -41,6 +49,11 @@ public class SettingsActivity extends BaseActivity {
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 isSwitchBatteryOptimization = sh.getBoolean(sharedPrefKey, false);
                 switchBatteryOptimization.setChecked(isSwitchBatteryOptimization);
+                break;
+            case StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                minimumSpeedLimit = sh.getLong(sharedPrefKey, minSpeedLimit);
+                editTextNumberDecimalMinimumSpeedLimit.setText(String.valueOf(minimumSpeedLimit));
                 break;
         }
     }
@@ -66,17 +79,29 @@ public class SettingsActivity extends BaseActivity {
                 }
             }
         });
+
+        editTextNumberDecimalMinimumSpeedLimit = findViewById(R.id.editTextNumberSignedMinimumSpeedLimit);
+        buttonSave = findViewById(R.id.buttonSave);
     }
 
     private void saveSharedPreferences(String sharedPreference) {
-        sharedpreferences = getSharedPreferences(StaticFields.STATIC_BATTERY_OPTIMIZATION, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedpreferences.edit();
+        if(sharedPreference.equals(StaticFields.STATIC_BATTERY_OPTIMIZATION)) {
+            sharedpreferences = getSharedPreferences(StaticFields.STATIC_BATTERY_OPTIMIZATION, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
 
-        if(switchBatteryOptimization.isChecked()) {
-            editor.putBoolean(sharedPreference, true);
-            editor.commit();
-        } else {
-            editor.putBoolean(sharedPreference, false);
+            if(switchBatteryOptimization.isChecked()) {
+                editor.putBoolean(sharedPreference, true);
+                editor.commit();
+            }  else {
+                editor.putBoolean(sharedPreference, false);
+                editor.commit();
+            }
+        } else if(sharedPreference.equals(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT)) {
+            sharedpreferences = getSharedPreferences(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            minimumSpeedLimit = Long.parseLong(editTextNumberDecimalMinimumSpeedLimit.getText().toString());
+            editor.putLong(sharedPreference, minimumSpeedLimit);
             editor.commit();
         }
     }
@@ -93,5 +118,10 @@ public class SettingsActivity extends BaseActivity {
         if(isSwitchBatteryOptimization) {
             switchBatteryOptimization.setChecked(isSwitchBatteryOptimization);
         }
+    }
+
+    public void save(View v)
+    {
+        saveSharedPreferences(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT);
     }
 }

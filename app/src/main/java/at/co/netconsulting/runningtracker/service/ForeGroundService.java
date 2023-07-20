@@ -10,31 +10,25 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.location.Geocoder;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -43,6 +37,7 @@ import java.util.TimerTask;
 
 import at.co.netconsulting.runningtracker.MapsActivity;
 import at.co.netconsulting.runningtracker.R;
+import at.co.netconsulting.runningtracker.StaticFields;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
@@ -64,16 +59,14 @@ public class ForeGroundService extends Service {
     private Timer timer;
     float calc;
     float[] result;
+    private long minimumSpeedLimit;
 
     //Polyline
-    private List<LatLng> polylinePoints;
+    private ArrayList<LatLng> polylinePoints;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        filter = new IntentFilter();
-        filter.addAction("android.provider.Telephony.SMS_RECEIVED");
-        filter.addAction("NO_SMS_RECEIVED");
         db = new DatabaseHandler(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -87,18 +80,52 @@ public class ForeGroundService extends Service {
             return;
         }
 
+        loadSharedPreferences(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         startLocationListener();
+        LocationManager locationManager = getLocationManager();
+        setGPSProviderAsLocationManager(locationManager);
+    }
 
-//        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+    private void setGPSProviderAsLocationManager(LocationManager locationManager) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if(location==null) {
+        if (location == null) {
             Log.d("TAG: ", "BLA");
         }
-//      Location via cell phone is not supported
-//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 5, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
+    }
 
-//        registerReceiver(receiver, filter);
+    private LocationManager getLocationManager() {
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        String bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true)).toString();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
+        Location location = locationManager.getLastKnownLocation(bestProvider);
+
+        if (location != null) {
+            Log.e("TAG", "GPS is on");
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
+        return locationManager;
     }
 
     private void initObjects() {
@@ -171,7 +198,6 @@ public class ForeGroundService extends Service {
                 .setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
                 .setSmallIcon(R.drawable.ic_launcher_background);
-//                .addAction(R.drawable.ic_launcher_background, "Stop", stopPendingIntent);
 
         notification = notificationBuilder.build();
 
@@ -188,8 +214,9 @@ public class ForeGroundService extends Service {
                     timer.cancel();
                     stopSelfResult(NOTIFICATION_ID);
                 } else {
-                    if(polylinePoints.size()>1)
+                    if(polylinePoints.size()>1) {
                         calculateDistance();
+                    }
                     manager.notify(NOTIFICATION_ID /* ID of notification */,
                             notificationBuilder.setContentTitle("Distance covered: " + calc + " meter").build());
                 }
@@ -203,20 +230,36 @@ public class ForeGroundService extends Service {
         double startLat = lastEntry.latitude;
         double startLng = lastEntry.longitude;
 
-        String oLat = (String) String.format(Locale.ENGLISH, "%.2f", startLat);
-        Double oldDoubleLat = Double.parseDouble(oLat);
+//        String oLat = (String) String.format(Locale.ENGLISH, "%.8f", startLat);
+//        Double oldDoubleLat = Double.parseDouble(oLat);
+        Double oldDoubleLat = startLat;
 
-        String oLng = (String) String.format(Locale.ENGLISH,"%.2f", startLng);
-        Double oldDoubleLng = Double.parseDouble(oLng);
+//        String oLng = (String) String.format(Locale.ENGLISH,"%.8f", startLng);
+//        Double oldDoubleLng = Double.parseDouble(oLng);
+        Double oldDoubleLng = startLng;
 
-        String newLat = (String) String.format(Locale.ENGLISH,"%.2f", latitude);
-        Double newDoubleLat = Double.parseDouble(newLat);
+//        String newLat = (String) String.format(Locale.ENGLISH,"%.8f", location.getLatitude());
+//        Double newDoubleLat = Double.parseDouble(newLat);
+        Double newDoubleLat = location.getLatitude();
 
-        String newLng = (String) String.format(Locale.ENGLISH,"%.2f", startLng);
-        Double newDoubleLng = Double.parseDouble(newLng);
+//        String newLng = (String) String.format(Locale.ENGLISH,"%.8f", location.getLongitude());
+//        Double newDoubleLng = Double.parseDouble(newLng);
+        Double newDoubleLng = location.getLongitude();
 
-        Location.distanceBetween(oldDoubleLat, oldDoubleLng, newDoubleLat, newDoubleLng, result);
-        calc += result[0];
+        if(location.getSpeed()>minimumSpeedLimit) {
+            Location.distanceBetween(oldDoubleLat, oldDoubleLng, newDoubleLat, newDoubleLng, result);
+            calc += result[0];
+            sendBroadcastToMapsActivity(polylinePoints);
+        }
+    }
+
+    private void sendBroadcastToMapsActivity(ArrayList<LatLng> polylinePoints) {
+        Intent intent=new Intent();
+        intent.setAction(StaticFields.STATIC_BROADCAST_ACTION);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(StaticFields.STATIC_BROADCAST_ACTION, polylinePoints);
+        intent.putExtras(bundle);
+        getApplicationContext().sendBroadcast(intent);
     }
 
     private PendingIntent createPendingIntent() {
@@ -259,6 +302,17 @@ public class ForeGroundService extends Service {
             );
             manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(serviceChannel);
+        }
+    }
+
+    private void loadSharedPreferences(String sharedPrefKey) {
+        SharedPreferences sh;
+
+        switch(sharedPrefKey) {
+            case StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                minimumSpeedLimit = sh.getLong(sharedPrefKey, Double.valueOf(StaticFields.STATIC_DOUBLE_MINIMUM_SPEED_LIMIT).longValue());
+                break;
         }
     }
 }

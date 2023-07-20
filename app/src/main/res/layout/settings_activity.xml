@@ -37,6 +37,26 @@
                 android:ems="10"
                 android:inputType="numberSigned" />
 
+            <TextView
+                android:id="@+id/textViewMinimumSpeedLimit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Minimum speed limit" />
+
+            <EditText
+                android:id="@+id/editTextNumberSignedMinimumSpeedLimit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="numberDecimal" />
+
+            <Button
+                android:id="@+id/buttonSave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                android:onClick="save"/>
+
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>
