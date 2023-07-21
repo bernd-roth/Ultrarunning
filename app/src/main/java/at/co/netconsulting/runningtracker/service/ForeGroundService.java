@@ -164,7 +164,10 @@ public class ForeGroundService extends Service {
 
                 //get speed
                 speed = (location.getSpeed()/1000)*3600;
-                Log.d("SPEED: ", String.valueOf(location.getSpeed()));
+                Log.d("SPEED", String.valueOf(location.getSpeed()));
+
+                //number of satellites
+                Log.d("NUMBER OF SATELLITES", String.valueOf(location.getExtras().getInt("satellites")));
             }
 
             @Override
@@ -227,10 +230,9 @@ public class ForeGroundService extends Service {
                                     .setContentTitle("Distance covered: " + calc + " meter")
                                     .setContentText("Current speed: " + speed + " km/h | Number of satellites: " + location.getExtras().getInt("satellites"))
                                     .build());
-                                    //"Number of satellites: " + location.getExtras().getInt("satellites")).build());
                 }
             }
-        }, 0,500);
+        }, 0,100);
         return Service.START_STICKY;
         //return super.onStartCommand(intent, flags, startId);
     }
