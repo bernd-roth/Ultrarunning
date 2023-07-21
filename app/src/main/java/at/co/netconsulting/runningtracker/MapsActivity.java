@@ -47,16 +47,12 @@ import at.co.netconsulting.runningtracker.service.ForeGroundService;
 public class MapsActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener {
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
-    private Location location;
-    private double latitude, longitude;
-    private LocationListener locationListener;
     //Polyline
     private Polyline polyline;
     private List<LatLng> polylinePoints;
     private boolean isDisableZoomCamera = true;
     private FloatingActionButton fabStartRecording, fabStopRecording;
     private double lastLat, lastLng;
-    private TextView textViewSpeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +87,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
 
                 polylinePoints.add(latLng);
-                textViewSpeed.setText(String.valueOf(latLng));
 
                 if (polyline != null) {
                     polyline.setPoints(polylinePoints);
@@ -147,7 +142,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabStopRecording = findViewById(R.id.fabStopRecording);
         fabStopRecording.setVisibility(View.INVISIBLE);
         polylinePoints = new ArrayList<>();
-        textViewSpeed = findViewById(R.id.textViewSpeed);
         configureReceiver();
     }
 

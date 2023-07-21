@@ -223,12 +223,14 @@ public class ForeGroundService extends Service {
                         calculateDistance();
                     }
                     manager.notify(NOTIFICATION_ID /* ID of notification */,
-                            notificationBuilder.setContentTitle("Distance covered: " + calc + " meter\n" +
-                                    "Current speed: " + speed + " km/h\n").build());// +
+                            notificationBuilder
+                                    .setContentTitle("Distance covered: " + calc + " meter")
+                                    .setContentText("Current speed: " + speed + " km/h | Number of satellites: " + location.getExtras().getInt("satellites"))
+                                    .build());
                                     //"Number of satellites: " + location.getExtras().getInt("satellites")).build());
                 }
             }
-        }, 0,1000);
+        }, 0,500);
         return Service.START_STICKY;
         //return super.onStartCommand(intent, flags, startId);
     }
