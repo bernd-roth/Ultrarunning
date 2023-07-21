@@ -45,7 +45,7 @@ import at.co.netconsulting.runningtracker.pojo.Run;
 public class ForeGroundService extends Service {
 
     private static final int NOTIFICATION_ID = 1;
-    private String NOTIFICATION_CHANNEL_ID = "com.netconsulting.parkingticket";
+    private String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.parkingticket";
     private Notification notification;
     private NotificationCompat.Builder notificationBuilder;
     private NotificationManager manager;
@@ -101,7 +101,7 @@ public class ForeGroundService extends Service {
         }
         location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (location == null) {
-            Log.d("TAG: ", "BLA");
+            Log.d("LOCATION: ", "Location is null");
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
     }
@@ -139,6 +139,8 @@ public class ForeGroundService extends Service {
         polylinePoints = new ArrayList<>();
         calc = 0;
         result = new float[1];
+        speed = 0;
+        timer = new Timer();
     }
 
     private void saveToDatabase() {
@@ -161,9 +163,8 @@ public class ForeGroundService extends Service {
                 polylinePoints.add(latLng);
 
                 //get speed
-                Log.d("SPEED", String.valueOf(location.getSpeed()));
-                //Toast.makeText(getApplicationContext(), "Speed: " + location.getSpeed(), Toast.LENGTH_SHORT).show();
                 speed = (location.getSpeed()/1000)*3600;
+                Log.d("SPEED: ", String.valueOf(location.getSpeed()));
             }
 
             @Override
@@ -211,7 +212,6 @@ public class ForeGroundService extends Service {
         final int[] counter = {1};
         waitForXMinutes*=60;
 
-        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {

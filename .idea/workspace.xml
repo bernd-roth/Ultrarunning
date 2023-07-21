@@ -9,13 +9,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* calculation of distance covered finished in ForeGroundService.java&#10;* unnecessary locationlistener in MapsActivity.java removed">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* display speed in notification&#10;* minSpeedLimit changed to long&#10;* bestProvider changed to &quot;GPS&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForeGroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForeGroundService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -159,7 +155,14 @@
       <option name="project" value="LOCAL" />
       <updated>1689860500484</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="* display speed in notification&#10;* minSpeedLimit changed to long&#10;* bestProvider changed to &quot;GPS&quot;">
+      <created>1689889416511</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1689889416512</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -178,15 +181,16 @@
     <MESSAGE value="Revert &quot;Initial commit&quot;&#10;&#10;This reverts commit de6871e9" />
     <MESSAGE value="* API Key deleted" />
     <MESSAGE value="* calculation of distance covered finished in ForeGroundService.java&#10;* unnecessary locationlistener in MapsActivity.java removed" />
-    <option name="LAST_COMMIT_MESSAGE" value="* calculation of distance covered finished in ForeGroundService.java&#10;* unnecessary locationlistener in MapsActivity.java removed" />
+    <MESSAGE value="* display speed in notification&#10;* minSpeedLimit changed to long&#10;* bestProvider changed to &quot;GPS&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="* display speed in notification&#10;* minSpeedLimit changed to long&#10;* bestProvider changed to &quot;GPS&quot;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForeGroundService.java</url>
-          <line>248</line>
-          <option name="timeStamp" value="317" />
+          <line>249</line>
+          <option name="timeStamp" value="322" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
