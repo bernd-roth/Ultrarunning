@@ -50,6 +50,48 @@
                 android:ems="10"
                 android:inputType="numberDecimal" />
 
+            <TextView
+                android:id="@+id/textViewMapType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Google map type" />
+
+            <RadioGroup
+                android:id="@+id/radioGroupMaptype"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/radioButton_map_type_normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Normal"
+                    android:onClick="onClickRadioButtonNormal"/>
+                <RadioButton
+                    android:id="@+id/radioButton_map_type_hybrid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hybrid"
+                    android:onClick="onClickRadioButtonHybrid"/>
+                <RadioButton
+                    android:id="@+id/radioButton_map_none"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="None"
+                    android:onClick="onClickRadioButtonNone"/>
+                <RadioButton
+                    android:id="@+id/radioButton_map_type_terrain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Terrain"
+                    android:onClick="onClickRadioButtonTerrain"/>
+                <RadioButton
+                    android:id="@+id/radioButton_map_type_satellite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Satellite"
+                    android:onClick="onClickRadioButtonSatellite"/>
+            </RadioGroup>
+
             <Button
                 android:id="@+id/buttonSave"
                 android:layout_width="match_parent"

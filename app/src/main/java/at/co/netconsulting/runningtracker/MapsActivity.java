@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -53,6 +54,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private boolean isDisableZoomCamera = true;
     private FloatingActionButton fabStartRecording, fabStopRecording;
     private double lastLat, lastLng;
+    private String mapType;
+    private SupportMapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,12 +65,27 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         setContentView(binding.getRoot());
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        loadSharedPreferences();
+
         //initialize objects
         initObjects();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadSharedPreferences();
+    }
+
+    private void loadSharedPreferences() {
+        SharedPreferences sh;
+
+        sh = getSharedPreferences(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
+        mapType = sh.getString(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NORMAL");
     }
 
     private void createListenerAndfillPolyPoints(double lastLat, double lastLng) {
@@ -158,9 +176,23 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             return;
         }
         mMap = googleMap;
-//      if map is moved around, automatic camera movement is disabled
+        //if map is moved around, automatic camera movement is disabled
         mMap.setOnCameraMoveListener(this);
-        mMap.setMapType(mMap.MAP_TYPE_NORMAL);
+        if(mapType.equals("MAP_TYPE_NORMAL"))
+            mMap.setMapType(mMap.MAP_TYPE_NORMAL);
+        else if(mapType.equals("MAP_TYPE_HYBRID"))
+            mMap.setMapType(mMap.MAP_TYPE_HYBRID);
+        else if(mapType.equals("MAP_TYPE_NONE"))
+            mMap.setMapType(mMap.MAP_TYPE_NONE);
+        else if(mapType.equals("MAP_TYPE_TERRAIN"))
+            mMap.setMapType(mMap.MAP_TYPE_TERRAIN);
+        else if(mapType.equals("MAP_TYPE_SATELLITE"))
+            mMap.setMapType(mMap.MAP_TYPE_SATELLITE);
+        else
+            mMap.setMapType(mMap.MAP_TYPE_NORMAL);
+
+        //
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(1.0f));
 
         // Get map views
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().
@@ -176,12 +208,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         layoutParams.setMargins(0, 0, 5, 255);
 
-//      adjust location button layout params above the zoom layout
+        //adjust location button layout params above the zoom layout
         RelativeLayout.LayoutParams location_layout = (RelativeLayout.LayoutParams) location_button.getLayoutParams();
         location_layout.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
         location_layout.addRule(RelativeLayout.ABOVE, zoom_layout.getId());
 
-//      Cross-hair is shown here, right upper corner
+        //Cross-hair is shown here, right upper corner
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setPadding(0,0,0,90);

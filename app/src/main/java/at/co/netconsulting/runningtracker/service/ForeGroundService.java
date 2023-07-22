@@ -208,7 +208,9 @@ public class ForeGroundService extends Service {
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
                 .setSmallIcon(R.drawable.ic_launcher_background)
+                //show notification on home screen to everyone
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                //without FOREGROUND_SERVICE_IMMEDIATE, notification can take up to 10 secs to be shown
                 .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
 
         notification = notificationBuilder.build();
@@ -241,7 +243,6 @@ public class ForeGroundService extends Service {
             }
         }, 0,100);
         return START_STICKY;
-        //return super.onStartCommand(intent, flags, startId);
     }
 
     private void calculateDistance() {
