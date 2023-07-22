@@ -50,7 +50,6 @@ public class ForeGroundService extends Service {
     private Notification notification;
     private NotificationCompat.Builder notificationBuilder;
     private NotificationManager manager;
-    private IntentFilter filter;
     private int waitForXMinutes = 10;
     private DatabaseHandler db;
     private Run run;
@@ -63,7 +62,6 @@ public class ForeGroundService extends Service {
     private float speed;
     private float[] result;
     private float minimumSpeedLimit;
-
     //Polyline
     private ArrayList<LatLng> polylinePoints;
 
@@ -113,6 +111,7 @@ public class ForeGroundService extends Service {
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         criteria.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
         criteria.setSpeedRequired(true);
+        //TODO: take the best provider based on user input or device
         String bestProvider = locationManager.getBestProvider(criteria, true);
         bestProvider="gps";
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -209,7 +208,8 @@ public class ForeGroundService extends Service {
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
                 .setSmallIcon(R.drawable.ic_launcher_background)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
 
         notification = notificationBuilder.build();
 
