@@ -66,7 +66,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-//initialize objects
+        //initialize objects
         initObjects();
     }
 

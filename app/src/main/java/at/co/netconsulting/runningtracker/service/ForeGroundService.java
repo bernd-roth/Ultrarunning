@@ -196,17 +196,19 @@ public class ForeGroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         initObjects();
         createNotificationChannel();
-        PendingIntent stopPendingIntent = createPendingIntent();
+        //PendingIntent stopPendingIntent = createPendingIntent();
+        createPendingIntent();
 
-        Intent notificationIntent = new Intent(this, MapsActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT |
-                        PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
+        //Intent notificationIntent = new Intent(this, MapsActivity.class);
+        //PendingIntent pendingIntent = PendingIntent.getActivity(this,
+        //        0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT |
+        //                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(getString(R.string.notificationBuilder_title))
-                .setContentIntent(pendingIntent)
+                //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
-                .setSmallIcon(R.drawable.ic_launcher_background);
+                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
         notification = notificationBuilder.build();
 
@@ -228,12 +230,16 @@ public class ForeGroundService extends Service {
                     manager.notify(NOTIFICATION_ID /* ID of notification */,
                             notificationBuilder
                                     .setContentTitle("Distance covered: " + calc + " meter")
-                                    .setContentText("Current speed: " + speed + " km/h | Number of satellites: " + location.getExtras().getInt("satellites"))
+                                    //.setContentText("Current speed: " + speed + " km/h | Number of satellites: " + location.getExtras().getInt("satellites"))
+                                    .setStyle(new NotificationCompat.BigTextStyle()
+                                    .bigText("Current speed: " + speed + " km/h"
+                                            + "\nNumber of satellites: " + location.getExtras().getInt("satellites")
+                                            + "\nLocation accuraccy: " + location.getExtras().getInt(String.valueOf(location.getAccuracy()))))
                                     .build());
                 }
             }
         }, 0,100);
-        return Service.START_STICKY;
+        return START_STICKY;
         //return super.onStartCommand(intent, flags, startId);
     }
 

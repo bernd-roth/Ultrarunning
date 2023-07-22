@@ -26,7 +26,6 @@ public class SettingsActivity extends BaseActivity {
     private boolean isSwitchBatteryOptimization;
     private float minimumSpeedLimit;
     private SharedPreferences sharedpreferences;
-    private static long minSpeedLimit = (long) 3.5;
     private EditText editTextNumberDecimalMinimumSpeedLimit;
     private Button buttonSave;
 
@@ -52,7 +51,7 @@ public class SettingsActivity extends BaseActivity {
                 break;
             case StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                minimumSpeedLimit = sh.getFloat(sharedPrefKey, minSpeedLimit);
+                minimumSpeedLimit = sh.getFloat(sharedPrefKey, Float.valueOf(String.valueOf(StaticFields.STATIC_DOUBLE_MINIMUM_SPEED_LIMIT)));
                 editTextNumberDecimalMinimumSpeedLimit.setText(String.valueOf(minimumSpeedLimit));
                 break;
         }

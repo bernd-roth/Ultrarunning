@@ -6,4 +6,5 @@ public class StaticFields {
     //minimum speed limit is always m/s
     public final static Double STATIC_DOUBLE_MINIMUM_SPEED_LIMIT = 1.111;
     public final static String STATIC_BROADCAST_ACTION = "at.co.netconsulting.polylinepoints";
+    //public final static long STATIC_MIN_SPEED_LIMIT = (long) 3.8;
 }
