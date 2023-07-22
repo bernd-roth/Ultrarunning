@@ -9,17 +9,19 @@ public class Run {
     private String dateTime;
     private double lat;
     private double lng;
+    private double meters_covered;
     private float speed;
     private int heart_rate;
 
     public Run() {
     }
 
-    public Run(int id, String dateTime, double lat, double lng, float speed, int heart_rate) {
+    public Run(int id, String dateTime, double lat, double lng, double meters_covered, float speed, int heart_rate) {
         this.id = id;
         this.dateTime = dateTime;
         this.lat = lat;
         this.lng = lng;
+        this.meters_covered = meters_covered;
         this.speed = speed;
         this.heart_rate = heart_rate;
     }
@@ -70,5 +72,13 @@ public class Run {
 
     public void setHeart_rate(int heart_rate) {
         this.heart_rate = heart_rate;
+    }
+
+    public double getMeters_covered() {
+        return meters_covered;
+    }
+
+    public void setMeters_covered(double meters_covered) {
+        this.meters_covered = meters_covered;
     }
 }

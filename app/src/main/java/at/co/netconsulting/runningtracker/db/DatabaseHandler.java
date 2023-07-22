@@ -19,6 +19,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_DATE_TIME = "date_time";
     private static final String KEY_LAT = "lat";
     private static final String KEY_LNG = "lng";
+    private static final String KEY_METERS_COVERED = "km";
 	private static final String KEY_SPEED = "speed";
 	private static final String KEY_HEART_RATE = "heart_rate";
 
@@ -43,6 +44,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_LAT, run.getLat());
         values.put(KEY_LNG, run.getLng());
+        values.put(KEY_METERS_COVERED, run.getMeters_covered());
         values.put(KEY_SPEED, run.getLng());
         values.put(KEY_HEART_RATE, run.getLng());
 
@@ -57,16 +59,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_RUNS, new String[] { KEY_ID,
-                        KEY_DATE_TIME, KEY_LAT, KEY_LNG, KEY_SPEED, KEY_HEART_RATE }, KEY_ID + "=?",
+                        KEY_DATE_TIME, KEY_LAT, KEY_LNG, KEY_METERS_COVERED, KEY_SPEED, KEY_HEART_RATE }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
         Run run = new Run(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), cursor.getDouble(2),
+                cursor.getString(1),
+                cursor.getDouble(2),
                 cursor.getDouble(3),
-                cursor.getFloat(4),
-                cursor.getInt(5));
+                cursor.getDouble(4),
+                cursor.getInt(5),
+                cursor.getInt(6));
         // return contact
         return run;
     }
@@ -88,8 +92,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setDateTime(cursor.getString(1));
                 run.setLat(cursor.getDouble(2));
                 run.setLng(cursor.getDouble(3));
-                run.setSpeed(cursor.getFloat(4));
-                run.setHeart_rate(cursor.getInt(5));
+                run.setMeters_covered(cursor.getDouble(4));
+                run.setSpeed(cursor.getFloat(5));
+                run.setHeart_rate(cursor.getInt(6));
                 // Adding contact to list
                 contactList.add(run);
             } while (cursor.moveToNext());
@@ -136,6 +141,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_DATE_TIME + " DATETIME ,"
                 + KEY_LAT + " DOUBLE,"
                 + KEY_LNG + " DOUBLE,"
+                + KEY_METERS_COVERED + " DOUBLE,"
                 + KEY_SPEED + " DOUBLE,"
                 + KEY_HEART_RATE + " INTEGER" + ")";
         db.execSQL(CREATE_RUNS_TABLE);

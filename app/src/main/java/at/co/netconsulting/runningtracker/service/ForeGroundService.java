@@ -30,6 +30,8 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -43,7 +45,6 @@ import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class ForeGroundService extends Service {
-
     private static final int NOTIFICATION_ID = 1;
     private String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.parkingticket";
     private Notification notification;
@@ -58,9 +59,9 @@ public class ForeGroundService extends Service {
     private LocationManager locationManager;
     private Location location;
     private Timer timer;
-    float calc;
-    float speed;
-    float[] result;
+    private float calc;
+    private float speed;
+    private float[] result;
     private float minimumSpeedLimit;
 
     //Polyline
@@ -229,7 +230,7 @@ public class ForeGroundService extends Service {
                     }
                     manager.notify(NOTIFICATION_ID /* ID of notification */,
                             notificationBuilder
-                                    .setContentTitle("Distance covered: " + calc + " meter")
+                                    .setContentTitle("Distance covered: " + String.format("%.2f meter", calc))
                                     //.setContentText("Current speed: " + speed + " km/h | Number of satellites: " + location.getExtras().getInt("satellites"))
                                     .setStyle(new NotificationCompat.BigTextStyle()
                                     .bigText("Current speed: " + speed + " km/h"
