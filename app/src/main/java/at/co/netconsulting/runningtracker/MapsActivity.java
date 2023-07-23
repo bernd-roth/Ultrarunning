@@ -15,14 +15,11 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,7 +40,7 @@ import java.util.List;
 
 import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
-import at.co.netconsulting.runningtracker.service.ForeGroundService;
+import at.co.netconsulting.runningtracker.service.ForegroundService;
 
 public class MapsActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener {
     private GoogleMap mMap;
@@ -79,6 +76,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     protected void onResume() {
         super.onResume();
         loadSharedPreferences();
+        //redraw Google Map, calling GoogleMap will fail du to NPE
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     private void loadSharedPreferences() {
@@ -89,7 +90,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     }
 
     private void createListenerAndfillPolyPoints(double lastLat, double lastLng) {
-        boolean isServiceRunning = isServiceRunning("at.co.netconsulting.runningtracker.service.ForeGroundService");
+        boolean isServiceRunning = isServiceRunning("at.co.netconsulting.runningtracker.service.ForegroundService");
 
         if(isServiceRunning) {
             double latitude = this.lastLat;
@@ -239,21 +240,21 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(this, ForeGroundService.class));
+        stopService(new Intent(this, ForegroundService.class));
     }
 
     public void onClickRecording(View view) {
         switch(view.getId()) {
             case R.id.fabRecording:
                 Context contextFabRecording = getApplicationContext();
-                Intent intentForegroundService = new Intent(contextFabRecording, ForeGroundService.class);
+                Intent intentForegroundService = new Intent(contextFabRecording, ForegroundService.class);
                 intentForegroundService.setAction("ACTION_START");
                 contextFabRecording.startForegroundService(intentForegroundService);
                 createListenerAndfillPolyPoints(lastLat, lastLng);
                 fabStopRecording.setVisibility(View.VISIBLE);
                 break;
             case R.id.fabStopRecording:
-                stopService(new Intent(this, ForeGroundService.class));
+                stopService(new Intent(this, ForegroundService.class));
                 fabStopRecording.setVisibility(View.INVISIBLE);
                 break;
             case R.id.fabStatistics:

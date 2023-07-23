@@ -6,10 +6,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -19,9 +17,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Parcelable;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,11 +26,8 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,7 +37,7 @@ import at.co.netconsulting.runningtracker.StaticFields;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
-public class ForeGroundService extends Service {
+public class ForegroundService extends Service {
     private static final int NOTIFICATION_ID = 1;
     private String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.parkingticket";
     private Notification notification;
