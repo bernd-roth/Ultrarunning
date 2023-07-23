@@ -92,6 +92,32 @@
                     android:onClick="onClickRadioButtonSatellite"/>
             </RadioGroup>
 
+            <TextView
+                android:id="@+id/textViewMinDistanceMeter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Update minimum distance meter" />
+
+            <EditText
+                android:id="@+id/editTextNumberSignedMinimumDistanceMeter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:id="@+id/textViewMinTimeMs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Update minimum time sec" />
+
+            <EditText
+                android:id="@+id/editTextNumberSignedMinimumTimeMs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="numberDecimal" />
+
             <Button
                 android:id="@+id/buttonSave"
                 android:layout_width="match_parent"

@@ -9,11 +9,12 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* saving lat, lng, meters_covered, ... to table">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* introducing new settings: minDistance, minTimeMs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/pojo/Run.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/pojo/Run.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StaticFields.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StaticFields.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/settings_activity.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/settings_activity.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -241,7 +242,14 @@
       <option name="project" value="LOCAL" />
       <updated>1690098472343</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="* new table columns&#10;* receive last entry from table for number of runs">
+      <created>1690103732857</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1690103732857</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -271,6 +279,24 @@
     <MESSAGE value="* different map presentations in SettingsActivity.java like MAP_TYPE_NORMAL,MAP_TYPE_HYBRID..." />
     <MESSAGE value="* redraw GoogleMap in onResume&#10;* renaming ForegroundService.java" />
     <MESSAGE value="* saving lat, lng, meters_covered, ... to table" />
-    <option name="LAST_COMMIT_MESSAGE" value="* saving lat, lng, meters_covered, ... to table" />
+    <MESSAGE value="* new table columns&#10;* receive last entry from table for number of runs" />
+    <MESSAGE value="* introducing new settings: minDistance, minTimeMs" />
+    <option name="LAST_COMMIT_MESSAGE" value="* introducing new settings: minDistance, minTimeMs" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
+          <line>184</line>
+          <option name="timeStamp" value="49" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
+          <line>88</line>
+          <option name="timeStamp" value="51" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

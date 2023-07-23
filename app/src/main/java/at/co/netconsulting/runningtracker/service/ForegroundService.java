@@ -12,25 +12,20 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-
+import android.location.LocationListener;
 import com.google.android.gms.maps.model.LatLng;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -64,6 +59,9 @@ public class ForegroundService extends Service {
     private LocalDateTime dateObj;
     private String formattedDateTime;
     private int lastRun;
+    private LatLng latLng;
+    private int minDistanceMeter;
+    private long minTimeMs;
 
     @Override
     public void onCreate() {
@@ -84,6 +82,8 @@ public class ForegroundService extends Service {
         }
 
         loadSharedPreferences(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT);
+        loadSharedPreferences(StaticFields.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER);
+        loadSharedPreferences(StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         startLocationListener();
         LocationManager locationManager = getLocationManager();
         setGPSProviderAsLocationManager(locationManager);
@@ -104,7 +104,7 @@ public class ForegroundService extends Service {
         if (location == null) {
             Log.d("LOCATION: ", "Location is null");
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeMs*1000, (float) minDistanceMeter, locationListener);
     }
 
     private LocationManager getLocationManager() {
@@ -169,7 +169,7 @@ public class ForegroundService extends Service {
                 longitude = location.getLongitude();
 
                 //get the location name from latitude and longitude
-                LatLng latLng = new LatLng(latitude, longitude);
+                latLng = new LatLng(latitude, longitude);
                 polylinePoints.add(latLng);
 
                 //get speed
@@ -178,26 +178,6 @@ public class ForegroundService extends Service {
 
                 //number of satellites
                 Log.d("NUMBER OF SATELLITES", String.valueOf(location.getExtras().getInt("satellites")));
-            }
-
-            @Override
-            public void onLocationChanged(@NonNull List<Location> locations) {
-                LocationListener.super.onLocationChanged(locations);
-            }
-
-            @Override
-            public void onFlushComplete(int requestCode) {
-                LocationListener.super.onFlushComplete(requestCode);
-            }
-
-            @Override
-            public void onProviderEnabled(@NonNull String provider) {
-                LocationListener.super.onProviderEnabled(provider);
-            }
-
-            @Override
-            public void onProviderDisabled(@NonNull String provider) {
-                LocationListener.super.onProviderDisabled(provider);
             }
         };
     }
@@ -209,10 +189,6 @@ public class ForegroundService extends Service {
         //PendingIntent stopPendingIntent = createPendingIntent();
         createPendingIntent();
 
-        //Intent notificationIntent = new Intent(this, MapsActivity.class);
-        //PendingIntent pendingIntent = PendingIntent.getActivity(this,
-        //        0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT |
-        //                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(getString(R.string.notificationBuilder_title))
                 //.setContentIntent(pendingIntent)
@@ -268,12 +244,12 @@ public class ForegroundService extends Service {
         double newDoubleLat = lastEntry.latitude;
         double newDoubleLng = lastEntry.longitude;
 
-        if(speed>minimumSpeedLimit) {
-            Location.distanceBetween(oldDoubleLat, oldDoubleLng, newDoubleLat, newDoubleLng, result);
-            calc += result[0];
-            saveToDatabase();
-            sendBroadcastToMapsActivity(polylinePoints);
-        }
+//        if(speed>minimumSpeedLimit) {
+        Location.distanceBetween(oldDoubleLat, oldDoubleLng, newDoubleLat, newDoubleLng, result);
+        calc += result[0];
+        saveToDatabase();
+        sendBroadcastToMapsActivity(polylinePoints);
+//        }
     }
 
     private void sendBroadcastToMapsActivity(ArrayList<LatLng> polylinePoints) {
@@ -300,6 +276,8 @@ public class ForegroundService extends Service {
         super.onDestroy();
         cancelNotification();
         timer.cancel();
+        polylinePoints.clear();
+        latLng = null;
         stopForeground(STOP_FOREGROUND_REMOVE);
         stopSelf();
     }
@@ -335,6 +313,14 @@ public class ForegroundService extends Service {
             case StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 minimumSpeedLimit = sh.getFloat(sharedPrefKey, Double.valueOf(StaticFields.STATIC_DOUBLE_MINIMUM_SPEED_LIMIT).floatValue());
+                break;
+            case StaticFields.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                minDistanceMeter = sh.getInt(sharedPrefKey, StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_DISTANCE_METER_DEFAULT);
+                break;
+            case StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                minTimeMs = sh.getLong(sharedPrefKey, StaticFields.STATIC_SHARED_PREF_LONG_MIN_TIME_MS_DEFAULT);
                 break;
         }
     }

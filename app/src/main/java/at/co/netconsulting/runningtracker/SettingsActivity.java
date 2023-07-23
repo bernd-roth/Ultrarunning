@@ -30,6 +30,8 @@ public class SettingsActivity extends BaseActivity {
     private float minimumSpeedLimit;
     private SharedPreferences sharedpreferences;
     private EditText editTextNumberDecimalMinimumSpeedLimit;
+    private EditText editTextNumberSignedMinimumTimeMs;
+    private EditText editTextNumberSignedMinimumDistanceMeter;
     private Button buttonSave;
     private String mapType;
     private RadioButton radioButtonNormal,
@@ -37,6 +39,8 @@ public class SettingsActivity extends BaseActivity {
             radioButtonNone,
             radioButtonTerrain,
             radioButtonSatellite;
+    private int minDistanceMeter;
+    private int minTimeMs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,8 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(StaticFields.STATIC_BATTERY_OPTIMIZATION);
         loadSharedPreferences(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         loadSharedPreferences(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE);
+        loadSharedPreferences(StaticFields.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER);
+        loadSharedPreferences(StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         ignoreBatteryOptimization();
     }
 
@@ -80,6 +86,16 @@ public class SettingsActivity extends BaseActivity {
                 else
                     radioButtonNormal.setChecked(true);
                 break;
+            case StaticFields.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                minDistanceMeter = sh.getInt(sharedPrefKey, StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_DISTANCE_METER_DEFAULT);
+                editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(minDistanceMeter));
+                break;
+            case StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                minTimeMs = sh.getInt(sharedPrefKey, StaticFields.STATIC_SHARED_PREF_LONG_MIN_TIME_MS_DEFAULT);
+                editTextNumberSignedMinimumTimeMs.setText(String.valueOf(minTimeMs));
+                break;
         }
     }
 
@@ -106,6 +122,8 @@ public class SettingsActivity extends BaseActivity {
         });
 
         editTextNumberDecimalMinimumSpeedLimit = findViewById(R.id.editTextNumberSignedMinimumSpeedLimit);
+        editTextNumberSignedMinimumTimeMs = findViewById(R.id.editTextNumberSignedMinimumTimeMs);
+        editTextNumberSignedMinimumDistanceMeter = findViewById(R.id.editTextNumberSignedMinimumDistanceMeter);
         buttonSave = findViewById(R.id.buttonSave);
 
         radioButtonNormal = findViewById(R.id.radioButton_map_type_normal);
@@ -163,6 +181,18 @@ public class SettingsActivity extends BaseActivity {
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
             editor.putString(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_SATELLITE");
+            editor.commit();
+        } else if(sharedPreference.equals("MIN_DISTANCE_METER")) {
+            sharedpreferences = getSharedPreferences(StaticFields.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            editor.putString(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, "MIN_DISTANCE_METER");
+            editor.commit();
+        } else if(sharedPreference.equals("MIN_TIME_MS")) {
+            sharedpreferences = getSharedPreferences(StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            editor.putString(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, "MIN_TIME_MS");
             editor.commit();
         }
     }
