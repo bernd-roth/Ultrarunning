@@ -1,9 +1,5 @@
 package at.co.netconsulting.runningtracker.pojo;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
 public class Run {
     private int id;
     private String dateTime;
@@ -46,10 +42,6 @@ public class Run {
         this.lng = lng;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public double getLat() {
         return lat;
     }
@@ -80,5 +72,9 @@ public class Run {
 
     public void setMeters_covered(double meters_covered) {
         this.meters_covered = meters_covered;
+    }
+
+    public int getId() {
+        return id;
     }
 }

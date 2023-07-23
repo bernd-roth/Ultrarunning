@@ -42,11 +42,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(KEY_DATE_TIME, run.getDateTime());
         values.put(KEY_LAT, run.getLat());
         values.put(KEY_LNG, run.getLng());
         values.put(KEY_METERS_COVERED, run.getMeters_covered());
-        values.put(KEY_SPEED, run.getLng());
-        values.put(KEY_HEART_RATE, run.getLng());
+        values.put(KEY_SPEED, run.getSpeed());
+        values.put(KEY_HEART_RATE, run.getHeart_rate());
 
         // Inserting Row
         db.insert(TABLE_RUNS, null, values);
@@ -54,8 +55,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
-    // code to get the single contact
-    Run getContact(int id) {
+    //code to get single entry
+    public Run getSingleEntry(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_RUNS, new String[] { KEY_ID,
@@ -71,15 +72,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 cursor.getDouble(4),
                 cursor.getInt(5),
                 cursor.getInt(6));
-        // return contact
         return run;
     }
 
-    // code to get all contacts in a list view
-    public List<Run> getAllContacts() {
-        List<Run> contactList = new ArrayList<Run>();
+    // code to get all entries in a list view
+    public List<Run> getAllEntries() {
+        List<Run> allEntryList = new ArrayList<Run>();
         // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_RUNS;
+        String selectQuery = "SELECT * FROM " + TABLE_RUNS;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -96,10 +96,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setSpeed(cursor.getFloat(5));
                 run.setHeart_rate(cursor.getInt(6));
                 // Adding contact to list
-                contactList.add(run);
+                allEntryList.add(run);
             } while (cursor.moveToNext());
         }
-        return contactList;
+        return allEntryList;
     }
 
     // code to update the single contact

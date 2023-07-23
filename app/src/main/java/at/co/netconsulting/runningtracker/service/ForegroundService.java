@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +27,8 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -57,6 +60,9 @@ public class ForegroundService extends Service {
     private float minimumSpeedLimit;
     //Polyline
     private ArrayList<LatLng> polylinePoints;
+    private DateTimeFormatter formatDateTime;
+    private LocalDateTime dateObj;
+    private String formattedDateTime;
 
     @Override
     public void onCreate() {
@@ -134,14 +140,19 @@ public class ForegroundService extends Service {
         result = new float[1];
         speed = 0;
         timer = new Timer();
+        dateObj = LocalDateTime.now();
+        formatDateTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     }
 
     private void saveToDatabase() {
-//Save input to database
-//                run.setLat(latitude);
-//                run.setLng(longitude);
-//                db.addRun(run);
-//                polylinePoints.add(latLng);
+        //Save input to database
+        dateObj = LocalDateTime.now();
+        formattedDateTime = dateObj.format(formatDateTime);
+
+        run.setDateTime(dateObj.format(formatDateTime));
+        run.setLat(latitude);
+        run.setLng(longitude);
+        db.addRun(run);
     }
 
     private void startLocationListener() {
@@ -253,6 +264,7 @@ public class ForegroundService extends Service {
         if(speed>minimumSpeedLimit) {
             Location.distanceBetween(oldDoubleLat, oldDoubleLng, newDoubleLat, newDoubleLng, result);
             calc += result[0];
+            saveToDatabase();
             sendBroadcastToMapsActivity(polylinePoints);
         }
     }
