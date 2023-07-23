@@ -22,6 +22,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_METERS_COVERED = "km";
 	private static final String KEY_SPEED = "speed";
 	private static final String KEY_HEART_RATE = "heart_rate";
+    private static final String KEY_COMMENT = "comment";
+    private static final String KEY_NUMBER_OF_RUN = "number_of_run";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -48,6 +50,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_METERS_COVERED, run.getMeters_covered());
         values.put(KEY_SPEED, run.getSpeed());
         values.put(KEY_HEART_RATE, run.getHeart_rate());
+        values.put(KEY_COMMENT, run.getComment());
+        values.put(KEY_NUMBER_OF_RUN, run.getNumber_of_run());
 
         // Inserting Row
         db.insert(TABLE_RUNS, null, values);
@@ -60,7 +64,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_RUNS, new String[] { KEY_ID,
-                        KEY_DATE_TIME, KEY_LAT, KEY_LNG, KEY_METERS_COVERED, KEY_SPEED, KEY_HEART_RATE }, KEY_ID + "=?",
+                        KEY_DATE_TIME, KEY_LAT, KEY_LNG, KEY_METERS_COVERED, KEY_SPEED, KEY_HEART_RATE, KEY_COMMENT, KEY_NUMBER_OF_RUN }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
@@ -71,8 +75,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 cursor.getDouble(3),
                 cursor.getDouble(4),
                 cursor.getInt(5),
-                cursor.getInt(6));
+                cursor.getInt(6),
+                cursor.getString(7),
+                cursor.getInt(8)
+        );
         return run;
+    }
+
+    public int getLastEntry() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + TABLE_RUNS;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        Run run = new Run();
+
+        if (cursor.moveToLast()) {
+            do {
+                run.setNumber_of_run(cursor.getInt(8));
+            } while (cursor.moveToNext());
+        } else {
+            run.setNumber_of_run(0);
+        }
+        return run.getNumber_of_run();
     }
 
     // code to get all entries in a list view
@@ -95,44 +120,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setMeters_covered(cursor.getDouble(4));
                 run.setSpeed(cursor.getFloat(5));
                 run.setHeart_rate(cursor.getInt(6));
+                run.setComment(cursor.getString(7));
+                run.setNumber_of_run(cursor.getInt(8));
                 // Adding contact to list
                 allEntryList.add(run);
             } while (cursor.moveToNext());
         }
         return allEntryList;
     }
-
-    // code to update the single contact
-//    public int updateContact(Contact contact) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//
-//        ContentValues values = new ContentValues();
-//        values.put(KEY_NAME, contact.getName());
-//        values.put(KEY_PH_NO, contact.getPhoneNumber());
-//
-//        // updating row
-//        return db.update(TABLE_CONTACTS, values, KEY_ID + " = ?",
-//                new String[] { String.valueOf(contact.getID()) });
-//    }
-//
-//    // Deleting single contact
-//    public void deleteContact(Contact contact) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        db.delete(TABLE_CONTACTS, KEY_ID + " = ?",
-//                new String[] { String.valueOf(contact.getID()) });
-//        db.close();
-//    }
-//
-//    // Getting contacts Count
-//    public int getContactsCount() {
-//        String countQuery = "SELECT  * FROM " + TABLE_CONTACTS;
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        Cursor cursor = db.rawQuery(countQuery, null);
-//        cursor.close();
-//
-//        // return count
-//        return cursor.getCount();
-//    }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -143,7 +138,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_LNG + " DOUBLE,"
                 + KEY_METERS_COVERED + " DOUBLE,"
                 + KEY_SPEED + " DOUBLE,"
-                + KEY_HEART_RATE + " INTEGER" + ")";
+                + KEY_HEART_RATE + " INTEGER,"
+                + KEY_COMMENT + " STRING,"
+                + KEY_NUMBER_OF_RUN + " INTEGER" + ")";
         db.execSQL(CREATE_RUNS_TABLE);
     }
 }

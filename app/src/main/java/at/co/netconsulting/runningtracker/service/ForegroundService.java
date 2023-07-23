@@ -63,11 +63,14 @@ public class ForegroundService extends Service {
     private DateTimeFormatter formatDateTime;
     private LocalDateTime dateObj;
     private String formattedDateTime;
+    private int lastRun;
 
     @Override
     public void onCreate() {
         super.onCreate();
         db = new DatabaseHandler(this);
+        lastRun = db.getLastEntry();
+        lastRun+=1;
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -144,14 +147,17 @@ public class ForegroundService extends Service {
         formatDateTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     }
 
+    //Save input to database
     private void saveToDatabase() {
-        //Save input to database
+        //format date and time
         dateObj = LocalDateTime.now();
         formattedDateTime = dateObj.format(formatDateTime);
 
         run.setDateTime(dateObj.format(formatDateTime));
         run.setLat(latitude);
         run.setLng(longitude);
+        run.setNumber_of_run(lastRun);
+        run.setMeters_covered(calc);
         db.addRun(run);
     }
 
@@ -231,6 +237,7 @@ public class ForegroundService extends Service {
                     timer.cancel();
                     stopSelfResult(NOTIFICATION_ID);
                 } else {
+                    saveToDatabase();
                     if(polylinePoints.size()>1) {
                         calculateDistance();
                     }

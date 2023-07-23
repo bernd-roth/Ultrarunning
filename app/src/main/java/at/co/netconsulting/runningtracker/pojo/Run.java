@@ -8,11 +8,17 @@ public class Run {
     private double meters_covered;
     private float speed;
     private int heart_rate;
+    private String comment;
+    private int number_of_run;
 
     public Run() {
     }
 
-    public Run(int id, String dateTime, double lat, double lng, double meters_covered, float speed, int heart_rate) {
+    public Run(int number_of_run) {
+        this.number_of_run = number_of_run;
+    }
+
+    public Run(int id, String dateTime, double lat, double lng, double meters_covered, float speed, int heart_rate, String comment, int number_of_run) {
         this.id = id;
         this.dateTime = dateTime;
         this.lat = lat;
@@ -20,6 +26,8 @@ public class Run {
         this.meters_covered = meters_covered;
         this.speed = speed;
         this.heart_rate = heart_rate;
+        this.comment = comment;
+        this.number_of_run = number_of_run;
     }
 
     public void setId(int id) {
@@ -76,5 +84,21 @@ public class Run {
 
     public int getId() {
         return id;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public int getNumber_of_run() {
+        return number_of_run;
+    }
+
+    public void setNumber_of_run(int number_of_run) {
+        this.number_of_run = number_of_run;
     }
 }
