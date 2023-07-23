@@ -70,17 +70,6 @@ public class ForegroundService extends Service {
         lastRun = db.getLastEntry();
         lastRun+=1;
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
         loadSharedPreferences(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         loadSharedPreferences(StaticFields.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER);
         loadSharedPreferences(StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
@@ -91,20 +80,10 @@ public class ForegroundService extends Service {
 
     private void setGPSProviderAsLocationManager(LocationManager locationManager) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (location == null) {
-            Log.d("LOCATION: ", "Location is null");
-        }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeMs*1000, (float) minDistanceMeter, locationListener);
+        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
     private LocationManager getLocationManager() {
@@ -117,16 +96,9 @@ public class ForegroundService extends Service {
         String bestProvider = locationManager.getBestProvider(criteria, true);
         bestProvider="gps";
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return null;
         }
-        Location location = locationManager.getLastKnownLocation(bestProvider);
+        location = locationManager.getLastKnownLocation(bestProvider);
 
         if (location != null) {
             Log.i("GPS: ", "GPS is on");
@@ -244,11 +216,16 @@ public class ForegroundService extends Service {
         double newDoubleLat = lastEntry.latitude;
         double newDoubleLng = lastEntry.longitude;
 
-//        if(speed>minimumSpeedLimit) {
         Location.distanceBetween(oldDoubleLat, oldDoubleLng, newDoubleLat, newDoubleLng, result);
         calc += result[0];
         saveToDatabase();
         sendBroadcastToMapsActivity(polylinePoints);
+
+//        if(speed>minimumSpeedLimit) {
+//            Location.distanceBetween(oldDoubleLat, oldDoubleLng, newDoubleLat, newDoubleLng, result);
+//            calc += result[0];
+//            saveToDatabase();
+//            sendBroadcastToMapsActivity(polylinePoints);
 //        }
     }
 

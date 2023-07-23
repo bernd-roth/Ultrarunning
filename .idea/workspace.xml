@@ -9,12 +9,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* introducing new settings: minDistance, minTimeMs">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* introducing new settings: minDistance, minTimeMs&#10;* removing if speed&gt;minimumSpeedLimit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StaticFields.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StaticFields.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/settings_activity.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/settings_activity.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -249,7 +246,14 @@
       <option name="project" value="LOCAL" />
       <updated>1690103732857</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="* introducing new settings: minDistance, minTimeMs&#10;* removing if speed&gt;minimumSpeedLimit">
+      <created>1690123975658</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1690123975658</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -281,7 +285,8 @@
     <MESSAGE value="* saving lat, lng, meters_covered, ... to table" />
     <MESSAGE value="* new table columns&#10;* receive last entry from table for number of runs" />
     <MESSAGE value="* introducing new settings: minDistance, minTimeMs" />
-    <option name="LAST_COMMIT_MESSAGE" value="* introducing new settings: minDistance, minTimeMs" />
+    <MESSAGE value="* introducing new settings: minDistance, minTimeMs&#10;* removing if speed&gt;minimumSpeedLimit" />
+    <option name="LAST_COMMIT_MESSAGE" value="* introducing new settings: minDistance, minTimeMs&#10;* removing if speed&gt;minimumSpeedLimit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
