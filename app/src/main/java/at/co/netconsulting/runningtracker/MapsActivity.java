@@ -102,9 +102,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             } else {
                 LatLng latLng = new LatLng(latitude, longitude);
 
-                if (isDisableZoomCamera)
+                if (isDisableZoomCamera) {
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
-
+                }
                 polylinePoints.add(latLng);
 
                 if (polyline != null) {

@@ -129,6 +129,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return allEntryList;
     }
 
+    public void delete() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_RUNS, null, null);
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_RUNS_TABLE = "CREATE TABLE " + TABLE_RUNS + "("

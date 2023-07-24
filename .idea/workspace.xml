@@ -9,9 +9,13 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* introducing new settings: minDistance, minTimeMs&#10;* removing if speed&gt;minimumSpeedLimit">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* calculating speed from m/s to km/h&#10;* truncating database in SettingsActivity.java">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/settings_activity.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/settings_activity.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,6 +66,9 @@
   <component name="RecentsManager">
     <key name="android.template.-1983559038">
       <recent name="at.co.netconsulting.runningtracker" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="at.co.netconsulting.runningtracker.service" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\projects\android\RunningTracker\app\src\main\res" />
@@ -253,7 +260,14 @@
       <option name="project" value="LOCAL" />
       <updated>1690123975658</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="* removed comments&#10;* if condition speed&gt;minimumSpeedLimit removed">
+      <created>1690142100172</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1690142100172</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -286,20 +300,17 @@
     <MESSAGE value="* new table columns&#10;* receive last entry from table for number of runs" />
     <MESSAGE value="* introducing new settings: minDistance, minTimeMs" />
     <MESSAGE value="* introducing new settings: minDistance, minTimeMs&#10;* removing if speed&gt;minimumSpeedLimit" />
-    <option name="LAST_COMMIT_MESSAGE" value="* introducing new settings: minDistance, minTimeMs&#10;* removing if speed&gt;minimumSpeedLimit" />
+    <MESSAGE value="* removed comments&#10;* if condition speed&gt;minimumSpeedLimit removed" />
+    <MESSAGE value="* calculating speed from m/s to km/h&#10;* truncating database in SettingsActivity.java" />
+    <option name="LAST_COMMIT_MESSAGE" value="* calculating speed from m/s to km/h&#10;* truncating database in SettingsActivity.java" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>184</line>
+          <line>188</line>
           <option name="timeStamp" value="49" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>88</line>
-          <option name="timeStamp" value="51" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

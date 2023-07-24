@@ -21,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceFragmentCompat;
 
+import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 
 public class SettingsActivity extends BaseActivity {
@@ -41,6 +42,7 @@ public class SettingsActivity extends BaseActivity {
             radioButtonSatellite;
     private int minDistanceMeter;
     private int minTimeMs;
+    private DatabaseHandler db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +133,8 @@ public class SettingsActivity extends BaseActivity {
         radioButtonNone = findViewById(R.id.radioButton_map_none);
         radioButtonTerrain = findViewById(R.id.radioButton_map_type_terrain);
         radioButtonSatellite = findViewById(R.id.radioButton_map_type_satellite);
+
+        db = new DatabaseHandler(this);
     }
 
     private void saveSharedPreferences(String sharedPreference) {
@@ -214,6 +218,11 @@ public class SettingsActivity extends BaseActivity {
     public void save(View v)
     {
         saveSharedPreferences(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT);
+    }
+
+    public void delete(View v)
+    {
+        db.delete();
     }
 
     public void onClickRadioButtonNormal(View view) {

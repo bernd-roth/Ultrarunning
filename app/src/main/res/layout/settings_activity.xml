@@ -25,19 +25,6 @@
                 android:text="Use battery optimization for a better recording\nduring background process" />
 
             <TextView
-                android:id="@+id/textViewAdjustLatLng"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Trim decimal places" />
-
-            <EditText
-                android:id="@+id/editTextNumberSigned"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="numberSigned" />
-
-            <TextView
                 android:id="@+id/textViewMinimumSpeedLimit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -124,6 +111,19 @@
                 android:layout_height="wrap_content"
                 android:text="Save"
                 android:onClick="save"/>
+
+            <TextView
+                android:id="@+id/textViewDeleteDatabase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Delete all entries from database" />
+
+            <Button
+                android:id="@+id/buttonDelete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Delete"
+                android:onClick="delete"/>
 
         </LinearLayout>
     </FrameLayout>
