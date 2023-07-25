@@ -5,7 +5,16 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
+import android.util.Log;
 
+import com.opencsv.CSVWriter;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +33,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_HEART_RATE = "heart_rate";
     private static final String KEY_COMMENT = "comment";
     private static final String KEY_NUMBER_OF_RUN = "number_of_run";
+    private Context context;
+    private File file;
+    private CSVWriter csvWrite;
+    private SQLiteDatabase db;
+    private Cursor curCSV;
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     // Upgrading database
@@ -41,7 +56,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // code to add the new contact
     public void addRun(Run run) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_DATE_TIME, run.getDateTime());
@@ -132,6 +147,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void delete() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_RUNS, null, null);
+    }
+
+    public void exportTableContent() {
+        try {
+            file = new File(context.getExternalFilesDir(null), "run.csv");
+            file.createNewFile();
+            csvWrite = new CSVWriter(new FileWriter(file));
+            db = getReadableDatabase();
+            curCSV = db.rawQuery("SELECT * FROM " + TABLE_RUNS,null);
+            csvWrite.writeNext(curCSV.getColumnNames());
+            while(curCSV.moveToNext()) {
+                String arrStr[] ={curCSV.getString(0),
+                        curCSV.getString(1),
+                        curCSV.getString(2),
+                        curCSV.getString(3),
+                        curCSV.getString(4),
+                        curCSV.getString(5),
+                        curCSV.getString(6),
+                        curCSV.getString(7),
+                        curCSV.getString(8),
+                };
+                csvWrite.writeNext(arrStr);
+            }
+            csvWrite.close();
+            curCSV.close();
+        } catch(Exception sqlEx) {
+            Log.e("DatabaseHandler", sqlEx.getMessage(), sqlEx);
+        }
     }
 
     @Override

@@ -225,6 +225,11 @@ public class SettingsActivity extends BaseActivity {
         db.delete();
     }
 
+    public void export(View v)
+    {
+        db.exportTableContent();
+    }
+
     public void onClickRadioButtonNormal(View view) {
         saveSharedPreferences("MAP_TYPE_NORMAL");
     }

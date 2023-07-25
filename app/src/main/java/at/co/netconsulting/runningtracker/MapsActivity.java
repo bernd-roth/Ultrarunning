@@ -2,11 +2,11 @@ package at.co.netconsulting.runningtracker;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-
-import androidx.annotation.NonNull;
+import static android.Manifest.permission.POST_NOTIFICATIONS;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -21,7 +21,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,11 +32,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.Map;
 import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
@@ -54,6 +52,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private double lastLat, lastLng;
     private String mapType;
     private SupportMapFragment mapFragment;
+    private String[] permissions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +70,33 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         //initialize objects
         initObjects();
+        permissionLauncherMultiple.launch(permissions);
     }
+
+    private ActivityResultLauncher<String[]> permissionLauncherMultiple = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            new ActivityResultCallback<Map<String, Boolean>>() {
+                @Override
+                public void onActivityResult(Map<String, Boolean> result) {
+                    //here we will check if permissions were now (from permission request dialog) or already granted or not
+
+                    boolean allAreGranted = true;
+                    for (Boolean isGranted : result.values()) {
+                        Log.d("Granted", "onActivityResult: isGranted: " + isGranted);
+                        allAreGranted = allAreGranted && isGranted;
+                    }
+
+                    if (allAreGranted) {
+                        //All Permissions granted now do the required task here or call the function for that
+                        Toast.makeText(getApplicationContext(), "Granted everything", Toast.LENGTH_LONG).show();
+                    } else {
+                        //All or some Permissions were denied so can't do the task that requires that permission
+                        Log.d("Permission denied", "onActivityResult: All or some permissions denied...");
+                        Toast.makeText(MapsActivity.this, "All or some permissions denied...", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+    );
 
     @Override
     protected void onResume() {
@@ -93,13 +118,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private void createListenerAndfillPolyPoints(double lastLat, double lastLng) {
         boolean isServiceRunning = isServiceRunning("at.co.netconsulting.runningtracker.service.ForegroundService");
 
-        if(isServiceRunning) {
+        if (isServiceRunning) {
             double latitude = this.lastLat;
             double longitude = this.lastLng;
 
             mMap.setMaxZoomPreference(20);
 
-            if(latitude==0 && longitude==0) {
+            if (latitude == 0 && longitude == 0) {
             } else {
                 LatLng latLng = new LatLng(latitude, longitude);
 
@@ -127,35 +152,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         registerReceiver(receiver, filter);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 1: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission(this,
-                            ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-            case 2: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission(this,
-                            ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-        }
-    }
-
     private void initObjects() {
         fabStartRecording = findViewById(R.id.fabRecording);
         fabStartRecording.setVisibility(View.VISIBLE);
@@ -163,32 +159,23 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabStopRecording.setVisibility(View.INVISIBLE);
         polylinePoints = new ArrayList<>();
         configureReceiver();
+        permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
         mMap = googleMap;
         //if map is moved around, automatic camera movement is disabled
         mMap.setOnCameraMoveListener(this);
-        if(mapType.equals("MAP_TYPE_NORMAL"))
+        if (mapType.equals("MAP_TYPE_NORMAL"))
             mMap.setMapType(mMap.MAP_TYPE_NORMAL);
-        else if(mapType.equals("MAP_TYPE_HYBRID"))
+        else if (mapType.equals("MAP_TYPE_HYBRID"))
             mMap.setMapType(mMap.MAP_TYPE_HYBRID);
-        else if(mapType.equals("MAP_TYPE_NONE"))
+        else if (mapType.equals("MAP_TYPE_NONE"))
             mMap.setMapType(mMap.MAP_TYPE_NONE);
-        else if(mapType.equals("MAP_TYPE_TERRAIN"))
+        else if (mapType.equals("MAP_TYPE_TERRAIN"))
             mMap.setMapType(mMap.MAP_TYPE_TERRAIN);
-        else if(mapType.equals("MAP_TYPE_SATELLITE"))
+        else if (mapType.equals("MAP_TYPE_SATELLITE"))
             mMap.setMapType(mMap.MAP_TYPE_SATELLITE);
         else
             mMap.setMapType(mMap.MAP_TYPE_NORMAL);
@@ -200,7 +187,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().
                 findFragmentById(R.id.map);
         View mapView = mapFragment.getView();
-        View location_button =mapView.findViewWithTag("GoogleMapMyLocationButton");
+        View location_button = mapView.findViewWithTag("GoogleMapMyLocationButton");
         View zoom_in_button = mapView.findViewWithTag("GoogleMapZoomInButton");
         View zoom_layout = (View) zoom_in_button.getParent();
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)
@@ -216,6 +203,16 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         location_layout.addRule(RelativeLayout.ABOVE, zoom_layout.getId());
 
         //Cross-hair is shown here, right upper corner
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setPadding(0,0,0,90);
