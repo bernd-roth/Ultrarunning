@@ -1,7 +1,6 @@
 package at.co.netconsulting.runningtracker.service;
 
 import static android.location.LocationManager.GPS_PROVIDER;
-
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -13,32 +12,26 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-
+import android.os.Looper;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-
-import android.location.LocationListener;
-import android.os.Looper;
-import android.util.Log;
-
 import com.google.android.gms.maps.model.LatLng;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import at.co.netconsulting.runningtracker.MapsActivity;
 import at.co.netconsulting.runningtracker.R;
-import at.co.netconsulting.runningtracker.StaticFields;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
+import at.co.netconsulting.runningtracker.general.SharedPref;
+import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class ForegroundService extends Service {
@@ -76,9 +69,9 @@ public class ForegroundService extends Service {
         lastRun += 1;
         locationListener = new MyLocationListener();
 
-        loadSharedPreferences(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT);
-        loadSharedPreferences(StaticFields.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER);
-        loadSharedPreferences(StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
+        loadSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         //startLocationListener();
         locationManager = getLocationManager();
         getLastKnownLocation(locationManager);
@@ -193,9 +186,9 @@ public class ForegroundService extends Service {
 
     private void sendBroadcastToMapsActivity(ArrayList<LatLng> polylinePoints) {
         Intent intent=new Intent();
-        intent.setAction(StaticFields.STATIC_BROADCAST_ACTION);
+        intent.setAction(SharedPref.STATIC_BROADCAST_ACTION);
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(StaticFields.STATIC_BROADCAST_ACTION, polylinePoints);
+        bundle.putParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION, polylinePoints);
         intent.putExtras(bundle);
         getApplicationContext().sendBroadcast(intent);
     }
@@ -250,17 +243,17 @@ public class ForegroundService extends Service {
         SharedPreferences sh;
 
         switch(sharedPrefKey) {
-            case StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT:
+            case SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 minimumSpeedLimit = sh.getFloat(sharedPrefKey, Double.valueOf(StaticFields.STATIC_DOUBLE_MINIMUM_SPEED_LIMIT).floatValue());
                 break;
-            case StaticFields.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER:
+            case SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                minDistanceMeter = sh.getInt(sharedPrefKey, StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_DISTANCE_METER_DEFAULT);
+                minDistanceMeter = sh.getInt(sharedPrefKey, SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_DISTANCE_METER_DEFAULT);
                 break;
-            case StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS:
+            case SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                minTimeMs = sh.getLong(sharedPrefKey, StaticFields.STATIC_SHARED_PREF_LONG_MIN_TIME_MS_DEFAULT);
+                minTimeMs = sh.getLong(sharedPrefKey, SharedPref.STATIC_SHARED_PREF_LONG_MIN_TIME_MS_DEFAULT);
                 break;
         }
     }

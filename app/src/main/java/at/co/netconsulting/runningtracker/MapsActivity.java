@@ -40,6 +40,7 @@ import java.util.List;
 
 import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
+import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.service.ForegroundService;
 
 public class MapsActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener {
@@ -85,8 +86,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private void loadSharedPreferences() {
         SharedPreferences sh;
 
-        sh = getSharedPreferences(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
-        mapType = sh.getString(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NORMAL");
+        sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
+        mapType = sh.getString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NORMAL");
     }
 
     private void createListenerAndfillPolyPoints(double lastLat, double lastLng) {
@@ -121,7 +122,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
     private void configureReceiver() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(StaticFields.STATIC_BROADCAST_ACTION);
+        filter.addAction(SharedPref.STATIC_BROADCAST_ACTION);
         BroadcastReceiver receiver = new DataBroadcastReceiver();
         registerReceiver(receiver, filter);
     }
@@ -293,7 +294,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             Log.d("DataBroadcastReceiver: ", action);
-            ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(StaticFields.STATIC_BROADCAST_ACTION);
+            ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
 
             int size = polylinePoints.size();
 

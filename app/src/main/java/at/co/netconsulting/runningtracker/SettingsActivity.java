@@ -14,15 +14,15 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceFragmentCompat;
 
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
+import at.co.netconsulting.runningtracker.general.SharedPref;
+import at.co.netconsulting.runningtracker.general.StaticFields;
 
 public class SettingsActivity extends BaseActivity {
 
@@ -50,11 +50,11 @@ public class SettingsActivity extends BaseActivity {
         setContentView(R.layout.settings_activity);
 
         initObjects();
-        loadSharedPreferences(StaticFields.STATIC_BATTERY_OPTIMIZATION);
-        loadSharedPreferences(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT);
-        loadSharedPreferences(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE);
-        loadSharedPreferences(StaticFields.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER);
-        loadSharedPreferences(StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
+        loadSharedPreferences(SharedPref.STATIC_BATTERY_OPTIMIZATION);
+        loadSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         ignoreBatteryOptimization();
     }
 
@@ -62,17 +62,17 @@ public class SettingsActivity extends BaseActivity {
         SharedPreferences sh;
 
         switch(sharedPrefKey) {
-            case StaticFields.STATIC_BATTERY_OPTIMIZATION:
+            case SharedPref.STATIC_BATTERY_OPTIMIZATION:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 isSwitchBatteryOptimization = sh.getBoolean(sharedPrefKey, false);
                 switchBatteryOptimization.setChecked(isSwitchBatteryOptimization);
                 break;
-            case StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT:
+            case SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 minimumSpeedLimit = sh.getFloat(sharedPrefKey, Float.valueOf(String.valueOf(StaticFields.STATIC_DOUBLE_MINIMUM_SPEED_LIMIT)));
                 editTextNumberDecimalMinimumSpeedLimit.setText(String.valueOf(minimumSpeedLimit));
                 break;
-            case StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE:
+            case SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 mapType = sh.getString(sharedPrefKey, "MAP_TYPE_NORMAL");
                 if(mapType.equals("MAP_TYPE_NORMAL"))
@@ -88,14 +88,14 @@ public class SettingsActivity extends BaseActivity {
                 else
                     radioButtonNormal.setChecked(true);
                 break;
-            case StaticFields.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER:
+            case SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                minDistanceMeter = sh.getInt(sharedPrefKey, StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_DISTANCE_METER_DEFAULT);
+                minDistanceMeter = sh.getInt(sharedPrefKey, SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_DISTANCE_METER_DEFAULT);
                 editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(minDistanceMeter));
                 break;
-            case StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS:
+            case SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                minTimeMs = sh.getInt(sharedPrefKey, StaticFields.STATIC_SHARED_PREF_LONG_MIN_TIME_MS_DEFAULT);
+                minTimeMs = sh.getInt(sharedPrefKey, SharedPref.STATIC_SHARED_PREF_LONG_MIN_TIME_MS_DEFAULT);
                 editTextNumberSignedMinimumTimeMs.setText(String.valueOf(minTimeMs));
                 break;
         }
@@ -115,10 +115,10 @@ public class SettingsActivity extends BaseActivity {
                         intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
                         intent.setData(Uri.parse("package:" + packageName));
                         startActivity(intent);
-                        saveSharedPreferences(StaticFields.STATIC_BATTERY_OPTIMIZATION);
+                        saveSharedPreferences(SharedPref.STATIC_BATTERY_OPTIMIZATION);
                     }
                 } else {
-                    saveSharedPreferences(StaticFields.STATIC_BATTERY_OPTIMIZATION);
+                    saveSharedPreferences(SharedPref.STATIC_BATTERY_OPTIMIZATION);
                 }
             }
         });
@@ -138,8 +138,8 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void saveSharedPreferences(String sharedPreference) {
-        if(sharedPreference.equals(StaticFields.STATIC_BATTERY_OPTIMIZATION)) {
-            sharedpreferences = getSharedPreferences(StaticFields.STATIC_BATTERY_OPTIMIZATION, Context.MODE_PRIVATE);
+        if(sharedPreference.equals(SharedPref.STATIC_BATTERY_OPTIMIZATION)) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_BATTERY_OPTIMIZATION, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
             if(switchBatteryOptimization.isChecked()) {
@@ -149,54 +149,54 @@ public class SettingsActivity extends BaseActivity {
                 editor.putBoolean(sharedPreference, false);
                 editor.commit();
             }
-        } else if(sharedPreference.equals(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT)) {
-            sharedpreferences = getSharedPreferences(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT, Context.MODE_PRIVATE);
+        } else if(sharedPreference.equals(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT)) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
             minimumSpeedLimit = Float.parseFloat(editTextNumberDecimalMinimumSpeedLimit.getText().toString());
             editor.putFloat(sharedPreference, minimumSpeedLimit);
             editor.commit();
         } else if(sharedPreference.equals("MAP_TYPE_NORMAL")) {
-            sharedpreferences = getSharedPreferences(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
-            editor.putString(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NORMAL");
+            editor.putString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NORMAL");
             editor.commit();
         } else if(sharedPreference.equals("MAP_TYPE_NONE")) {
-            sharedpreferences = getSharedPreferences(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
-            editor.putString(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NONE");
+            editor.putString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NONE");
             editor.commit();
         } else if(sharedPreference.equals("MAP_TYPE_HYBRID")) {
-            sharedpreferences = getSharedPreferences(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
-            editor.putString(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_HYBRID");
+            editor.putString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_HYBRID");
             editor.commit();
         } else if(sharedPreference.equals("MAP_TYPE_TERRAIN")) {
-            sharedpreferences = getSharedPreferences(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
-            editor.putString(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_TERRAIN");
+            editor.putString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_TERRAIN");
             editor.commit();
         } else if(sharedPreference.equals("MAP_TYPE_SATELLITE")) {
-            sharedpreferences = getSharedPreferences(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
-            editor.putString(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_SATELLITE");
+            editor.putString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_SATELLITE");
             editor.commit();
         } else if(sharedPreference.equals("MIN_DISTANCE_METER")) {
-            sharedpreferences = getSharedPreferences(StaticFields.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER, Context.MODE_PRIVATE);
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
-            editor.putString(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, "MIN_DISTANCE_METER");
+            editor.putString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MIN_DISTANCE_METER");
             editor.commit();
         } else if(sharedPreference.equals("MIN_TIME_MS")) {
-            sharedpreferences = getSharedPreferences(StaticFields.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS, Context.MODE_PRIVATE);
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
-            editor.putString(StaticFields.STATIC_SHARED_PREF_STRING_MAPTYPE, "MIN_TIME_MS");
+            editor.putString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MIN_TIME_MS");
             editor.commit();
         }
     }
@@ -217,7 +217,7 @@ public class SettingsActivity extends BaseActivity {
 
     public void save(View v)
     {
-        saveSharedPreferences(StaticFields.STATIC_STRING_MINIMUM_SPEED_LIMIT);
+        saveSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
     }
 
     public void delete(View v)
