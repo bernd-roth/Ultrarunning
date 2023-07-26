@@ -18,6 +18,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -25,6 +27,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import at.co.netconsulting.runningtracker.MapsActivity;
@@ -116,9 +119,15 @@ public class ForegroundService extends Service {
             db.addRun(run);
         }
 
-        //List<Run> l = db.getAllEntries();
-        //for(int i = 0;i<l.size();i++)
-        //    Log.d("Entries", "ID: " + l.get(i).getId() + " Lat: " + l.get(i).getLat() + " Lon: " + l.get(i).getLng() + " Speed: " + l.get(i).getSpeed() + " Date: " + l.get(i).getDateTime());
+//        List<Run> l = db.getAllEntries();
+//        for(int i = 0;i<l.size();i++) {
+//            Log.d("Entries",
+//                    "ID: " + l.get(i).getId()
+//                    + " Lat: " + l.get(i).getLat()
+//                    + " Lon: " + l.get(i).getLng()
+//                    + " Speed: " + l.get(i).getSpeed()
+//                    + " Date: " + l.get(i).getDateTime());
+//        }
     }
 
     @Override
@@ -161,7 +170,8 @@ public class ForegroundService extends Service {
                                 .setStyle(new NotificationCompat.BigTextStyle()
                                         .bigText("Current speed: " + (currentLocation.getSpeed()/1000)*3600 + " km/h"
                                                 + "\nNumber of satellites: " + currentLocation.getExtras().getInt("satellites")
-                                                + "\nLocation accuraccy: " + currentLocation.getExtras().getInt(String.valueOf(currentLocation.getAccuracy()))))
+                                                + "\nLocation accuraccy: " + currentLocation.getExtras().getInt(String.valueOf(currentLocation.getAccuracy()))
+                                                + "\nAltitude: " + + currentLocation.getExtras().getInt(String.valueOf(currentLocation.getAltitude()))))
                                 .build());
             }
         }, 0, 100);
