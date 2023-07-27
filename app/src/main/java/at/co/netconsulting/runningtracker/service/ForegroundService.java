@@ -17,9 +17,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Looper;
-import android.util.Log;
-
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -28,29 +26,26 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import at.co.netconsulting.runningtracker.MapsActivity;
 import at.co.netconsulting.runningtracker.R;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
+import timber.log.Timber;
 
-public class ForegroundService extends Service {
+public class ForegroundService extends Service implements LocationListener {
     private static final int NOTIFICATION_ID = 1;
     private String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.parkingticket";
     private Notification notification;
     private NotificationCompat.Builder notificationBuilder;
     private NotificationManager manager;
-    private int waitForXMinutes = 10;
     private DatabaseHandler db;
     private Run run;
     private double currentLatitude, currentLongitude;
     private LocationListener locationListener;
     private LocationManager locationManager;
-    private Location currentLocation;
-    private Timer timer;
+    //private Location currentLocation;
     private float calc;
     private float[] result;
     private float minimumSpeedLimit;
@@ -63,6 +58,9 @@ public class ForegroundService extends Service {
     private LatLng latLng;
     private int minDistanceMeter;
     private long minTimeMs;
+    private float speed;
+    private double altitude;
+    private float accuracy, currentSpeed;
 
     @Override
     public void onCreate() {
@@ -70,7 +68,6 @@ public class ForegroundService extends Service {
         db = new DatabaseHandler(this);
         lastRun = db.getLastEntry();
         lastRun += 1;
-        locationListener = new MyLocationListener();
 
         loadSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER);
@@ -84,8 +81,9 @@ public class ForegroundService extends Service {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        locationManager.requestLocationUpdates(GPS_PROVIDER, minTimeMs * 1000, (float) minDistanceMeter, locationListener, Looper.getMainLooper());
-        currentLocation = locationManager.getLastKnownLocation(GPS_PROVIDER);
+        //locationManager.requestLocationUpdates(GPS_PROVIDER, minTimeMs * 1000, (float) minDistanceMeter, locationListener, Looper.getMainLooper());
+        locationManager.requestLocationUpdates(GPS_PROVIDER, minTimeMs * 1000, (float) minDistanceMeter, this);
+        //currentLocation = locationManager.getLastKnownLocation(GPS_PROVIDER);
     }
 
     private LocationManager getLocationManager() {
@@ -98,7 +96,6 @@ public class ForegroundService extends Service {
         polylinePoints = new ArrayList<>();
         calc = 0;
         result = new float[1];
-        timer = new Timer();
         dateObj = LocalDateTime.now();
         formatDateTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     }
@@ -116,25 +113,15 @@ public class ForegroundService extends Service {
             run.setLng(currentLongitude);
             run.setNumber_of_run(lastRun);
             run.setMeters_covered(calc);
+            run.setSpeed(speed);
             db.addRun(run);
         }
-
-//        List<Run> l = db.getAllEntries();
-//        for(int i = 0;i<l.size();i++) {
-//            Log.d("Entries",
-//                    "ID: " + l.get(i).getId()
-//                    + " Lat: " + l.get(i).getLat()
-//                    + " Lon: " + l.get(i).getLng()
-//                    + " Speed: " + l.get(i).getSpeed()
-//                    + " Date: " + l.get(i).getDateTime());
-//        }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         initObjects();
         createNotificationChannel();
-        //PendingIntent stopPendingIntent = createPendingIntent();
         createPendingIntent();
 
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
@@ -151,30 +138,6 @@ public class ForegroundService extends Service {
 
         startForeground(NOTIFICATION_ID, notification);
 
-        final int[] counter = {1};
-        waitForXMinutes *= 60;
-
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                currentLatitude = currentLocation.getLatitude();
-                currentLongitude = currentLocation.getLongitude();
-                polylinePoints.add(new LatLng(currentLatitude, currentLongitude));
-                getLastKnownLocation(locationManager);
-                if (polylinePoints.size() > 1) {
-                    calculateDistance();
-                }
-                manager.notify(NOTIFICATION_ID /* ID of notification */,
-                        notificationBuilder
-                                .setContentTitle("Distance covered: " + String.format("%.2f meter", calc))
-                                .setStyle(new NotificationCompat.BigTextStyle()
-                                        .bigText("Current speed: " + (currentLocation.getSpeed()/1000)*3600 + " km/h"
-                                                + "\nNumber of satellites: " + currentLocation.getExtras().getInt("satellites")
-                                                + "\nLocation accuraccy: " + currentLocation.getExtras().getInt(String.valueOf(currentLocation.getAccuracy()))
-                                                + "\nAltitude: " + + currentLocation.getExtras().getInt(String.valueOf(currentLocation.getAltitude()))))
-                                .build());
-            }
-        }, 0, 100);
         return START_STICKY;
     }
 
@@ -216,9 +179,8 @@ public class ForegroundService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        timer.cancel();
         cancelNotification();
-        saveToDatabase();
+        locationManager.removeUpdates(this);
         polylinePoints.clear();
         latLng = null;
         stopForeground(STOP_FOREGROUND_REMOVE);
@@ -266,5 +228,67 @@ public class ForegroundService extends Service {
                 minTimeMs = sh.getLong(sharedPrefKey, SharedPref.STATIC_SHARED_PREF_LONG_MIN_TIME_MS_DEFAULT);
                 break;
         }
+    }
+
+    //methods to implement
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        currentLatitude = location.getLatitude();
+        currentLongitude = location.getLongitude();
+
+        //get the location name from latitude and longitude
+        latLng = new LatLng(currentLatitude, currentLongitude);
+
+        polylinePoints.add(latLng);
+
+        //get speed
+        speed = (location.getSpeed() / 1000) * 3600;
+        Timber.d("SPEED: %s", String.valueOf(location.getSpeed()));
+
+        //number of satellites
+        Timber.d("NUMBER OF SATELLITES: %s", String.valueOf(location.getExtras().getInt("satellites")));
+
+        if (polylinePoints.size() > 1) {
+            calculateDistance();
+        }
+
+        altitude = location.getAltitude();
+        accuracy = location.getAccuracy();
+        currentSpeed = (location.getSpeed() / 1000) * 3600;
+
+        manager.notify(NOTIFICATION_ID /* ID of notification */, notificationBuilder
+            .setContentTitle("Distance covered: " + String.format("%.2f meter", calc))
+            .setStyle(new NotificationCompat.BigTextStyle()
+            .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " km/h"
+                                        + "\nNumber of satellites: " + location.getExtras().getInt("satellites")
+                                        + "\nLocation accuracy: " + String.format("%.2f", accuracy)
+                                        + "\nAltitude: " + String.format("%.2f", altitude)))
+            .build());
+        saveToDatabase();
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull List<Location> locations) {
+        LocationListener.super.onLocationChanged(locations);
+    }
+
+    @Override
+    public void onFlushComplete(int requestCode) {
+        LocationListener.super.onFlushComplete(requestCode);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        LocationListener.super.onStatusChanged(provider, status, extras);
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+        LocationListener.super.onProviderEnabled(provider);
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        LocationListener.super.onProviderDisabled(provider);
     }
 }

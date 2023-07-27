@@ -138,6 +138,19 @@
                 android:text="Delete"
                 android:onClick="delete"/>
 
+            <TextView
+                android:id="@+id/textViewKalmanFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Normalize data with Kalman-filter" />
+
+            <Button
+                android:id="@+id/buttonNormalizeWithKalmanFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="startKalmanFilter"
+                android:text="KalmanFilter" />
+
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>

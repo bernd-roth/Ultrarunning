@@ -40,6 +40,8 @@ import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.service.ForegroundService;
+import timber.log.Timber;
+import timber.log.Timber.DebugTree;
 
 public class MapsActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener {
     private GoogleMap mMap;
@@ -57,7 +59,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if(BuildConfig.DEBUG) {
+            Timber.plant(new DebugTree());
+        }
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 

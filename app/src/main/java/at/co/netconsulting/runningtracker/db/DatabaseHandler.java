@@ -21,7 +21,7 @@ import java.util.List;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "DATABASE_RUN";
     private static final String TABLE_RUNS = "TABLE_RUN";
     private static final String KEY_ID = "id";
@@ -33,6 +33,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_HEART_RATE = "heart_rate";
     private static final String KEY_COMMENT = "comment";
     private static final String KEY_NUMBER_OF_RUN = "number_of_run";
+    private static final String KEY_DATETIME_IN_MS = "date_time_ms";
     private Context context;
     private File file;
     private CSVWriter csvWrite;
@@ -54,7 +55,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // code to add the new contact
+    // code to add the new data
     public void addRun(Run run) {
         db = this.getWritableDatabase();
 
@@ -67,6 +68,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_HEART_RATE, run.getHeart_rate());
         values.put(KEY_COMMENT, run.getComment());
         values.put(KEY_NUMBER_OF_RUN, run.getNumber_of_run());
+        values.put(KEY_DATETIME_IN_MS, run.getDateTimeInMs());
 
         // Inserting Row
         db.insert(TABLE_RUNS, null, values);
@@ -79,7 +81,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_RUNS, new String[] { KEY_ID,
-                        KEY_DATE_TIME, KEY_LAT, KEY_LNG, KEY_METERS_COVERED, KEY_SPEED, KEY_HEART_RATE, KEY_COMMENT, KEY_NUMBER_OF_RUN }, KEY_ID + "=?",
+                        KEY_DATE_TIME, KEY_LAT, KEY_LNG, KEY_METERS_COVERED, KEY_SPEED, KEY_HEART_RATE, KEY_COMMENT, KEY_NUMBER_OF_RUN, KEY_DATETIME_IN_MS }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
@@ -92,7 +94,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 cursor.getInt(5),
                 cursor.getInt(6),
                 cursor.getString(7),
-                cursor.getInt(8)
+                cursor.getInt(8),
+                cursor.getLong(9)
         );
         return run;
     }
@@ -115,7 +118,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return run.getNumber_of_run();
     }
 
-    // code to get all entries in a list view
+    // code to get all entries in a list
     public List<Run> getAllEntries() {
         List<Run> allEntryList = new ArrayList<Run>();
         // Select All Query
@@ -137,11 +140,42 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setHeart_rate(cursor.getInt(6));
                 run.setComment(cursor.getString(7));
                 run.setNumber_of_run(cursor.getInt(8));
+                run.setDateTimeInMs(cursor.getInt(9));
                 // Adding contact to list
                 allEntryList.add(run);
             } while (cursor.moveToNext());
         }
         return allEntryList;
+    }
+
+    public List<Run> getEntriesForKalmanFilter() {
+        List<Run> kalmanFilterList = new ArrayList<Run>();
+        // Select All Query
+        String selectQuery = "SELECT"
+                + " id,"
+                + " speed,"
+                + " lat,"
+                + " lng,"
+                + " date_time_ms"
+                + " FROM " + TABLE_RUNS;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Run run = new Run();
+                run.setId(Integer.parseInt(cursor.getString(0)));
+                run.setLat(cursor.getDouble(2));
+                run.setLng(cursor.getDouble(3));
+                run.setSpeed(cursor.getFloat(5));
+                run.setDateTimeInMs(cursor.getInt(9));
+                // Adding contact to list
+                kalmanFilterList.add(run);
+            } while (cursor.moveToNext());
+        }
+        return kalmanFilterList;
     }
 
     public void delete() {
@@ -167,6 +201,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         curCSV.getString(6),
                         curCSV.getString(7),
                         curCSV.getString(8),
+                        curCSV.getString(9)
                 };
                 csvWrite.writeNext(arrStr);
             }
@@ -188,7 +223,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_SPEED + " DOUBLE,"
                 + KEY_HEART_RATE + " INTEGER,"
                 + KEY_COMMENT + " STRING,"
-                + KEY_NUMBER_OF_RUN + " INTEGER" + ")";
+                + KEY_NUMBER_OF_RUN + " INTEGER,"
+                + KEY_DATETIME_IN_MS + " LONG"
+                + ")";
         db.execSQL(CREATE_RUNS_TABLE);
     }
 }

@@ -19,6 +19,8 @@ import android.widget.Switch;
 import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceFragmentCompat;
 
+import at.co.netconsulting.runningtracker.calculation.GPSDataFactory;
+import at.co.netconsulting.runningtracker.calculation.Importer;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
@@ -215,8 +217,7 @@ public class SettingsActivity extends BaseActivity {
         }
     }
 
-    public void save(View v)
-    {
+    public void save(View v) {
         saveSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
     }
 
@@ -248,5 +249,9 @@ public class SettingsActivity extends BaseActivity {
 
     public void onClickRadioButtonSatellite(View view) {
         saveSharedPreferences("MAP_TYPE_SATELLITE");
+    }
+
+    public void startKalmanFilter(View view) {
+        GPSDataFactory gpsDataFactory = new GPSDataFactory(db);
     }
 }
