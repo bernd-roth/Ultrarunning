@@ -47,11 +47,9 @@ public class ForegroundService extends Service implements LocationListener {
     private double currentLatitude, currentLongitude;
     private LocationListener locationListener;
     private LocationManager locationManager;
-    //private Location currentLocation;
     private float calc;
     private float[] result;
     private float minimumSpeedLimit;
-    //Polyline
     private ArrayList<LatLng> polylinePoints;
     private DateTimeFormatter formatDateTime;
     private LocalDateTime dateObj;
@@ -74,7 +72,7 @@ public class ForegroundService extends Service implements LocationListener {
         loadSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
-        //startLocationListener();
+
         locationManager = getLocationManager();
         getLastKnownLocation(locationManager);
     }
@@ -83,9 +81,7 @@ public class ForegroundService extends Service implements LocationListener {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        //locationManager.requestLocationUpdates(GPS_PROVIDER, minTimeMs * 1000, (float) minDistanceMeter, locationListener, Looper.getMainLooper());
         locationManager.requestLocationUpdates(GPS_PROVIDER, minTimeMs * 1000, (float) minDistanceMeter, this);
-        //currentLocation = locationManager.getLastKnownLocation(GPS_PROVIDER);
     }
 
     private LocationManager getLocationManager() {
@@ -217,10 +213,6 @@ public class ForegroundService extends Service implements LocationListener {
         SharedPreferences sh;
 
         switch(sharedPrefKey) {
-            case SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT:
-                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                minimumSpeedLimit = sh.getFloat(sharedPrefKey, Double.valueOf(StaticFields.STATIC_DOUBLE_MINIMUM_SPEED_LIMIT).floatValue());
-                break;
             case SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 minDistanceMeter = sh.getInt(sharedPrefKey, SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_DISTANCE_METER_DEFAULT);
