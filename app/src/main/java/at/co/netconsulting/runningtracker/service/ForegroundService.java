@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -128,7 +130,7 @@ public class ForegroundService extends Service implements LocationListener {
                 .setContentTitle(getString(R.string.notificationBuilder_title))
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.icon_notification)
                 //show notification on home screen to everyone
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 //without FOREGROUND_SERVICE_IMMEDIATE, notification can take up to 10 secs to be shown
@@ -263,6 +265,7 @@ public class ForegroundService extends Service implements LocationListener {
                                         + "\nNumber of satellites: " + location.getExtras().getInt("satellites")
                                         + "\nLocation accuracy: " + String.format("%.2f", accuracy)
                                         + "\nAltitude: " + String.format("%.2f", altitude)))
+                .setLargeIcon(BitmapFactory. decodeResource (this.getResources() , R.drawable. icon_notification ))
             .build());
         saveToDatabase();
     }
