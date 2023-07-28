@@ -180,7 +180,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="C:\Users\bernd\Downloads\AppIcons\android\mipmap-hdpi\ic_launcher.png" />
+                                                <entry key="imagePath" value="C:\Users\bernd\Downloads\AppIcons (1)\appstore.png" />
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -214,8 +214,10 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
+                                      <entry key="backgroundColor" value="000000" />
                                       <entry key="iconShape" value="CIRCLE" />
-                                      <entry key="imageAsset" value="C:\Users\bernd\Downloads\AppIcons\android\mipmap-hdpi\ic_launcher.png" />
+                                      <entry key="imageAsset" value="C:\Users\bernd\Downloads\AppIcons (1)\appstore.png" />
+                                      <entry key="outputName" value="rec_button" />
                                     </map>
                                   </option>
                                 </PersistentState>

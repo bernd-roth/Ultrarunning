@@ -6,6 +6,7 @@ import static android.Manifest.permission.POST_NOTIFICATIONS;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -25,6 +26,8 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -140,37 +143,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 }
             }
         }
-    }
-
-    private void createAlertDialog() {
-        // Create the object of AlertDialog Builder class
-        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-
-        // Set the message show for the Alert time
-        builder.setMessage("Do you want to exit ?");
-
-        // Set Alert Title
-        builder.setTitle("Please, turn your location on");
-
-        // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
-        builder.setCancelable(false);
-
-        // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
-        builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
-            // When the user click yes button then app will close
-            finish();
-        });
-
-        // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
-        builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
-            // If user click no then dialog box is canceled.
-            dialog.cancel();
-        });
-
-        // Create the Alert dialog
-        AlertDialog alertDialog = builder.create();
-        // Show the Alert Dialog box
-        alertDialog.show();
     }
 
     private boolean isServiceRunning(String serviceName) {
@@ -317,10 +289,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 contextFabRecording.startForegroundService(intentForegroundService);
                 createListenerAndfillPolyPoints(lastLat, lastLng);
                 fabStopRecording.setVisibility(View.VISIBLE);
+                fabStartRecording.setVisibility(View.INVISIBLE);
                 break;
             case R.id.fabStopRecording:
                 stopService(new Intent(this, ForegroundService.class));
                 fabStopRecording.setVisibility(View.INVISIBLE);
+                fabStartRecording.setVisibility(View.VISIBLE);
                 break;
             case R.id.fabStatistics:
                 Intent intentStatistics = new Intent(MapsActivity.this, StatisticsActivity.class);
