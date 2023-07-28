@@ -15,12 +15,13 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -55,11 +56,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private String mapType;
     private SupportMapFragment mapFragment;
     private String[] permissions;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Timber.plant(new DebugTree());
         }
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
@@ -82,21 +84,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             new ActivityResultCallback<Map<String, Boolean>>() {
                 @Override
                 public void onActivityResult(Map<String, Boolean> result) {
-                    //here we will check if permissions were now (from permission request dialog) or already granted or not
-
                     boolean allAreGranted = true;
                     for (Boolean isGranted : result.values()) {
-                        Log.d("Granted", "onActivityResult: isGranted: " + isGranted);
                         allAreGranted = allAreGranted && isGranted;
                     }
 
                     if (allAreGranted) {
-                        //All Permissions granted now do the required task here or call the function for that
-                        Toast.makeText(getApplicationContext(), "Granted everything", Toast.LENGTH_LONG).show();
+                        Timber.d("MapsActivity: onActivityResult: All permissions were granted!");
                     } else {
-                        //All or some Permissions were denied so can't do the task that requires that permission
-                        Log.d("Permission denied", "onActivityResult: All or some permissions denied...");
-                        Toast.makeText(MapsActivity.this, "All or some permissions denied...", Toast.LENGTH_SHORT).show();
+                        Timber.d("MapsActivity: onActivityResult: All or some permission were denied!");
                     }
                 }
             }
@@ -122,20 +118,24 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private void createListenerAndfillPolyPoints(double lastLat, double lastLng) {
         boolean isServiceRunning = isServiceRunning("at.co.netconsulting.runningtracker.service.ForegroundService");
 
-        if (isServiceRunning) {
-            double latitude = this.lastLat;
-            double longitude = this.lastLng;
-
-            mMap.setMaxZoomPreference(20);
-
-            if (latitude == 0 && longitude == 0) {
-            } else {
-                LatLng latLng = new LatLng(latitude, longitude);
-
-                if (isDisableZoomCamera) {
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
-                }
-                polylinePoints.add(latLng);
+        if(!isServiceRunning) {
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 14));
+        } else {
+            if(lastLat!=0 && lastLng!=0) {
+                LatLng latLng = new LatLng(lastLat, lastLng);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
 
                 if (polyline != null) {
                     polyline.setPoints(polylinePoints);
@@ -147,6 +147,26 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 }
             }
         }
+    }
+
+    private boolean isServiceRunning(String serviceName) {
+        boolean serviceRunning = false;
+        ActivityManager am = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> l = am.getRunningServices(50);
+        Iterator<ActivityManager.RunningServiceInfo> i = l.iterator();
+        while (i.hasNext()) {
+            ActivityManager.RunningServiceInfo runningServiceInfo = i
+                    .next();
+
+            if (runningServiceInfo.service.getClassName().equals(serviceName)) {
+                serviceRunning = true;
+
+                if (runningServiceInfo.foreground) {
+                    //service run in foreground
+                }
+            }
+        }
+        return serviceRunning;
     }
 
     private void configureReceiver() {
@@ -184,8 +204,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         else
             mMap.setMapType(mMap.MAP_TYPE_NORMAL);
 
-        //
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(1.0f));
+        createListenerAndfillPolyPoints(0, 0);
 
         // Get map views
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().
@@ -268,26 +287,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 this.startActivity(intentSettings);
                 break;
         }
-    }
-
-    private boolean isServiceRunning(String serviceName) {
-        boolean serviceRunning = false;
-        ActivityManager am = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
-        List<ActivityManager.RunningServiceInfo> l = am.getRunningServices(50);
-        Iterator<ActivityManager.RunningServiceInfo> i = l.iterator();
-        while (i.hasNext()) {
-            ActivityManager.RunningServiceInfo runningServiceInfo = i
-                    .next();
-
-            if (runningServiceInfo.service.getClassName().equals(serviceName)) {
-                serviceRunning = true;
-
-                if (runningServiceInfo.foreground) {
-                    //service run in foreground
-                }
-            }
-        }
-        return serviceRunning;
     }
 
     private class DataBroadcastReceiver extends BroadcastReceiver {
