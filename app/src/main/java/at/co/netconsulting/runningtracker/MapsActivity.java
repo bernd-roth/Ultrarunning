@@ -311,7 +311,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Log.d("DataBroadcastReceiver: ", action);
+            Timber.d("DataBroadcastReceiver %s", action);
             ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
 
             int size = polylinePoints.size();
