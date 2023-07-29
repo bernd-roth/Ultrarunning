@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
@@ -28,6 +27,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import at.co.netconsulting.runningtracker.MapsActivity;
 import at.co.netconsulting.runningtracker.R;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
@@ -61,6 +62,11 @@ public class ForegroundService extends Service implements LocationListener {
     private float speed;
     private double altitude;
     private float accuracy, currentSpeed;
+    private long currentMilliseconds;
+    private final long[] seconds = {0};
+    private final long[] minutes = {0};
+    private final long[] hours = {0};
+    private Timer t;
 
     @Override
     public void onCreate() {
@@ -75,6 +81,24 @@ public class ForegroundService extends Service implements LocationListener {
 
         locationManager = getLocationManager();
         getLastKnownLocation(locationManager);
+    }
+
+    private void createTimer() {
+        t.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                seconds[0] += 1;
+                if(seconds[0]==60) {
+                    minutes[0] += 1;
+                    seconds[0] = 0;
+                    if(minutes[0]==60) {
+                        hours[0] += 1;
+                        minutes[0] = 0;
+                    }
+                }
+                Timber.d("%s:%s:%s", hours[0], minutes[0], seconds[0]);
+            }
+        },0,1000);
     }
 
     private void getLastKnownLocation(LocationManager locationManager) {
@@ -96,6 +120,7 @@ public class ForegroundService extends Service implements LocationListener {
         result = new float[1];
         dateObj = LocalDateTime.now();
         formatDateTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        t = new Timer();
     }
 
     //Save input to database
@@ -103,6 +128,7 @@ public class ForegroundService extends Service implements LocationListener {
         //format date and time
         dateObj = LocalDateTime.now();
         formattedDateTime = dateObj.format(formatDateTime);
+        currentMilliseconds = System.currentTimeMillis();
 
         //save all entries from polyline to table now
         for(int i = 0; i<polylinePoints.size(); i++) {
@@ -112,6 +138,7 @@ public class ForegroundService extends Service implements LocationListener {
             run.setNumber_of_run(lastRun);
             run.setMeters_covered(calc);
             run.setSpeed(speed);
+            run.setDateTimeInMs(currentMilliseconds);
             db.addRun(run);
         }
     }
@@ -121,6 +148,7 @@ public class ForegroundService extends Service implements LocationListener {
         initObjects();
         createNotificationChannel();
         createPendingIntent();
+        createTimer();
 
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(getString(R.string.notificationBuilder_title))
@@ -250,13 +278,18 @@ public class ForegroundService extends Service implements LocationListener {
         accuracy = location.getAccuracy();
         currentSpeed = (location.getSpeed() / 1000) * 3600;
 
+        long hour = hours[0];
+        long minute = minutes[0];
+        long second = seconds[0];
+
         manager.notify(NOTIFICATION_ID /* ID of notification */, notificationBuilder
             .setContentTitle("Distance covered: " + String.format("%.2f meter", calc))
             .setStyle(new NotificationCompat.BigTextStyle()
             .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " km/h"
                                         + "\nNumber of satellites: " + location.getExtras().getInt("satellites")
                                         + "\nLocation accuracy: " + String.format("%.2f", accuracy)
-                                        + "\nAltitude: " + String.format("%.2f", altitude)))
+                                        + "\nAltitude: " + String.format("%.2f", altitude)
+                                        + "\nTime: " + String.format("%s:%s:%s", hour, minute, second)))
                 .setLargeIcon(BitmapFactory. decodeResource (this.getResources() , R.drawable. icon_notification ))
             .build());
         saveToDatabase();

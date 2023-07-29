@@ -1,5 +1,6 @@
 package at.co.netconsulting.runningtracker.calculation;
 
+import android.content.Context;
 import org.greenrobot.eventbus.Subscribe;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 
@@ -8,13 +9,14 @@ public class KalmanFilter {
     private double latitude; // degree
     private double longitude; // degree
     private float variance; // P matrix. Initial estimate of error
-
     private Exporter exporter;
+    private Context context;
 
-    public KalmanFilter() {
-        exporter = new Exporter();
+    public KalmanFilter(Context context) {
+        exporter = new Exporter(context);
         registerBus();
         variance = -1;
+        this.context = context;
     }
 
     private void registerBus() {

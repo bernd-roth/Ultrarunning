@@ -8,19 +8,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
-
 import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceFragmentCompat;
-
+import java.io.File;
 import at.co.netconsulting.runningtracker.calculation.GPSDataFactory;
-import at.co.netconsulting.runningtracker.calculation.Importer;
+import at.co.netconsulting.runningtracker.calculation.KalmanFilter;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
@@ -34,7 +32,7 @@ public class SettingsActivity extends BaseActivity {
     private SharedPreferences sharedpreferences;
     private EditText editTextNumberSignedMinimumTimeMs;
     private EditText editTextNumberSignedMinimumDistanceMeter;
-    private Button buttonSave;
+    private Button buttonSave, buttonNormalizeWithKalmanFilter;
     private String mapType;
     private RadioButton radioButtonNormal,
             radioButtonHybrid,
@@ -128,6 +126,7 @@ public class SettingsActivity extends BaseActivity {
         radioButtonNone = findViewById(R.id.radioButton_map_none);
         radioButtonTerrain = findViewById(R.id.radioButton_map_type_terrain);
         radioButtonSatellite = findViewById(R.id.radioButton_map_type_satellite);
+        buttonNormalizeWithKalmanFilter = findViewById(R.id.buttonNormalizeWithKalmanFilter);
 
         db = new DatabaseHandler(this);
     }
@@ -242,6 +241,18 @@ public class SettingsActivity extends BaseActivity {
     }
 
     public void startKalmanFilter(View view) {
-        GPSDataFactory gpsDataFactory = new GPSDataFactory(db);
+        buttonNormalizeWithKalmanFilter.setEnabled(false);
+
+        File file = new File(getApplicationContext().getExternalFilesDir(null), "Kalman_filtered.csv");
+        try {
+            boolean fileExists = file.createNewFile();
+            if (fileExists) {
+                file.delete();
+            }
+        } catch(Exception e) {}
+
+        new KalmanFilter(getApplicationContext());
+        new GPSDataFactory(db);
+        buttonNormalizeWithKalmanFilter.setEnabled(true);
     }
 }

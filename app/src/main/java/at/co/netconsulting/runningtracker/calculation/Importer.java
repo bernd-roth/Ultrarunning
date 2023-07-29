@@ -2,7 +2,10 @@ package at.co.netconsulting.runningtracker.calculation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
+import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class Importer {
     private List<String> gpsDataLines;
@@ -14,7 +17,27 @@ public class Importer {
 
     public List<String> readData() {
         List<String> gpsDataLines = new ArrayList<>();
-        gpsDataLines.add(String.valueOf(db.getEntriesForKalmanFilter()));
+
+        int id;
+        double lat;
+        double lng;
+        float speed;
+        long dateTimeInMs;
+
+        for(Run s : db.getEntriesForKalmanFilter()) {
+            id = s.getId();
+            lat = s.getLat();
+            lng = s.getLng();
+            speed = s.getSpeed();
+            dateTimeInMs = s.getDateTimeInMs();
+
+            gpsDataLines.add(id + " " + lat + " " + lng + " " + speed + " " + dateTimeInMs);
+        }
+
+//        String listString = db.getEntriesForKalmanFilter().stream().map(Object::toString)
+//                .collect(Collectors.joining(" "));
+
+//        gpsDataLines.add(String.valueOf(db.getEntriesForKalmanFilter()));
         return gpsDataLines;
     }
 }

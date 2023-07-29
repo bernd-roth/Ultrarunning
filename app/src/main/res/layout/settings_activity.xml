@@ -24,18 +24,10 @@
                 android:layout_height="wrap_content"
                 android:text="Use battery optimization for a better recording\nduring background process" />
 
-            <TextView
-                android:id="@+id/textViewMinimumSpeedLimit"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Minimum speed limit" />
-
-            <EditText
-                android:id="@+id/editTextNumberSignedMinimumSpeedLimit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="numberDecimal" />
+                android:layout_height="2dp"
+                android:background="#c0c0c0"/>
 
             <TextView
                 android:id="@+id/textViewMapType"
@@ -78,6 +70,11 @@
                     android:text="Satellite"
                     android:onClick="onClickRadioButtonSatellite"/>
             </RadioGroup>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#c0c0c0"/>
 
             <TextView
                 android:id="@+id/textViewMinDistanceMeter"

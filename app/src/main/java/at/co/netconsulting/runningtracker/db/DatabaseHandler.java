@@ -5,19 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Environment;
 import android.util.Log;
-
 import com.opencsv.CSVWriter;
-
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
@@ -136,7 +129,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setLat(cursor.getDouble(2));
                 run.setLng(cursor.getDouble(3));
                 run.setMeters_covered(cursor.getDouble(4));
-                run.setSpeed(cursor.getFloat(5));
+                run.setSpeed((float) cursor.getDouble(5));
                 run.setHeart_rate(cursor.getInt(6));
                 run.setComment(cursor.getString(7));
                 run.setNumber_of_run(cursor.getInt(8));
@@ -153,11 +146,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Select All Query
         String selectQuery = "SELECT"
                 + " id,"
-                + " speed,"
                 + " lat,"
                 + " lng,"
+                + " speed,"
                 + " date_time_ms"
-                + " FROM " + TABLE_RUNS;
+                + " FROM " + TABLE_RUNS
+                + " WHERE number_of_run = (SELECT MAX(number_of_run) FROM " + TABLE_RUNS + ")";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -167,10 +161,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             do {
                 Run run = new Run();
                 run.setId(Integer.parseInt(cursor.getString(0)));
-                run.setLat(cursor.getDouble(2));
-                run.setLng(cursor.getDouble(3));
-                run.setSpeed(cursor.getFloat(5));
-                run.setDateTimeInMs(cursor.getInt(9));
+                run.setLat(cursor.getDouble(1));
+                run.setLng(cursor.getDouble(2));
+                run.setSpeed(cursor.getFloat(3));
+                run.setDateTimeInMs(cursor.getInt(4));
                 // Adding contact to list
                 kalmanFilterList.add(run);
             } while (cursor.moveToNext());
@@ -205,6 +199,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 };
                 csvWrite.writeNext(arrStr);
             }
+            csvWrite.close();
+            curCSV.close();
+        } catch(Exception sqlEx) {
+            Log.e("DatabaseHandler", sqlEx.getMessage(), sqlEx);
+        }
+    }
+
+    public void exportTableContent(String line) {
+        try {
+            String[] lineSplitted = line.split(" ");
+
+            file = new File(context.getExternalFilesDir(null), "Kalman_filtered.csv");
+            boolean fileExists = file.createNewFile();
+            if(fileExists) {
+                csvWrite = new CSVWriter(new FileWriter(file, true));
+            } else {
+                csvWrite = new CSVWriter(new FileWriter(file));
+            }
+            csvWrite.writeNext(lineSplitted);
             csvWrite.close();
             curCSV.close();
         } catch(Exception sqlEx) {
