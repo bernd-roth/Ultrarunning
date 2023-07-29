@@ -70,7 +70,7 @@ public class ForegroundService extends Service implements LocationListener {
         lastRun += 1;
 
         loadSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
-        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
 
         locationManager = getLocationManager();
@@ -213,13 +213,13 @@ public class ForegroundService extends Service implements LocationListener {
         SharedPreferences sh;
 
         switch(sharedPrefKey) {
-            case SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER:
+            case SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                minDistanceMeter = sh.getInt(sharedPrefKey, SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_DISTANCE_METER_DEFAULT);
+                minDistanceMeter = sh.getInt(sharedPrefKey, StaticFields.STATIC_INTEGER_MIN_DISTANCE_METER);
                 break;
             case SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                minTimeMs = sh.getLong(sharedPrefKey, SharedPref.STATIC_SHARED_PREF_LONG_MIN_TIME_MS_DEFAULT);
+                minTimeMs =  sh.getLong(sharedPrefKey, (long) StaticFields.STATIC_LONG_MIN_TIME_MS);
                 break;
         }
     }

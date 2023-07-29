@@ -42,7 +42,7 @@ public class SettingsActivity extends BaseActivity {
             radioButtonTerrain,
             radioButtonSatellite;
     private int minDistanceMeter;
-    private int minTimeMs;
+    private long minTimeMs;
     private DatabaseHandler db;
 
     @Override
@@ -54,7 +54,7 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_BATTERY_OPTIMIZATION);
         loadSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE);
-        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         ignoreBatteryOptimization();
     }
@@ -84,14 +84,14 @@ public class SettingsActivity extends BaseActivity {
                 else
                     radioButtonNormal.setChecked(true);
                 break;
-            case SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER:
+            case SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                minDistanceMeter = sh.getInt(sharedPrefKey, StaticFields.STATIC_LONG_MIN_DISTANCE_METER);
+                minDistanceMeter = sh.getInt(sharedPrefKey, StaticFields.STATIC_INTEGER_MIN_DISTANCE_METER);
                 editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(minDistanceMeter));
                 break;
             case SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                minTimeMs = sh.getInt(sharedPrefKey, StaticFields.STATIC_FLOAT_MIN_TIME_MS);
+                minTimeMs = sh.getLong(sharedPrefKey, StaticFields.STATIC_LONG_MIN_TIME_MS);
                 editTextNumberSignedMinimumTimeMs.setText(String.valueOf(minTimeMs));
                 break;
         }
@@ -175,18 +175,18 @@ public class SettingsActivity extends BaseActivity {
             editor.putString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_SATELLITE");
             editor.commit();
         } else if(sharedPreference.equals("MIN_DISTANCE_METER")) {
-            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER, Context.MODE_PRIVATE);
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
             minDistanceMeter = Integer.parseInt(editTextNumberSignedMinimumDistanceMeter.getText().toString());
-            editor.putInt(SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER, minDistanceMeter);
+            editor.putInt(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER, minDistanceMeter);
             editor.commit();
         } else if(sharedPreference.equals("MIN_TIME_MS")) {
             sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
-            minTimeMs = Integer.parseInt(editTextNumberSignedMinimumTimeMs.getText().toString());
-            editor.putInt(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS, minTimeMs);
+            minTimeMs = Long.parseLong(editTextNumberSignedMinimumTimeMs.getText().toString());
+            editor.putLong(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS, minTimeMs);
             editor.commit();
         }
     }
@@ -207,7 +207,7 @@ public class SettingsActivity extends BaseActivity {
 
     public void save(View v) {
         saveSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
-        saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_LONG_MIN_DISTANCE_METER);
+        saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
     }
 
