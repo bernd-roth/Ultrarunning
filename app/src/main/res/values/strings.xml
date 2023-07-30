@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">RunningTracker</string>
     <string name="title_activity_maps">RunningTracker</string>
-    <string name="notificationBuilder_title">NotificationBuilder</string>
+    <string name="notificationBuilder_title">Still trying to get a fix to some satellites</string>
     <string name="title_content">Title_Content</string>
     <string name="title_activity_statistics">StatisticsActivity</string>
     <string name="action_settings">Settings</string>

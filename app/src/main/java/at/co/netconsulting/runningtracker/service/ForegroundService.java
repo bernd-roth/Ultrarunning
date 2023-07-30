@@ -211,6 +211,7 @@ public class ForegroundService extends Service implements LocationListener {
         latLng = null;
         stopForeground(STOP_FOREGROUND_REMOVE);
         stopSelf();
+        t.cancel();
     }
 
     private void cancelNotification() {

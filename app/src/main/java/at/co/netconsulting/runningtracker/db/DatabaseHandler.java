@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import at.co.netconsulting.runningtracker.pojo.Run;
+import timber.log.Timber;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 2;
@@ -172,9 +173,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return kalmanFilterList;
     }
 
+    public void updateComment(String comment, int number_of_run) {
+        ContentValues cv = new ContentValues();
+        cv.put(KEY_COMMENT, comment);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.update(TABLE_RUNS, cv, "number_of_run = ?", new String[]{String.valueOf(number_of_run)});
+    }
+
     public void delete() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_RUNS, null, null);
+    }
+
+    public void deleteLastRun(int number_of_run) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_RUNS, "number_of_run = ?", new String[]{String.valueOf(number_of_run)});
     }
 
     public void exportTableContent() {

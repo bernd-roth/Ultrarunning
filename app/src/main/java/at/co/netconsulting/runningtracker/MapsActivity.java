@@ -17,8 +17,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.text.InputType;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -39,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
+import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.service.ForegroundService;
@@ -290,6 +295,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 stopService(new Intent(this, ForegroundService.class));
                 fabStopRecording.setVisibility(View.INVISIBLE);
                 fabStartRecording.setVisibility(View.VISIBLE);
+                createAlertDialog();
                 break;
             case R.id.fabStatistics:
                 Intent intentStatistics = new Intent(MapsActivity.this, StatisticsActivity.class);
@@ -300,6 +306,33 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 this.startActivity(intentSettings);
                 break;
         }
+    }
+
+    private void createAlertDialog() {
+        final EditText taskEditText = new EditText(this);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Save exercise and comment it?")
+                .setMessage("Comments on your last exercise")
+                .setView(taskEditText)
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String task = String.valueOf(taskEditText.getText());
+                        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+                        int lastEntryOfRun = db.getLastEntry();
+                        db.updateComment(task, lastEntryOfRun);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+                        int lastEntryOfRun = db.getLastEntry();
+                        db.deleteLastRun(lastEntryOfRun);
+                    }
+                })
+                .create();
+        dialog.show();
     }
 
     private class DataBroadcastReceiver extends BroadcastReceiver {
