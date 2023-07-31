@@ -327,6 +327,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         DatabaseHandler db = new DatabaseHandler(this);
         List<Run> allEntries = db.getAllEntriesGroupedByRun();
 
+        if(polylinePoints.size()>0) {
+            polylinePoints.clear();
+        }
+
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(MapsActivity.this);
         if(allEntries.size()<=0) {
             builderSingle.setTitle(getResources().getString(R.string.no_run_available));
@@ -376,6 +380,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         LatLng latLng = new LatLng(lat, lng);
 
+        mMap.clear();
         polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
         mMap.addMarker(new MarkerOptions().position(latLng).title("Current location"));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15));
