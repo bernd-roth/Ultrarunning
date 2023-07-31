@@ -1,6 +1,7 @@
 package at.co.netconsulting.runningtracker.service;
 
 import static android.location.LocationManager.GPS_PROVIDER;
+
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -12,23 +13,31 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.location.GnssStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+
 import com.google.android.gms.maps.model.LatLng;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import at.co.netconsulting.runningtracker.MapsActivity;
 import at.co.netconsulting.runningtracker.R;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
@@ -67,6 +76,7 @@ public class ForegroundService extends Service implements LocationListener {
     private final long[] minutes = {0};
     private final long[] hours = {0};
     private Timer t;
+    private int satelliteCount;
 
     @Override
     public void onCreate() {
@@ -88,17 +98,17 @@ public class ForegroundService extends Service implements LocationListener {
             @Override
             public void run() {
                 seconds[0] += 1;
-                if(seconds[0]==60) {
+                if (seconds[0] == 60) {
                     minutes[0] += 1;
                     seconds[0] = 0;
-                    if(minutes[0]==60) {
+                    if (minutes[0] == 60) {
                         hours[0] += 1;
                         minutes[0] = 0;
                     }
                 }
                 Timber.d("%s:%s:%s", hours[0], minutes[0], seconds[0]);
             }
-        },0,1000);
+        }, 0, 1000);
     }
 
     private void getLastKnownLocation(LocationManager locationManager) {
@@ -121,6 +131,7 @@ public class ForegroundService extends Service implements LocationListener {
         dateObj = LocalDateTime.now();
         formatDateTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         t = new Timer();
+        initCallbacks();
     }
 
     //Save input to database
@@ -131,7 +142,7 @@ public class ForegroundService extends Service implements LocationListener {
         currentMilliseconds = System.currentTimeMillis();
 
         //save all entries from polyline to table now
-        for(int i = 0; i<polylinePoints.size(); i++) {
+        for (int i = 0; i < polylinePoints.size(); i++) {
             run.setDateTime(dateObj.format(formatDateTime));
             run.setLat(currentLatitude);
             run.setLng(currentLongitude);
@@ -155,11 +166,11 @@ public class ForegroundService extends Service implements LocationListener {
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText("Distance covered: 0 meter"
                                 + "\nCurrent speed: 0 km/h"
-                                + "\nNumber of satellites: 0"
+                                + "\nNumber of satellites: 0/" + satelliteCount
                                 + "\nLocation accuracy: 0 m/s"
                                 + "\nAltitude: 0 meter"
                                 + "\nTime: 0:0:0"))
-                .setLargeIcon(BitmapFactory. decodeResource (this.getResources() , R.drawable. icon_notification ))
+                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
                 .setSmallIcon(R.drawable.icon_notification)
@@ -173,6 +184,47 @@ public class ForegroundService extends Service implements LocationListener {
         startForeground(NOTIFICATION_ID, notification);
 
         return START_STICKY;
+    }
+
+    private GnssStatus.Callback gnssCallback;
+
+    public void initCallbacks() {
+        gnssCallback = new GnssStatus.Callback() {
+            @Override
+            public void onSatelliteStatusChanged(@NonNull GnssStatus status) {
+                satelliteCount = status.getSatelliteCount();
+                int usedCount = 0;
+                for (int i = 0; i < satelliteCount; ++i)
+                    if (status.usedInFix(i))
+                        ++usedCount;
+                Timber.d("Total number of satellites: %s", satelliteCount);
+            }
+        };
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.registerGnssStatusCallback(gnssCallback, new Handler(Looper.myLooper()));
+    }
+
+    public void deinitCallbacks() {
+        locationManager.unregisterGnssStatusCallback(gnssCallback);
     }
 
     private void calculateDistance() {
@@ -220,6 +272,7 @@ public class ForegroundService extends Service implements LocationListener {
         stopForeground(STOP_FOREGROUND_REMOVE);
         stopSelf();
         t.cancel();
+        deinitCallbacks();
     }
 
     private void cancelNotification() {
@@ -295,7 +348,7 @@ public class ForegroundService extends Service implements LocationListener {
             .setContentTitle("Distance covered: " + String.format("%.2f meter", calc))
             .setStyle(new NotificationCompat.BigTextStyle()
             .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " km/h"
-                                        + "\nNumber of satellites: " + location.getExtras().getInt("satellites")
+                                        + "\nNumber of satellites: " + location.getExtras().getInt("satellites") + "/" + satelliteCount
                                         + "\nLocation accuracy: " + String.format("%.2f", accuracy)
                                         + "\nAltitude: " + String.format("%.2f", altitude)
                                         + "\nTime: " + String.format("%s:%s:%s", hour, minute, second)))

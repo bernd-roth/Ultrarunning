@@ -9,9 +9,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* alertdialog outside click solved&#10;* new notificaiton pic&#10;* notification message enhanced">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* fading start/stop button implemented">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -389,7 +389,14 @@
       <option name="project" value="LOCAL" />
       <updated>1690787618977</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="* fading start/stop button implemented">
+      <created>1690793314986</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1690793314986</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -405,7 +412,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* if pressing notification, nothing has to be done&#10;* minSpeedLimit moved to StaticFields.java&#10;* setVisibility service on desktop" />
     <MESSAGE value="* adding meters covered in db table&#10;* output of meters covered 2 digits" />
     <MESSAGE value="* foregroundservice will be shown to the user immediatly" />
     <MESSAGE value="* different map presentations in SettingsActivity.java like MAP_TYPE_NORMAL,MAP_TYPE_HYBRID..." />
@@ -430,7 +436,8 @@
     <MESSAGE value="* dialog for saving your last run&#10;* changing notification" />
     <MESSAGE value="* Battery optimization removed&#10;* changed settings pic" />
     <MESSAGE value="* alertdialog outside click solved&#10;* new notificaiton pic&#10;* notification message enhanced" />
-    <option name="LAST_COMMIT_MESSAGE" value="* alertdialog outside click solved&#10;* new notificaiton pic&#10;* notification message enhanced" />
+    <MESSAGE value="* fading start/stop button implemented" />
+    <option name="LAST_COMMIT_MESSAGE" value="* fading start/stop button implemented" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
