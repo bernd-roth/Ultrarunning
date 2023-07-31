@@ -9,7 +9,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* ForegroundService.java: minor string change&#10;* moving hardcoded strings to strings.xml">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: polylinePoints cleared before filling it with old data">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
     </list>
@@ -417,7 +417,14 @@
       <option name="project" value="LOCAL" />
       <updated>1690814215820</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="* MapsActivity.java: polylinePoints cleared before filling it with old data">
+      <created>1690821906886</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1690821906886</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -433,7 +440,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* redraw GoogleMap in onResume&#10;* renaming ForegroundService.java" />
     <MESSAGE value="* saving lat, lng, meters_covered, ... to table" />
     <MESSAGE value="* new table columns&#10;* receive last entry from table for number of runs" />
     <MESSAGE value="* introducing new settings: minDistance, minTimeMs" />
@@ -458,7 +464,8 @@
     <MESSAGE value="* total number of satellites implemented" />
     <MESSAGE value="* display recorded tracks by selecting single track from table&#10;* new icon for choosing track to display" />
     <MESSAGE value="* ForegroundService.java: minor string change&#10;* moving hardcoded strings to strings.xml" />
-    <option name="LAST_COMMIT_MESSAGE" value="* ForegroundService.java: minor string change&#10;* moving hardcoded strings to strings.xml" />
+    <MESSAGE value="* MapsActivity.java: polylinePoints cleared before filling it with old data" />
+    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: polylinePoints cleared before filling it with old data" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -469,29 +476,14 @@
           <option name="timeStamp" value="142" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java</url>
-          <line>334</line>
-          <option name="timeStamp" value="231" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java</url>
-          <line>319</line>
-          <option name="timeStamp" value="232" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
+          <line>143</line>
+          <option name="timeStamp" value="256" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>138</line>
-          <option name="timeStamp" value="239" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>382</line>
-          <option name="timeStamp" value="243" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>370</line>
-          <option name="timeStamp" value="245" />
+          <line>141</line>
+          <option name="timeStamp" value="257" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

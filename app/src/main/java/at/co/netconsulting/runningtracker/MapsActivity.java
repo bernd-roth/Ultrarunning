@@ -58,7 +58,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private ActivityMapsBinding binding;
     //Polyline
     private Polyline polyline;
-    private List<LatLng> polylinePoints;
+    private List<LatLng> polylinePoints, polylinePointsTemp;
     private boolean isDisableZoomCamera;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics;
     private double lastLat, lastLng;
@@ -68,6 +68,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private LocationManager locationManager;
     private boolean gps_enabled;
     private Marker markerName;
+    private boolean startingPoint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,23 +128,20 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         mapType = sh.getString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NORMAL");
     }
 
-    private void createListenerAndfillPolyPoints(double lastLat, double lastLng) {
+    private void createListenerAndfillPolyPoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
         boolean isServiceRunning = isServiceRunning("at.co.netconsulting.runningtracker.service.ForegroundService");
 
         if(!isServiceRunning) {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
         } else {
-            if(lastLat!=0 && lastLng!=0) {
-                LatLng latLng = new LatLng(lastLat, lastLng);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
-                if (polyline != null) {
-                    polyline.setPoints(polylinePoints);
-                    markerName = mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location)));
-                    markerName.remove();
-                } else {
-                    polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-                    mMap.addMarker(new MarkerOptions().position(latLng).title(String.valueOf(getResources().getString(R.string.current_location))));
-                }
+            LatLng latLng = new LatLng(lastLat, lastLng);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+
+            if(startingPoint) {
+                markerName = mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location)));
+                startingPoint = false;
+            } else {
+                polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
             }
         }
     }
@@ -183,10 +181,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabStatistics = findViewById(R.id.fabStatistics);
         fabStatistics.setVisibility(View.VISIBLE);
         polylinePoints = new ArrayList<>();
+        polylinePointsTemp = new ArrayList<>();
         configureReceiver();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
         locationManager = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         isDisableZoomCamera = true;
+        startingPoint = true;
     }
 
     private void checkIfLocationIsEnabled() {
@@ -226,7 +226,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         else
             mMap.setMapType(mMap.MAP_TYPE_NORMAL);
 
-        createListenerAndfillPolyPoints(0, 0);
+        //createListenerAndfillPolyPoints(0, 0);
 
         // Get map views
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().
@@ -293,9 +293,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 Intent intentForegroundService = new Intent(contextFabRecording, ForegroundService.class);
                 intentForegroundService.setAction("ACTION_START");
                 contextFabRecording.startForegroundService(intentForegroundService);
-                createListenerAndfillPolyPoints(lastLat, lastLng);
+                //createListenerAndfillPolyPoints(lastLat, lastLng);
                 LatLng latLng = new LatLng(lastLat, lastLng);
-                markerName = mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location)));
+                //markerName = mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location)));
                 mMap.clear();
 
                 fadingButtons(R.id.fabRecording);
@@ -471,12 +471,14 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 LatLng lastEntry = (LatLng) polylinePoints.get(polylinePoints.size());
                 lastLat = lastEntry.latitude;
                 lastLng = lastEntry.longitude;
+                polylinePointsTemp.add(lastEntry);
             } else {
                 LatLng lastEntry = (LatLng) polylinePoints.get(polylinePoints.size() - 2);
                 lastLat = lastEntry.latitude;
                 lastLng = lastEntry.longitude;
+                polylinePointsTemp.add(lastEntry);
             }
-            createListenerAndfillPolyPoints(lastLat, lastLng);
+            createListenerAndfillPolyPoints(lastLat, lastLng, polylinePointsTemp);
         }
     }
 }
