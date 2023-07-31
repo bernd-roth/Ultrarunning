@@ -15,10 +15,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.text.InputType;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -57,7 +60,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Polyline polyline;
     private List<LatLng> polylinePoints;
     private boolean isDisableZoomCamera = true;
-    private FloatingActionButton fabStartRecording, fabStopRecording;
+    private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics;
     private double lastLat, lastLng;
     private String mapType;
     private SupportMapFragment mapFragment;
@@ -177,6 +180,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabStartRecording.setVisibility(View.VISIBLE);
         fabStopRecording = findViewById(R.id.fabStopRecording);
         fabStopRecording.setVisibility(View.INVISIBLE);
+        fabStatistics = findViewById(R.id.fabStatistics);
+        fabStatistics.setVisibility(View.VISIBLE);
         polylinePoints = new ArrayList<>();
         configureReceiver();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
@@ -288,14 +293,18 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 intentForegroundService.setAction("ACTION_START");
                 contextFabRecording.startForegroundService(intentForegroundService);
                 createListenerAndfillPolyPoints(lastLat, lastLng);
-                fabStopRecording.setVisibility(View.VISIBLE);
-                fabStartRecording.setVisibility(View.INVISIBLE);
+
+                fadingButtons(R.id.fabRecording);
+
                 break;
             case R.id.fabStopRecording:
                 stopService(new Intent(this, ForegroundService.class));
                 fabStopRecording.setVisibility(View.INVISIBLE);
                 fabStartRecording.setVisibility(View.VISIBLE);
                 createAlertDialog();
+
+                fadingButtons(R.id.fabStopRecording);
+
                 break;
             case R.id.fabStatistics:
                 Intent intentStatistics = new Intent(MapsActivity.this, StatisticsActivity.class);
@@ -305,6 +314,46 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 Intent intentSettings = new Intent(MapsActivity.this, SettingsActivity.class);
                 this.startActivity(intentSettings);
                 break;
+        }
+    }
+
+    private void fadingButtons(int fabButton) {
+        if(fabButton==R.id.fabRecording) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Define the animators
+                    Animation fadeInAnimation = new AlphaAnimation(0.0f, 1.0f);
+                    Animation fadeOutAnimation = new AlphaAnimation(1.0f, 0.0f);
+                    // Duration of animation
+                    fadeInAnimation.setDuration(1500);
+                    fadeOutAnimation.setDuration(1500);
+                    // Keep stop button visible, start button invisible
+                    fadeInAnimation.setFillAfter(true);
+                    fadeOutAnimation.setFillAfter(true);
+
+                    fabStopRecording.startAnimation(fadeInAnimation);
+                    fabStartRecording.startAnimation(fadeOutAnimation);
+                }
+            }, 2000);// set time as per your requirement
+        } else if(fabButton==R.id.fabStopRecording) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Define the animators
+                    Animation fadeInAnimation = new AlphaAnimation(0.0f, 1.0f);
+                    Animation fadeOutAnimation = new AlphaAnimation(1.0f, 0.0f);
+                    // Duration of animation
+                    fadeInAnimation.setDuration(1500);
+                    fadeOutAnimation.setDuration(1500);
+                    // Keep stop button visible, start button invisible
+                    fadeInAnimation.setFillAfter(true);
+                    fadeOutAnimation.setFillAfter(true);
+
+                    fabStopRecording.startAnimation(fadeOutAnimation);
+                    fabStartRecording.startAnimation(fadeInAnimation);
+                }
+            }, 2000);// set time as per your requirement
         }
     }
 
