@@ -138,11 +138,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
                 if (polyline != null) {
                     polyline.setPoints(polylinePoints);
-                    markerName = mMap.addMarker(new MarkerOptions().position(latLng).title("Current location"));
+                    markerName = mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location)));
                     markerName.remove();
                 } else {
                     polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-                    mMap.addMarker(new MarkerOptions().position(latLng).title("Current location"));
+                    mMap.addMarker(new MarkerOptions().position(latLng).title(String.valueOf(getResources().getString(R.string.current_location))));
                 }
             }
         }
@@ -196,14 +196,14 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         if(!gps_enabled) {
             new AlertDialog.Builder(MapsActivity.this)
-                    .setMessage("Please, turn location service on!")
-                    .setPositiveButton("Open location settings", new DialogInterface.OnClickListener() {
+                    .setMessage(getResources().getString(R.string.location_service))
+                    .setPositiveButton(getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface paramDialogInterface, int paramInt) {
                             MapsActivity.this.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                         }
                     })
-                    .setNegativeButton("Cancel",null)
+                    .setNegativeButton(getResources().getString(R.string.buttonCancel),null)
                     .show();
         }
     }
@@ -295,7 +295,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 contextFabRecording.startForegroundService(intentForegroundService);
                 createListenerAndfillPolyPoints(lastLat, lastLng);
                 LatLng latLng = new LatLng(lastLat, lastLng);
-                markerName = mMap.addMarker(new MarkerOptions().position(latLng).title("Current location"));
+                markerName = mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location)));
                 mMap.clear();
 
                 fadingButtons(R.id.fabRecording);
@@ -328,15 +328,22 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         List<Run> allEntries = db.getAllEntriesGroupedByRun();
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(MapsActivity.this);
+        if(allEntries.size()<=0) {
+            builderSingle.setTitle(getResources().getString(R.string.no_run_available));
+        } else {
+            builderSingle.setTitle(getResources().getString(R.string.select_one_run));
+        }
         builderSingle.setIcon(R.drawable.icon_notification);
-        builderSingle.setTitle("Select one run");
+
+        // prevents closing alertdialog when clicking outside of it
+        builderSingle.setCancelable(false);
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapsActivity.this, android.R.layout.select_dialog_singlechoice);
         for(int i = 0; i<allEntries.size(); i++) {
             arrayAdapter.add(allEntries.get(i).getNumber_of_run() + "-DateTime: " + allEntries.get(i).getDateTime());
         }
 
-        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+        builderSingle.setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -417,12 +424,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private void createAlertDialog() {
         final EditText taskEditText = new EditText(this);
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Save exercise and comment it?")
-                .setMessage("Comments on your last exercise")
+                .setTitle(getResources().getString(R.string.save_exercise))
+                .setMessage(getResources().getString(R.string.comment_exercise))
                 .setView(taskEditText)
                 // prevents closing alertdialog when clicking outside of it
                 .setCancelable(false)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getResources().getString(R.string.buttonSave), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String task = String.valueOf(taskEditText.getText());
@@ -431,7 +438,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                         db.updateComment(task, lastEntryOfRun);
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         DatabaseHandler db = new DatabaseHandler(getApplicationContext());

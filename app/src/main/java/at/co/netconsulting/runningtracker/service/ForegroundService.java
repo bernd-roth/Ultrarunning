@@ -167,7 +167,7 @@ public class ForegroundService extends Service implements LocationListener {
                         .bigText("Distance covered: 0 meter"
                                 + "\nCurrent speed: 0 km/h"
                                 + "\nNumber of satellites: 0/" + satelliteCount
-                                + "\nLocation accuracy: 0 m/s"
+                                + "\nLocation accuracy: 0 m"
                                 + "\nAltitude: 0 meter"
                                 + "\nTime: 0:0:0"))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
