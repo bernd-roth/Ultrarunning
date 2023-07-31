@@ -15,6 +15,7 @@ Start the app and that`s it.
 ![](app/pics/earth.png)
 ![](app/pics/austria.png)
 ![](app/pics/notification.png)
+![](app/pics/notification_no_information_received.png)
 ![](app/pics/settings.png)
 ![](app/pics/comment_dialog.png)
 ![](app/pics/screen_lock.png)

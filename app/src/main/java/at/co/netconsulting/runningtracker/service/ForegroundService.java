@@ -151,7 +151,15 @@ public class ForegroundService extends Service implements LocationListener {
         createTimer();
 
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle(getString(R.string.notificationBuilder_title))
+                .setContentTitle("Still trying to gather information!")
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText("Distance covered: 0 meter"
+                                + "\nCurrent speed: 0 km/h"
+                                + "\nNumber of satellites: 0"
+                                + "\nLocation accuracy: 0 m/s"
+                                + "\nAltitude: 0 meter"
+                                + "\nTime: 0:0:0"))
+                .setLargeIcon(BitmapFactory. decodeResource (this.getResources() , R.drawable. icon_notification ))
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
                 .setSmallIcon(R.drawable.icon_notification)

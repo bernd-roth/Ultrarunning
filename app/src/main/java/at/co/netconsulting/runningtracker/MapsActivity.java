@@ -314,6 +314,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 .setTitle("Save exercise and comment it?")
                 .setMessage("Comments on your last exercise")
                 .setView(taskEditText)
+                // prevents closing alertdialog when clicking outside of it
+                .setCancelable(false)
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
