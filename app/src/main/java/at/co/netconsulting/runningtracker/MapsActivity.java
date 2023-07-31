@@ -18,13 +18,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.Settings;
-import android.text.InputType;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -49,6 +48,7 @@ import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
+import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.service.ForegroundService;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
@@ -59,7 +59,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     //Polyline
     private Polyline polyline;
     private List<LatLng> polylinePoints;
-    private boolean isDisableZoomCamera = true;
+    private boolean isDisableZoomCamera;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics;
     private double lastLat, lastLng;
     private String mapType;
@@ -67,6 +67,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private String[] permissions;
     private LocationManager locationManager;
     private boolean gps_enabled;
+    private Marker markerName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,10 +136,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             if(lastLat!=0 && lastLng!=0) {
                 LatLng latLng = new LatLng(lastLat, lastLng);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
-
                 if (polyline != null) {
                     polyline.setPoints(polylinePoints);
-                    Marker markerName = mMap.addMarker(new MarkerOptions().position(latLng).title("Current location"));
+                    markerName = mMap.addMarker(new MarkerOptions().position(latLng).title("Current location"));
                     markerName.remove();
                 } else {
                     polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
@@ -186,6 +186,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         configureReceiver();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
         locationManager = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        isDisableZoomCamera = true;
     }
 
     private void checkIfLocationIsEnabled() {
@@ -293,6 +294,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 intentForegroundService.setAction("ACTION_START");
                 contextFabRecording.startForegroundService(intentForegroundService);
                 createListenerAndfillPolyPoints(lastLat, lastLng);
+                LatLng latLng = new LatLng(lastLat, lastLng);
+                markerName = mMap.addMarker(new MarkerOptions().position(latLng).title("Current location"));
+                mMap.clear();
 
                 fadingButtons(R.id.fabRecording);
 
@@ -307,14 +311,67 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
                 break;
             case R.id.fabStatistics:
-                Intent intentStatistics = new Intent(MapsActivity.this, StatisticsActivity.class);
-                this.startActivity(intentStatistics);
+                //Intent intentStatistics = new Intent(MapsActivity.this, StatisticsActivity.class);
+                //this.startActivity(intentStatistics);
                 break;
             case R.id.fabSettings:
                 Intent intentSettings = new Intent(MapsActivity.this, SettingsActivity.class);
                 this.startActivity(intentSettings);
                 break;
+            case R.id.fabTracks:
+                showAlertDialogWithTtracks();
         }
+    }
+
+    private void showAlertDialogWithTtracks() {
+        DatabaseHandler db = new DatabaseHandler(this);
+        List<Run> allEntries = db.getAllEntriesGroupedByRun();
+
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MapsActivity.this);
+        builderSingle.setIcon(R.drawable.icon_notification);
+        builderSingle.setTitle("Select one run");
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapsActivity.this, android.R.layout.select_dialog_singlechoice);
+        for(int i = 0; i<allEntries.size(); i++) {
+            arrayAdapter.add(allEntries.get(i).getNumber_of_run() + "-DateTime: " + allEntries.get(i).getDateTime());
+        }
+
+        builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String numberOfRun = arrayAdapter.getItem(which);
+                String[] splittedString = numberOfRun.split("-");
+                int intNumberOfRun = Integer.parseInt(splittedString[0]);
+
+                List<Run> allEntries = db.getSingleEntryOrderedByDateTime(intNumberOfRun);
+                LatLng latLng;
+
+                for(int i = 0;i<allEntries.size(); i++) {
+                    latLng = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
+                    polylinePoints.add(latLng);
+                }
+                fillPolyPoints(polylinePoints);
+            }
+        });
+        builderSingle.show();
+    }
+
+    private void fillPolyPoints(List<LatLng> polylinePoints) {
+        double lat = polylinePoints.get(0).latitude;
+        double lng = polylinePoints.get(0).longitude;
+
+        LatLng latLng = new LatLng(lat, lng);
+
+        polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+        mMap.addMarker(new MarkerOptions().position(latLng).title("Current location"));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15));
     }
 
     private void fadingButtons(int fabButton) {

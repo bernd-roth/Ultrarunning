@@ -94,6 +94,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/ic_settings"
         android:onClick="onClickRecording"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabTracks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="339dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|right"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/icon_notification"
+        android:onClick="onClickRecording"/>
 </RelativeLayout>
 
     <!--<?xml version="1.0" encoding="utf-8"?>

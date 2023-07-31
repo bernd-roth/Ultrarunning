@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import at.co.netconsulting.runningtracker.pojo.Run;
-import timber.log.Timber;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 2;
@@ -117,6 +116,88 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         List<Run> allEntryList = new ArrayList<Run>();
         // Select All Query
         String selectQuery = "SELECT * FROM " + TABLE_RUNS;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Run run = new Run();
+                run.setId(Integer.parseInt(cursor.getString(0)));
+                run.setDateTime(cursor.getString(1));
+                run.setLat(cursor.getDouble(2));
+                run.setLng(cursor.getDouble(3));
+                run.setMeters_covered(cursor.getDouble(4));
+                run.setSpeed((float) cursor.getDouble(5));
+                run.setHeart_rate(cursor.getInt(6));
+                run.setComment(cursor.getString(7));
+                run.setNumber_of_run(cursor.getInt(8));
+                run.setDateTimeInMs(cursor.getInt(9));
+                // Adding contact to list
+                allEntryList.add(run);
+            } while (cursor.moveToNext());
+        }
+        return allEntryList;
+    }
+
+    public List<Run> getAllEntriesGroupedByRun() {
+        List<Run> allEntryList = new ArrayList<Run>();
+
+        // Select All Query
+        String selectQuery = "SELECT "
+                + KEY_ID + ", "
+                + KEY_DATE_TIME + ", "
+                + KEY_LAT + ", "
+                + KEY_LNG + ", "
+                + KEY_METERS_COVERED + ", "
+                + KEY_SPEED + ", "
+                + KEY_HEART_RATE + ", "
+                + KEY_COMMENT + ", "
+                + KEY_NUMBER_OF_RUN + ", "
+                + KEY_DATETIME_IN_MS
+                + " FROM " + TABLE_RUNS + " GROUP BY " + KEY_NUMBER_OF_RUN;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Run run = new Run();
+                run.setId(Integer.parseInt(cursor.getString(0)));
+                run.setDateTime(cursor.getString(1));
+                run.setLat(cursor.getDouble(2));
+                run.setLng(cursor.getDouble(3));
+                run.setMeters_covered(cursor.getDouble(4));
+                run.setSpeed((float) cursor.getDouble(5));
+                run.setHeart_rate(cursor.getInt(6));
+                run.setComment(cursor.getString(7));
+                run.setNumber_of_run(cursor.getInt(8));
+                run.setDateTimeInMs(cursor.getInt(9));
+                // Adding contact to list
+                allEntryList.add(run);
+            } while (cursor.moveToNext());
+        }
+        return allEntryList;
+    }
+
+    public List<Run> getSingleEntryOrderedByDateTime(int numberOfRun) {
+        List<Run> allEntryList = new ArrayList<Run>();
+
+        // Select All Query
+        String selectQuery = "SELECT "
+                + KEY_ID + ", "
+                + KEY_DATE_TIME + ", "
+                + KEY_LAT + ", "
+                + KEY_LNG + ", "
+                + KEY_METERS_COVERED + ", "
+                + KEY_SPEED + ", "
+                + KEY_HEART_RATE + ", "
+                + KEY_COMMENT + ", "
+                + KEY_NUMBER_OF_RUN + ", "
+                + KEY_DATETIME_IN_MS
+                + " FROM " + TABLE_RUNS + " WHERE " + KEY_NUMBER_OF_RUN + " = " + numberOfRun;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
