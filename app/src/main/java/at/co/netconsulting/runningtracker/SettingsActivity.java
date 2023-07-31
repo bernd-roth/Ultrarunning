@@ -14,6 +14,9 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
+import android.widget.Toast;
+
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceFragmentCompat;
 import java.io.File;
@@ -27,7 +30,6 @@ import timber.log.Timber;
 
 public class SettingsActivity extends BaseActivity {
 
-    private Switch switchBatteryOptimization;
     private boolean isSwitchBatteryOptimization;
     private SharedPreferences sharedpreferences;
     private EditText editTextNumberSignedMinimumTimeMs;
@@ -42,6 +44,7 @@ public class SettingsActivity extends BaseActivity {
     private int minDistanceMeter;
     private long minTimeMs;
     private DatabaseHandler db;
+    private static final int IGNORE_BATTERY_OPTIMIZATION_REQUEST = 1002;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,23 +52,16 @@ public class SettingsActivity extends BaseActivity {
         setContentView(R.layout.settings_activity);
 
         initObjects();
-        loadSharedPreferences(SharedPref.STATIC_BATTERY_OPTIMIZATION);
         loadSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
-        ignoreBatteryOptimization();
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
         SharedPreferences sh;
 
         switch(sharedPrefKey) {
-            case SharedPref.STATIC_BATTERY_OPTIMIZATION:
-                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                isSwitchBatteryOptimization = sh.getBoolean(sharedPrefKey, false);
-                switchBatteryOptimization.setChecked(isSwitchBatteryOptimization);
-                break;
             case SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 mapType = sh.getString(sharedPrefKey, "MAP_TYPE_NORMAL");
@@ -96,27 +92,6 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void initObjects() {
-        switchBatteryOptimization = findViewById(R.id.switchBatteryOptimization);
-        switchBatteryOptimization.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Timber.d("SettingsActivity: switchBatteryOptimization checked=%s", isChecked);
-                if(switchBatteryOptimization.isChecked()) {
-                    Intent intent = new Intent();
-                    String packageName = getPackageName();
-                    PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                    if (pm != null && !pm.isIgnoringBatteryOptimizations(packageName)) {
-                        intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                        intent.setData(Uri.parse("package:" + packageName));
-                        startActivity(intent);
-                        saveSharedPreferences(SharedPref.STATIC_BATTERY_OPTIMIZATION);
-                    }
-                } else {
-                    saveSharedPreferences(SharedPref.STATIC_BATTERY_OPTIMIZATION);
-                }
-            }
-        });
-
         editTextNumberSignedMinimumTimeMs = findViewById(R.id.editTextNumberSignedMinimumTimeMs);
         editTextNumberSignedMinimumDistanceMeter = findViewById(R.id.editTextNumberSignedMinimumDistanceMeter);
         buttonSave = findViewById(R.id.buttonSave);
@@ -132,18 +107,7 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void saveSharedPreferences(String sharedPreference) {
-        if(sharedPreference.equals(SharedPref.STATIC_BATTERY_OPTIMIZATION)) {
-            sharedpreferences = getSharedPreferences(SharedPref.STATIC_BATTERY_OPTIMIZATION, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-
-            if(switchBatteryOptimization.isChecked()) {
-                editor.putBoolean(sharedPreference, true);
-                editor.commit();
-            }  else {
-                editor.putBoolean(sharedPreference, false);
-                editor.commit();
-            }
-        } else if(sharedPreference.equals("MAP_TYPE_NORMAL")) {
+        if(sharedPreference.equals("MAP_TYPE_NORMAL")) {
             sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
@@ -194,13 +158,6 @@ public class SettingsActivity extends BaseActivity {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void ignoreBatteryOptimization() {
-        if(isSwitchBatteryOptimization) {
-            switchBatteryOptimization.setChecked(isSwitchBatteryOptimization);
         }
     }
 

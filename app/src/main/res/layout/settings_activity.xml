@@ -12,18 +12,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <Switch
-                android:id="@+id/switchBatteryOptimization"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Battery optimization" />
-
-            <TextView
-                android:id="@+id/textViewBatteryOptimization"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Use battery optimization for a better recording\nduring background process" />
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"

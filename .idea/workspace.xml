@@ -9,16 +9,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* count up timer in notification added&#10;* kalman filter added&#10;* export of kalman filter data added">
-      <change afterPath="$PROJECT_DIR$/app/pics/comment_dialog.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/pics/screen_lock.png" afterDir="false" />
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* dialog for saving your last run&#10;* changing notification">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pics/notification.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/pics/notification.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/pics/settings.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/pics/settings.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/settings_activity.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/settings_activity.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -375,7 +370,14 @@
       <option name="project" value="LOCAL" />
       <updated>1690671539785</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="* dialog for saving your last run&#10;* changing notification">
+      <created>1690710989476</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1690710989476</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -391,7 +393,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* notification enhanced for readability&#10;* textview in MapsActivity.java deleted" />
     <MESSAGE value="* log message adapted" />
     <MESSAGE value="* google api key adapted" />
     <MESSAGE value="* if pressing notification, nothing has to be done&#10;* minSpeedLimit moved to StaticFields.java&#10;* setVisibility service on desktop" />
@@ -416,7 +417,8 @@
     <MESSAGE value="* Log message replaced by Timber" />
     <MESSAGE value="* useless comments removed&#10;* minimum speed limit removed&#10;* Log message replaced with Timber&#10;* SharedPreferences in SettingsActivity.java fixed" />
     <MESSAGE value="* count up timer in notification added&#10;* kalman filter added&#10;* export of kalman filter data added" />
-    <option name="LAST_COMMIT_MESSAGE" value="* count up timer in notification added&#10;* kalman filter added&#10;* export of kalman filter data added" />
+    <MESSAGE value="* dialog for saving your last run&#10;* changing notification" />
+    <option name="LAST_COMMIT_MESSAGE" value="* dialog for saving your last run&#10;* changing notification" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
