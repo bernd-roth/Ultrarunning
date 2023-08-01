@@ -33,4 +33,6 @@
     <string name="location_service">Please, turn location service on!</string>
     <string name="open_location_settings">Open location settings</string>
     <string name="buttonSave">Save</string>
+    <string name="working_with_kalman_filter">Working on normalizing your data</string>
+    <string name="work_in_progress">Working. Please wait...</string>
 </resources>

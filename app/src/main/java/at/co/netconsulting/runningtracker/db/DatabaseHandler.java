@@ -314,7 +314,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
             csvWrite.writeNext(lineSplitted);
             csvWrite.close();
-            curCSV.close();
         } catch(Exception sqlEx) {
             Log.e("DatabaseHandler", sqlEx.getMessage(), sqlEx);
         }

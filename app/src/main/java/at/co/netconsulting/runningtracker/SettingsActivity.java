@@ -1,11 +1,14 @@
 package at.co.netconsulting.runningtracker;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 
 import androidx.preference.PreferenceFragmentCompat;
@@ -34,6 +37,7 @@ public class SettingsActivity extends BaseActivity {
     private long minTimeMs;
     private DatabaseHandler db;
     private static final int IGNORE_BATTERY_OPTIMIZATION_REQUEST = 1002;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +95,12 @@ public class SettingsActivity extends BaseActivity {
         radioButtonTerrain = findViewById(R.id.radioButton_map_type_terrain);
         radioButtonSatellite = findViewById(R.id.radioButton_map_type_satellite);
         buttonNormalizeWithKalmanFilter = findViewById(R.id.buttonNormalizeWithKalmanFilter);
+        dialog = new ProgressDialog(this);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setTitle("Loading");
+            dialog.setMessage("Loading. Please wait...");
+            dialog.setIndeterminate(true);
+            dialog.setCanceledOnTouchOutside(false);
 
         db = new DatabaseHandler(this);
     }
@@ -188,6 +198,12 @@ public class SettingsActivity extends BaseActivity {
 
     public void startKalmanFilter(View view) {
         buttonNormalizeWithKalmanFilter.setEnabled(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setTitle(getResources().getString(R.string.working_with_kalman_filter));
+        dialog.setMessage(getResources().getString(R.string.work_in_progress));
+        dialog.setIndeterminate(true);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
 
         File file = new File(getApplicationContext().getExternalFilesDir(null), "Kalman_filtered.csv");
         try {
@@ -200,5 +216,6 @@ public class SettingsActivity extends BaseActivity {
         new KalmanFilter(getApplicationContext());
         new GPSDataFactory(db);
         buttonNormalizeWithKalmanFilter.setEnabled(true);
+        dialog.cancel();
     }
 }
