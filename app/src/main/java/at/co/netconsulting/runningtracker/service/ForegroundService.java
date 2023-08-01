@@ -8,8 +8,10 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -22,6 +24,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -77,6 +80,8 @@ public class ForegroundService extends Service implements LocationListener {
     private final long[] hours = {0};
     private Timer t;
     private int satelliteCount;
+    private BroadcastReceiver broadcastReceiver;
+    private String bundlePause;
 
     @Override
     public void onCreate() {
@@ -91,6 +96,7 @@ public class ForegroundService extends Service implements LocationListener {
 
         locationManager = getLocationManager();
         getLastKnownLocation(locationManager);
+        configureBroadcastReceiver();
     }
 
     private void createTimer() {
@@ -132,6 +138,13 @@ public class ForegroundService extends Service implements LocationListener {
         formatDateTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         t = new Timer();
         initCallbacks();
+    }
+
+    private void configureBroadcastReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(SharedPref.STATIC_BROADCAST_PAUSE_ACTION);
+        broadcastReceiver = new DataBroadcastReceiver();
+        registerReceiver(broadcastReceiver, filter);
     }
 
     //Save input to database
@@ -273,6 +286,7 @@ public class ForegroundService extends Service implements LocationListener {
         stopSelf();
         t.cancel();
         deinitCallbacks();
+        unregisterReceiver(broadcastReceiver);
     }
 
     private void cancelNotification() {
@@ -354,7 +368,10 @@ public class ForegroundService extends Service implements LocationListener {
                                         + "\nTime: " + String.format("%s:%s:%s", hour, minute, second)))
                 .setLargeIcon(BitmapFactory. decodeResource (this.getResources() , R.drawable. icon_notification ))
             .build());
-        saveToDatabase();
+        //pause button was not pressed yet
+        if(bundlePause==null) {
+            saveToDatabase();
+        }
     }
 
     @Override
@@ -380,5 +397,14 @@ public class ForegroundService extends Service implements LocationListener {
     @Override
     public void onProviderDisabled(@NonNull String provider) {
         LocationListener.super.onProviderDisabled(provider);
+    }
+
+    private class DataBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            bundlePause = intent.getExtras().getString("Pausing");
+            Timber.d("Foregrundservice: DataBroadcastReceiver: %s", bundlePause);
+        }
     }
 }

@@ -60,15 +60,16 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Polyline polyline;
     private List<LatLng> polylinePoints, polylinePointsTemp;
     private boolean isDisableZoomCamera;
-    private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics;
+    private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabPauseRecording;
     private double lastLat, lastLng;
     private String mapType;
     private SupportMapFragment mapFragment;
     private String[] permissions;
     private LocationManager locationManager;
     private boolean gps_enabled;
-    private Marker markerName;
     private boolean startingPoint;
+    private BroadcastReceiver receiver;
+    private boolean isPauseRecordingClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +139,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
 
             if(startingPoint) {
-                markerName = mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location)));
+                mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location)));
                 startingPoint = false;
             } else {
                 polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
@@ -169,7 +170,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private void configureReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(SharedPref.STATIC_BROADCAST_ACTION);
-        BroadcastReceiver receiver = new DataBroadcastReceiver();
+        receiver = new DataBroadcastReceiver();
         registerReceiver(receiver, filter);
     }
 
@@ -179,6 +180,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabStopRecording = findViewById(R.id.fabStopRecording);
         fabStopRecording.setVisibility(View.INVISIBLE);
         fabStatistics = findViewById(R.id.fabStatistics);
+        fabPauseRecording = findViewById(R.id.fabPauseRecording);
+            fabPauseRecording.setVisibility(View.INVISIBLE);
+
         fabStatistics.setVisibility(View.VISIBLE);
         polylinePoints = new ArrayList<>();
         polylinePointsTemp = new ArrayList<>();
@@ -284,6 +288,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(this, ForegroundService.class));
+        unregisterReceiver(receiver);
     }
 
     public void onClickRecording(View view) {
@@ -299,15 +304,31 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 mMap.clear();
 
                 fadingButtons(R.id.fabRecording);
+                fadingButtons(R.id.fabPauseRecording);
 
                 break;
             case R.id.fabStopRecording:
                 stopService(new Intent(this, ForegroundService.class));
-                fabStopRecording.setVisibility(View.INVISIBLE);
-                fabStartRecording.setVisibility(View.VISIBLE);
+//                fabStopRecording.setVisibility(View.INVISIBLE);
+//                fabStartRecording.setVisibility(View.VISIBLE);
                 createAlertDialog();
 
                 fadingButtons(R.id.fabStopRecording);
+                fadingButtons(R.id.fabPauseRecording);
+//                fabPauseRecording.setVisibility(View.INVISIBLE);
+
+                break;
+            case R.id.fabPauseRecording:
+//                fabStopRecording.setVisibility(View.VISIBLE);
+//                fabStartRecording.setVisibility(View.INVISIBLE);
+
+                if(isPauseRecordingClicked==false) {
+                    sendBroadcastToForegroundService("Pausing");
+                    isPauseRecordingClicked = true;
+                } else {
+                    sendBroadcastToForegroundService(null);
+                    isPauseRecordingClicked = false;
+                }
 
                 break;
             case R.id.fabStatistics:
@@ -402,6 +423,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     fadeOutAnimation.setFillAfter(true);
 
                     fabStopRecording.startAnimation(fadeInAnimation);
+                    fabPauseRecording.startAnimation(fadeInAnimation);
                     fabStartRecording.startAnimation(fadeOutAnimation);
                 }
             }, 2000);// set time as per your requirement
@@ -420,6 +442,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     fadeOutAnimation.setFillAfter(true);
 
                     fabStopRecording.startAnimation(fadeOutAnimation);
+                    fabPauseRecording.startAnimation(fadeOutAnimation);
                     fabStartRecording.startAnimation(fadeInAnimation);
                 }
             }, 2000);// set time as per your requirement
@@ -453,6 +476,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 })
                 .create();
         dialog.show();
+    }
+
+    private void sendBroadcastToForegroundService(String value) {
+        Intent intent=new Intent();
+        intent.setAction(SharedPref.STATIC_BROADCAST_PAUSE_ACTION);
+        Bundle bundle = new Bundle();
+        bundle.putString("Pausing", value);
+        intent.putExtras(bundle);
+        getApplicationContext().sendBroadcast(intent);
     }
 
     private class DataBroadcastReceiver extends BroadcastReceiver {
