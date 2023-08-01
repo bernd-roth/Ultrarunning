@@ -315,14 +315,16 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 fadingButtons(R.id.fabStopRecording);
                 fadingButtons(R.id.fabPauseRecording);
 
-                isPauseRecordingClicked = true;
+                isPauseRecordingClicked = false;
 
                 break;
             case R.id.fabPauseRecording:
                 if(isPauseRecordingClicked==false) {
+                    //pause button was pressed
                     sendBroadcastToForegroundService("Pausing");
                     isPauseRecordingClicked = true;
                 } else {
+                    //pause button was not pressed
                     sendBroadcastToForegroundService(null);
                     isPauseRecordingClicked = false;
                 }
