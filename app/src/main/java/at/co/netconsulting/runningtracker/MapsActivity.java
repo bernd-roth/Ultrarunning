@@ -309,19 +309,16 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 break;
             case R.id.fabStopRecording:
                 stopService(new Intent(this, ForegroundService.class));
-//                fabStopRecording.setVisibility(View.INVISIBLE);
-//                fabStartRecording.setVisibility(View.VISIBLE);
+
                 createAlertDialog();
 
                 fadingButtons(R.id.fabStopRecording);
                 fadingButtons(R.id.fabPauseRecording);
-//                fabPauseRecording.setVisibility(View.INVISIBLE);
+
+                isPauseRecordingClicked = true;
 
                 break;
             case R.id.fabPauseRecording:
-//                fabStopRecording.setVisibility(View.VISIBLE);
-//                fabStartRecording.setVisibility(View.INVISIBLE);
-
                 if(isPauseRecordingClicked==false) {
                     sendBroadcastToForegroundService("Pausing");
                     isPauseRecordingClicked = true;
