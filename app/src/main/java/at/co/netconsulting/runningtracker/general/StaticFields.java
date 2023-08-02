@@ -9,4 +9,5 @@ public class StaticFields {
 
     public static final int STATIC_INTEGER_MIN_DISTANCE_METER = 10;
     public static final int STATIC_LONG_MIN_TIME_MS = 10;
+    public static final String STATIC_SAVE_ON_COMMENT_PAUSE = "COMMENT_AND_PAUSE";
 }

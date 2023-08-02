@@ -75,6 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:hint="Number between 1 and 10"
                 android:inputType="numberDecimal" />
 
             <TextView
@@ -88,7 +89,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:hint="Number between 1 and 10"
                 android:inputType="numberDecimal" />
+
+            <Switch
+                android:id="@+id/switchCommentPause"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/saveAndCommentPause"
+                android:onClick="saveAndCommentPause"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#c0c0c0"/>
 
             <Button
                 android:id="@+id/buttonSave"

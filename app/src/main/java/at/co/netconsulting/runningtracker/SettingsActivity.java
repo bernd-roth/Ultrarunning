@@ -3,22 +3,26 @@ package at.co.netconsulting.runningtracker;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.Switch;
 
 import androidx.preference.PreferenceFragmentCompat;
+
 import java.io.File;
+
 import at.co.netconsulting.runningtracker.calculation.GPSDataFactory;
 import at.co.netconsulting.runningtracker.calculation.KalmanFilter;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
+import timber.log.Timber;
 
 public class SettingsActivity extends BaseActivity {
 
@@ -38,6 +42,9 @@ public class SettingsActivity extends BaseActivity {
     private DatabaseHandler db;
     private static final int IGNORE_BATTERY_OPTIMIZATION_REQUEST = 1002;
     private ProgressDialog dialog;
+    private Switch switchCommentPause;
+    private boolean isCommentOnPause, isCommentedOnPause;
+    private boolean editTextDistance, editTextTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +56,7 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -81,15 +89,95 @@ public class SettingsActivity extends BaseActivity {
                 minTimeMs = sh.getLong(sharedPrefKey, StaticFields.STATIC_LONG_MIN_TIME_MS);
                 editTextNumberSignedMinimumTimeMs.setText(String.valueOf(minTimeMs));
                 break;
+            case SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isCommentedOnPause = sh.getBoolean(sharedPrefKey, Boolean.parseBoolean(StaticFields.STATIC_SAVE_ON_COMMENT_PAUSE));
+                switchCommentPause.setChecked(isCommentedOnPause);
+                break;
         }
     }
 
     private void initObjects() {
         editTextNumberSignedMinimumTimeMs = findViewById(R.id.editTextNumberSignedMinimumTimeMs);
+        editTextNumberSignedMinimumTimeMs.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                int length = s.length();
+
+                if(s.length()==0) {
+                    buttonSave.setEnabled(false);
+                } else {
+                    int number = Integer.parseInt(s.toString());
+                    if (length > 0 && length < 3) {
+                        Timber.d("Length: %s", length);
+                        if (number > 0 && number < 11) {
+                            Timber.d("Number: %s", number);
+                            buttonSave.setEnabled(true);
+                            editTextTime=true;
+                        } else {
+                            buttonSave.setEnabled(false);
+                            editTextTime=false;
+                        }
+                    } else {
+                        buttonSave.setEnabled(false);
+                        editTextTime=false;
+                    }
+                }
+                if(editTextDistance&&editTextTime) {
+                    buttonSave.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
         editTextNumberSignedMinimumDistanceMeter = findViewById(R.id.editTextNumberSignedMinimumDistanceMeter);
+        editTextNumberSignedMinimumDistanceMeter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                int length = s.length();
+
+                if(s.length()==0) {
+                    buttonSave.setEnabled(false);
+                    editTextDistance=false;
+                } else {
+                    int number = Integer.parseInt(s.toString());
+                    if (length > 0 && length < 3) {
+                        Timber.d("Length: %s", length);
+                        if (number > 0 && number < 11) {
+                            Timber.d("Number: %s", number);
+                            editTextDistance=true;
+                        } else {
+                            buttonSave.setEnabled(false);
+                            editTextDistance=false;
+                        }
+                    } else {
+                        buttonSave.setEnabled(false);
+                        editTextDistance=false;
+                    }
+                }
+                if(editTextDistance&&editTextTime) {
+                    buttonSave.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
         buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setTransformationMethod(null);
+        buttonSave.setEnabled(false);
 
         radioButtonNormal = findViewById(R.id.radioButton_map_type_normal);
         radioButtonHybrid = findViewById(R.id.radioButton_map_type_hybrid);
@@ -105,6 +193,8 @@ public class SettingsActivity extends BaseActivity {
 
         buttonDelete = findViewById(R.id.buttonDelete);
         buttonDelete.setTransformationMethod(null);
+
+        switchCommentPause = findViewById(R.id.switchCommentPause);
 
         dialog = new ProgressDialog(this);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -161,6 +251,22 @@ public class SettingsActivity extends BaseActivity {
             minTimeMs = Long.parseLong(editTextNumberSignedMinimumTimeMs.getText().toString());
             editor.putLong(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS, minTimeMs);
             editor.commit();
+        } else if(sharedPreference.equals("COMMENT_AND_PAUSE")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            boolean isCommentPauseChecked = switchCommentPause.isChecked();
+            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE, isCommentPauseChecked);
+            editor.commit();
+        }
+    }
+
+    public void saveAndCommentPause(View view) {
+        if(switchCommentPause.isChecked()) {
+            isCommentOnPause=true;
+            saveSharedPreferences("COMMENT_AND_PAUSE");
+        } else {
+            isCommentOnPause=false;
         }
     }
 

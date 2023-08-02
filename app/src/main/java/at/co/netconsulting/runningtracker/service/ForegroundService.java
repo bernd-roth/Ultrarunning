@@ -82,6 +82,7 @@ public class ForegroundService extends Service implements LocationListener {
     private int satelliteCount;
     private BroadcastReceiver broadcastReceiver;
     private String bundlePause;
+    private boolean isCommentOnPause;
 
     @Override
     public void onCreate() {
@@ -93,6 +94,7 @@ public class ForegroundService extends Service implements LocationListener {
         loadSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE);
 
         locationManager = getLocationManager();
         getLastKnownLocation(locationManager);
@@ -163,6 +165,27 @@ public class ForegroundService extends Service implements LocationListener {
             run.setMeters_covered(calc);
             run.setSpeed(speed);
             run.setDateTimeInMs(currentMilliseconds);
+            db.addRun(run);
+        }
+    }
+
+    //Save input to database
+    private void saveToDatabaseWithComment(String commentOnPause) {
+        //format date and time
+        dateObj = LocalDateTime.now();
+        formattedDateTime = dateObj.format(formatDateTime);
+        currentMilliseconds = System.currentTimeMillis();
+
+        //save all entries from polyline to table now
+        for (int i = 0; i < polylinePoints.size(); i++) {
+            run.setDateTime(dateObj.format(formatDateTime));
+            run.setLat(currentLatitude);
+            run.setLng(currentLongitude);
+            run.setNumber_of_run(lastRun);
+            run.setMeters_covered(calc);
+            run.setSpeed(speed);
+            run.setDateTimeInMs(currentMilliseconds);
+            run.setComment(commentOnPause);
             db.addRun(run);
         }
     }
@@ -325,6 +348,10 @@ public class ForegroundService extends Service implements LocationListener {
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 minTimeMs =  sh.getLong(sharedPrefKey, (long) StaticFields.STATIC_LONG_MIN_TIME_MS);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isCommentOnPause =  sh.getBoolean(sharedPrefKey, Boolean.parseBoolean(StaticFields.STATIC_SAVE_ON_COMMENT_PAUSE));
+                break;
         }
     }
 
@@ -371,6 +398,10 @@ public class ForegroundService extends Service implements LocationListener {
         //pause button was not pressed yet
         if(bundlePause==null) {
             saveToDatabase();
+        } else {
+            if(isCommentOnPause) {
+                saveToDatabaseWithComment("Paused");
+            }
         }
     }
 

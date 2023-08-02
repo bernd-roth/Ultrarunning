@@ -59,4 +59,7 @@
 
     <!-- MapsActivity -->
     <string name="serviceName">at.co.netconsulting.runningtracker.service.ForegroundService</string>
+
+    <!-- SettingsActivity -->
+    <string name="saveAndCommentPause">Save and comment, if pausing in database</string>
 </resources>
