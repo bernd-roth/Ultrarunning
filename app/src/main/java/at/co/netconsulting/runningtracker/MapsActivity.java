@@ -18,10 +18,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
@@ -130,7 +133,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     }
 
     private void createListenerAndfillPolyPoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
-        boolean isServiceRunning = isServiceRunning("at.co.netconsulting.runningtracker.service.ForegroundService");
+        boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
 
         if(!isServiceRunning) {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
@@ -450,13 +453,14 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
     private void createAlertDialog() {
         final EditText taskEditText = new EditText(this);
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(getResources().getString(R.string.save_exercise))
-                .setMessage(getResources().getString(R.string.comment_exercise))
-                .setView(taskEditText)
-                // prevents closing alertdialog when clicking outside of it
-                .setCancelable(false)
-                .setPositiveButton(getResources().getString(R.string.buttonSave), new DialogInterface.OnClickListener() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+        builder.setTitle(getResources().getString(R.string.save_exercise));
+        builder.setMessage(getResources().getString(R.string.comment_exercise));
+        builder.setView(taskEditText);
+        // prevents closing alertdialog when clicking outside of it
+        builder.setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.buttonSave), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String task = String.valueOf(taskEditText.getText());
@@ -464,8 +468,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                         int lastEntryOfRun = db.getLastEntry();
                         db.updateComment(task, lastEntryOfRun);
                     }
-                })
-                .setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
+                });
+        builder.setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         DatabaseHandler db = new DatabaseHandler(getApplicationContext());
@@ -474,7 +478,36 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     }
                 })
                 .create();
-        dialog.show();
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                if(button!=null) {
+                    button.setEnabled(false);
+                }
+            }
+        });
+        alertDialog.show();
+
+        TextWatcher mTextEditorWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(count>0) {
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                } else {
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        };
+        taskEditText.addTextChangedListener(mTextEditorWatcher);
     }
 
     private void sendBroadcastToForegroundService(String value) {

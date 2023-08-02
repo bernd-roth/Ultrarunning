@@ -56,4 +56,7 @@
     <string name="none">None</string>
     <string name="terrain">Terrain</string>
     <string name="satellite">Satellite</string>
+
+    <!-- MapsActivity -->
+    <string name="serviceName">at.co.netconsulting.runningtracker.service.ForegroundService</string>
 </resources>
