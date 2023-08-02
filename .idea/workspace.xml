@@ -9,9 +9,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* strings.xml: strings from different activities extracted">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* strings.xml: strings from different activities extracted&#10;* MapsActivity.java: AlertDialog must not be empty anymore, if track is saved">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -467,7 +468,14 @@
       <option name="project" value="LOCAL" />
       <updated>1690961638961</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="* strings.xml: strings from different activities extracted&#10;* MapsActivity.java: AlertDialog must not be empty anymore, if track is saved">
+      <created>1690973712318</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1690973712318</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -483,7 +491,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* moving static fields to separate class" />
     <MESSAGE value="* requesting permission for location, and notification&#10;* exporting tracked challenges via SettingsActivity.java" />
     <MESSAGE value="* added altitude in notification" />
     <MESSAGE value="* altitude, accuracy implemented&#10;* removeUpdates implemented&#10;* normalize GPS data with Kalman-filter&#10;* Task scheduler removed" />
@@ -508,7 +515,8 @@
     <MESSAGE value="* MapsActivity.java: unnecessary comments removed, isPauseRecordingClicked enhanced" />
     <MESSAGE value="* MapsActivity.java: fixed wrong behaviour when pause button is clicked" />
     <MESSAGE value="* strings.xml: strings from different activities extracted" />
-    <option name="LAST_COMMIT_MESSAGE" value="* strings.xml: strings from different activities extracted" />
+    <MESSAGE value="* strings.xml: strings from different activities extracted&#10;* MapsActivity.java: AlertDialog must not be empty anymore, if track is saved" />
+    <option name="LAST_COMMIT_MESSAGE" value="* strings.xml: strings from different activities extracted&#10;* MapsActivity.java: AlertDialog must not be empty anymore, if track is saved" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -519,19 +527,9 @@
           <option name="timeStamp" value="142" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>163</line>
-          <option name="timeStamp" value="260" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java</url>
           <line>348</line>
           <option name="timeStamp" value="293" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>499</line>
-          <option name="timeStamp" value="302" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

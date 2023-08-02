@@ -26,7 +26,7 @@ public class SettingsActivity extends BaseActivity {
     private SharedPreferences sharedpreferences;
     private EditText editTextNumberSignedMinimumTimeMs;
     private EditText editTextNumberSignedMinimumDistanceMeter;
-    private Button buttonSave, buttonNormalizeWithKalmanFilter;
+    private Button buttonSave, buttonNormalizeWithKalmanFilter, buttonExport, buttonDelete;
     private String mapType;
     private RadioButton radioButtonNormal,
             radioButtonHybrid,
@@ -87,14 +87,25 @@ public class SettingsActivity extends BaseActivity {
     private void initObjects() {
         editTextNumberSignedMinimumTimeMs = findViewById(R.id.editTextNumberSignedMinimumTimeMs);
         editTextNumberSignedMinimumDistanceMeter = findViewById(R.id.editTextNumberSignedMinimumDistanceMeter);
+
         buttonSave = findViewById(R.id.buttonSave);
+        buttonSave.setTransformationMethod(null);
 
         radioButtonNormal = findViewById(R.id.radioButton_map_type_normal);
         radioButtonHybrid = findViewById(R.id.radioButton_map_type_hybrid);
         radioButtonNone = findViewById(R.id.radioButton_map_none);
         radioButtonTerrain = findViewById(R.id.radioButton_map_type_terrain);
         radioButtonSatellite = findViewById(R.id.radioButton_map_type_satellite);
+
         buttonNormalizeWithKalmanFilter = findViewById(R.id.buttonNormalizeWithKalmanFilter);
+        buttonNormalizeWithKalmanFilter.setTransformationMethod(null);
+
+        buttonExport = findViewById(R.id.buttonExport);
+        buttonExport.setTransformationMethod(null);
+
+        buttonDelete = findViewById(R.id.buttonDelete);
+        buttonDelete.setTransformationMethod(null);
+
         dialog = new ProgressDialog(this);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.setTitle("Loading");

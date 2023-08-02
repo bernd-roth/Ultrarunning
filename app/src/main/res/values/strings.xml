@@ -48,7 +48,7 @@
     <string name="export_all_entries_from_database">Export all entries from database</string>
     <string name="export">Export</string>
     <string name="delete">Delete</string>
-    <string name="kalmanfilter">KalmanFilter</string>
+    <string name="kalmanfilter">Kalman-Filter</string>
 
     <!-- RadioButton activity_settings.xml -->
     <string name="normal">Normal</string>
