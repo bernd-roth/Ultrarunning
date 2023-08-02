@@ -35,4 +35,25 @@
     <string name="buttonSave">Save</string>
     <string name="working_with_kalman_filter">Working on normalizing your data</string>
     <string name="work_in_progress">Working. Please wait...</string>
+
+    <!-- TextView activity_settings.xml -->
+    <string name="update_minimum_distance_meter">Update minimum distance meter</string>
+    <string name="update_minimum_time_sec">Update minimum time sec</string>
+    <string name="delete_all_entries_from_database">Delete all entries from database</string>
+    <string name="normalize_data_with_kalman_filter">Normalize data with Kalman-filter</string>
+    <string name="google_map_type">Google map type</string>
+
+    <!-- Button activity_settings.xml -->
+    <string name="save">Save</string>
+    <string name="export_all_entries_from_database">Export all entries from database</string>
+    <string name="export">Export</string>
+    <string name="delete">Delete</string>
+    <string name="kalmanfilter">KalmanFilter</string>
+
+    <!-- RadioButton activity_settings.xml -->
+    <string name="normal">Normal</string>
+    <string name="hybrid">Hybrid</string>
+    <string name="none">None</string>
+    <string name="terrain">Terrain</string>
+    <string name="satellite">Satellite</string>
 </resources>

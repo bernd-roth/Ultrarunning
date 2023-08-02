@@ -21,7 +21,7 @@
                 android:id="@+id/textViewMapType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Google map type" />
+                android:text="@string/google_map_type" />
 
             <RadioGroup
                 android:id="@+id/radioGroupMaptype"
@@ -31,31 +31,31 @@
                     android:id="@+id/radioButton_map_type_normal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Normal"
+                    android:text="@string/normal"
                     android:onClick="onClickRadioButtonNormal"/>
                 <RadioButton
                     android:id="@+id/radioButton_map_type_hybrid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Hybrid"
+                    android:text="@string/hybrid"
                     android:onClick="onClickRadioButtonHybrid"/>
                 <RadioButton
                     android:id="@+id/radioButton_map_none"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="None"
+                    android:text="@string/none"
                     android:onClick="onClickRadioButtonNone"/>
                 <RadioButton
                     android:id="@+id/radioButton_map_type_terrain"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Terrain"
+                    android:text="@string/terrain"
                     android:onClick="onClickRadioButtonTerrain"/>
                 <RadioButton
                     android:id="@+id/radioButton_map_type_satellite"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Satellite"
+                    android:text="@string/satellite"
                     android:onClick="onClickRadioButtonSatellite"/>
             </RadioGroup>
 
@@ -68,7 +68,7 @@
                 android:id="@+id/textViewMinDistanceMeter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Update minimum distance meter" />
+                android:text="@string/update_minimum_distance_meter" />
 
             <EditText
                 android:id="@+id/editTextNumberSignedMinimumDistanceMeter"
@@ -81,7 +81,7 @@
                 android:id="@+id/textViewMinTimeMs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Update minimum time sec" />
+                android:text="@string/update_minimum_time_sec" />
 
             <EditText
                 android:id="@+id/editTextNumberSignedMinimumTimeMs"
@@ -94,47 +94,47 @@
                 android:id="@+id/buttonSave"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Save"
+                android:text="@string/save"
                 android:onClick="save"/>
 
             <TextView
                 android:id="@+id/textViewExportDatabase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Export all entries from database" />
+                android:text="@string/export_all_entries_from_database" />
 
             <Button
                 android:id="@+id/buttonExport"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Export"
+                android:text="@string/export"
                 android:onClick="export"/>
 
             <TextView
                 android:id="@+id/textViewDeleteDatabase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Delete all entries from database" />
+                android:text="@string/delete_all_entries_from_database" />
 
             <Button
                 android:id="@+id/buttonDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Delete"
+                android:text="@string/delete"
                 android:onClick="delete"/>
 
             <TextView
                 android:id="@+id/textViewKalmanFilter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Normalize data with Kalman-filter" />
+                android:text="@string/normalize_data_with_kalman_filter" />
 
             <Button
                 android:id="@+id/buttonNormalizeWithKalmanFilter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="startKalmanFilter"
-                android:text="KalmanFilter" />
+                android:text="@string/kalmanfilter" />
 
         </LinearLayout>
     </FrameLayout>
