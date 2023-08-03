@@ -9,11 +9,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* SettingsActivity.java: if pause is clicked, comment field is automatically field for a better examination&#10;* SettingsActivity.java: TextWatcher for EditText implemented">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* SettingsActivity.java: switch pause fixed&#10;* ForegroundService.java: logmessage enhanced&#10;* MapsActivity.java: depending on switch activated or not, alertDialog will be shown">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/CustomWatcher.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,6 +72,7 @@
       <recent name="at.co.netconsulting.runningtracker" />
     </key>
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="at.co.netconsulting.runningtracker" />
       <recent name="at.co.netconsulting.runningtracker.service" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
@@ -489,7 +489,14 @@
       <option name="project" value="LOCAL" />
       <updated>1691013587604</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="* SettingsActivity.java: switch pause fixed&#10;* ForegroundService.java: logmessage enhanced&#10;* MapsActivity.java: depending on switch activated or not, alertDialog will be shown">
+      <created>1691040230994</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1691040230994</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -505,7 +512,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* altitude, accuracy implemented&#10;* removeUpdates implemented&#10;* normalize GPS data with Kalman-filter&#10;* Task scheduler removed" />
     <MESSAGE value="* automatically zoom in when position is found&#10;* organize imports" />
     <MESSAGE value="* adding AlertDialog if location service is not enabled" />
     <MESSAGE value="* adding start/stop image&#10;* changing button img start/stop depending on their use case" />
@@ -530,7 +536,8 @@
     <MESSAGE value="* strings.xml: strings from different activities extracted&#10;* MapsActivity.java: AlertDialog must not be empty anymore, if track is saved" />
     <MESSAGE value="* Uppercase letters for buttons fixed" />
     <MESSAGE value="* SettingsActivity.java: if pause is clicked, comment field is automatically field for a better examination&#10;* SettingsActivity.java: TextWatcher for EditText implemented" />
-    <option name="LAST_COMMIT_MESSAGE" value="* SettingsActivity.java: if pause is clicked, comment field is automatically field for a better examination&#10;* SettingsActivity.java: TextWatcher for EditText implemented" />
+    <MESSAGE value="* SettingsActivity.java: switch pause fixed&#10;* ForegroundService.java: logmessage enhanced&#10;* MapsActivity.java: depending on switch activated or not, alertDialog will be shown" />
+    <option name="LAST_COMMIT_MESSAGE" value="* SettingsActivity.java: switch pause fixed&#10;* ForegroundService.java: logmessage enhanced&#10;* MapsActivity.java: depending on switch activated or not, alertDialog will be shown" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -547,28 +554,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>323</line>
-          <option name="timeStamp" value="323" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
           <line>313</line>
           <option name="timeStamp" value="331" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>134</line>
-          <option name="timeStamp" value="332" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
+          <line>107</line>
+          <option name="timeStamp" value="339" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>258</line>
-          <option name="timeStamp" value="333" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>264</line>
-          <option name="timeStamp" value="334" />
+          <line>122</line>
+          <option name="timeStamp" value="342" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

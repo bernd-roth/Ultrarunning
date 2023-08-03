@@ -40,7 +40,6 @@ public class SettingsActivity extends BaseActivity {
     private int minDistanceMeter;
     private long minTimeMs;
     private DatabaseHandler db;
-    private static final int IGNORE_BATTERY_OPTIMIZATION_REQUEST = 1002;
     private ProgressDialog dialog;
     private Switch switchCommentPause;
     private boolean isCommentOnPause, isCommentedOnPause;
@@ -106,30 +105,7 @@ public class SettingsActivity extends BaseActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                int length = s.length();
-
-                if(s.length()==0) {
-                    buttonSave.setEnabled(false);
-                } else {
-                    int number = Integer.parseInt(s.toString());
-                    if (length > 0 && length < 3) {
-                        Timber.d("Length: %s", length);
-                        if (number > 0 && number < 11) {
-                            Timber.d("Number: %s", number);
-                            buttonSave.setEnabled(true);
-                            editTextTime=true;
-                        } else {
-                            buttonSave.setEnabled(false);
-                            editTextTime=false;
-                        }
-                    } else {
-                        buttonSave.setEnabled(false);
-                        editTextTime=false;
-                    }
-                }
-                if(editTextDistance&&editTextTime) {
-                    buttonSave.setEnabled(true);
-                }
+                onTextChangeEditText(s, "time");
             }
 
             @Override
@@ -144,30 +120,7 @@ public class SettingsActivity extends BaseActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                int length = s.length();
-
-                if(s.length()==0) {
-                    buttonSave.setEnabled(false);
-                    editTextDistance=false;
-                } else {
-                    int number = Integer.parseInt(s.toString());
-                    if (length > 0 && length < 3) {
-                        Timber.d("Length: %s", length);
-                        if (number > 0 && number < 11) {
-                            Timber.d("Number: %s", number);
-                            editTextDistance=true;
-                        } else {
-                            buttonSave.setEnabled(false);
-                            editTextDistance=false;
-                        }
-                    } else {
-                        buttonSave.setEnabled(false);
-                        editTextDistance=false;
-                    }
-                }
-                if(editTextDistance&&editTextTime) {
-                    buttonSave.setEnabled(true);
-                }
+                onTextChangeEditText(s, "distance");
             }
 
             @Override
@@ -204,6 +157,55 @@ public class SettingsActivity extends BaseActivity {
             dialog.setCanceledOnTouchOutside(false);
 
         db = new DatabaseHandler(this);
+    }
+
+    private void onTextChangeEditText(CharSequence s, String whichEditText) {
+        int length = s.length();
+
+        if(whichEditText.equals("distance")) {
+            if (length == 0) {
+                buttonSave.setEnabled(false);
+                editTextDistance = false;
+            } else {
+                int number = Integer.parseInt(s.toString());
+                if (length > 0 && length < 3) {
+                    Timber.d("Length: %s", length);
+                    if (number > 0 && number < 11) {
+                        Timber.d("Number: %s", number);
+                        editTextDistance = true;
+                    } else {
+                        buttonSave.setEnabled(false);
+                        editTextDistance = false;
+                    }
+                } else {
+                    buttonSave.setEnabled(false);
+                    editTextDistance = false;
+                }
+            }
+        } else {
+            if (length == 0) {
+                buttonSave.setEnabled(false);
+                editTextTime = false;
+            } else {
+                int number = Integer.parseInt(s.toString());
+                if (length > 0 && length < 3) {
+                    Timber.d("Length: %s", length);
+                    if (number > 0 && number < 11) {
+                        Timber.d("Number: %s", number);
+                        editTextTime = true;
+                    } else {
+                        buttonSave.setEnabled(false);
+                        editTextTime = false;
+                    }
+                } else {
+                    buttonSave.setEnabled(false);
+                    editTextTime = false;
+                }
+            }
+        }
+        if (editTextDistance && editTextTime) {
+            buttonSave.setEnabled(true);
+        }
     }
 
     private void saveSharedPreferences(String sharedPreference) {
