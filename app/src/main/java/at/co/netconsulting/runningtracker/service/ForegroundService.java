@@ -371,6 +371,7 @@ public class ForegroundService extends Service implements LocationListener {
         Timber.d("SPEED: %s", String.valueOf(location.getSpeed()));
 
         //number of satellites
+        int numberOfsatellitesInUse = location.getExtras().getInt("satellites");
         Timber.d("NUMBER OF SATELLITES: %s", String.valueOf(location.getExtras().getInt("satellites")));
 
         if (polylinePoints.size() > 1) {
@@ -389,7 +390,7 @@ public class ForegroundService extends Service implements LocationListener {
             .setContentTitle("Distance covered: " + String.format("%.2f meter", calc))
             .setStyle(new NotificationCompat.BigTextStyle()
             .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " km/h"
-                                        + "\nNumber of satellites: " + location.getExtras().getInt("satellites") + "/" + satelliteCount
+                                        + "\nNumber of satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
                                         + "\nLocation accuracy: " + String.format("%.2f", accuracy)
                                         + "\nAltitude: " + String.format("%.2f", altitude)
                                         + "\nTime: " + String.format("%s:%s:%s", hour, minute, second)))

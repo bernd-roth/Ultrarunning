@@ -251,7 +251,7 @@ public class SettingsActivity extends BaseActivity {
             minTimeMs = Long.parseLong(editTextNumberSignedMinimumTimeMs.getText().toString());
             editor.putLong(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS, minTimeMs);
             editor.commit();
-        } else if(sharedPreference.equals("COMMENT_AND_PAUSE")) {
+        } else if(sharedPreference.equals("SAVE_ON_COMMENT_PAUSE")) {
             sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
@@ -264,9 +264,10 @@ public class SettingsActivity extends BaseActivity {
     public void saveAndCommentPause(View view) {
         if(switchCommentPause.isChecked()) {
             isCommentOnPause=true;
-            saveSharedPreferences("COMMENT_AND_PAUSE");
+            saveSharedPreferences("SAVE_ON_COMMENT_PAUSE");
         } else {
             isCommentOnPause=false;
+            saveSharedPreferences("SAVE_ON_COMMENT_PAUSE");
         }
     }
 

@@ -72,7 +72,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private boolean gps_enabled;
     private boolean startingPoint;
     private BroadcastReceiver receiver;
-    private boolean isPauseRecordingClicked;
+    private boolean isPauseRecordingClicked, isSwitchPausedActivated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +130,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
         mapType = sh.getString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NORMAL");
+
+        sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE, Context.MODE_PRIVATE);
+        isSwitchPausedActivated = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE, false);
     }
 
     private void createListenerAndfillPolyPoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
@@ -307,13 +310,20 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 mMap.clear();
 
                 fadingButtons(R.id.fabRecording);
-                fadingButtons(R.id.fabPauseRecording);
+
+                if(isSwitchPausedActivated) {
+                    fadingButtons(R.id.fabPauseRecording);
+                }
 
                 break;
             case R.id.fabStopRecording:
                 stopService(new Intent(this, ForegroundService.class));
 
-                createAlertDialog();
+                // since paused switch is activated and comment is automatically filled
+                // we do not provide the alertDialog
+                if(!isSwitchPausedActivated) {
+                    createAlertDialog();
+                }
 
                 fadingButtons(R.id.fabStopRecording);
                 fadingButtons(R.id.fabPauseRecording);
