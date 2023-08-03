@@ -27,23 +27,29 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -412,11 +418,22 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         double lng = polylinePoints.get(0).longitude;
 
         LatLng latLng = new LatLng(lat, lng);
+        PatternItem DOT = new Dot();
+        PatternItem GAP = new Gap(20);
+        List<PatternItem> PATTERN_POLYLINE_DOTTED = Arrays.asList(GAP, DOT);
 
         mMap.clear();
         polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-        mMap.addMarker(new MarkerOptions().position(latLng).title("Current location"));
+        polyline.setClickable(true);
+
+        mMap.addMarker(new MarkerOptions().position(latLng).title(getString(R.string.starting_position)));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15));
+        mMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
+            @Override
+            public void onPolylineClick(@NonNull Polyline polyline) {
+                polyline.setPattern(PATTERN_POLYLINE_DOTTED);
+            }
+        });
     }
 
     private void fadingButtons(int fabButton) {
@@ -482,9 +499,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         builder.setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-                        int lastEntryOfRun = db.getLastEntry();
-                        db.deleteLastRun(lastEntryOfRun);
+
+//                        TODO: if recording is running but nothing is saved to database because no fix is available,
+//                              last entry will be fetched and deleted. leading to the problem that with every recording and no fix
+//                              one dataset after the other will be deleted
+//                        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+//                        int lastEntryOfRun = db.getLastEntry();
+//                        db.deleteLastRun(lastEntryOfRun);
                     }
                 })
                 .create();
