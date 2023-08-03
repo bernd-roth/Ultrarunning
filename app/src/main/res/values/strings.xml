@@ -59,6 +59,7 @@
 
     <!-- MapsActivity -->
     <string name="serviceName">at.co.netconsulting.runningtracker.service.ForegroundService</string>
+    <string name="starting_position">Starting position</string>
 
     <!-- SettingsActivity -->
     <string name="saveAndCommentPause">Save and comment, if pausing in database</string>
