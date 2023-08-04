@@ -1,13 +1,11 @@
 package at.co.netconsulting.runningtracker.general;
 
+import java.text.DecimalFormat;
+
 public class StaticFields {
-    public final static Double STATIC_DOUBLE_MINIMUM_SPEED_LIMIT = 1.111;
-    public static final float MIN_ACCURACY = 3f;
-
-    public static final String GPS_FILE_IMPORT = "lon_lat.dat";
-    public static final String GPS_FILE_EXPORT = "new_lon_lat.dat";
-
-    public static final int STATIC_INTEGER_MIN_DISTANCE_METER = 10;
-    public static final int STATIC_LONG_MIN_TIME_MS = 10;
-    public static final String STATIC_SAVE_ON_COMMENT_PAUSE = "COMMENT_AND_PAUSE";
+    public final static float MIN_ACCURACY = 3f;
+    public final static int STATIC_INTEGER_MIN_DISTANCE_METER = 10;
+    public final static int STATIC_LONG_MIN_TIME_MS = 10;
+    public final static String STATIC_SAVE_ON_COMMENT_PAUSE = "COMMENT_AND_PAUSE";
+    public final static DecimalFormat df = new DecimalFormat("0.00");
 }

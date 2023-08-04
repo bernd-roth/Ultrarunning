@@ -54,7 +54,7 @@
         </activity>
         <activity
             android:name=".StatisticsActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/title_activity_statistics"></activity>
 
         <receiver android:name="MapsActivity" ></receiver>

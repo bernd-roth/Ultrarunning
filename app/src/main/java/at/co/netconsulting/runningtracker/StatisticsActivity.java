@@ -1,14 +1,13 @@
 package at.co.netconsulting.runningtracker;
 
+import static at.co.netconsulting.runningtracker.general.StaticFields.df;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
@@ -18,13 +17,10 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
-
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
@@ -37,12 +33,12 @@ public class StatisticsActivity extends AppCompatActivity {
     private float meters, speed;
     private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed;
     private float mSpeed, avgSpeed;
-    private static final DecimalFormat df = new DecimalFormat("0.00");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
+        getSupportActionBar().hide();
 
         initObjects();
         callDatabase();
@@ -55,7 +51,7 @@ public class StatisticsActivity extends AppCompatActivity {
         mChart.setMarker(mv);
         findHighestLowestValuesSpeed();
         renderData();
-        textViewMaxSpeed.setText("Max. speed: " + df.format(mSpeed) + " km/h");
+        textViewMaxSpeed.setText("Max. speed: " +  df.format(mSpeed) + " km/h");
         textViewDistance.setText("Distance: " + df.format(meters) + " meter");
         textViewAvgSpeed.setText("Avg: speed: " + df.format(avgSpeed) + " meter");
     }
