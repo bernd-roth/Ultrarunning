@@ -49,4 +49,5 @@ dependencies {
     implementation group: 'com.opencsv', name: 'opencsv', version: '3.7'
     implementation group: 'org.greenrobot', name: 'eventbus', version: '3.1.1'
     implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }

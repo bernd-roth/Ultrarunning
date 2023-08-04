@@ -9,10 +9,18 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* SettingsActivity.java: switch pause fixed&#10;* ForegroundService.java: logmessage enhanced&#10;* MapsActivity.java: depending on switch activated or not, alertDialog will be shown">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/CustomWatcher.java" afterDir="false" />
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: by clicking polyline, polyline transforms to dots">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MyMarkerView.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable-v24/fade_blue.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable-v24/marker.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/custom_marker_view.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/values/refs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,11 +39,21 @@
         <option value="Interface" />
         <option value="resourceFile" />
         <option value="Class" />
+        <option value="valueResourceFile" />
+        <option value="layoutResourceFile" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -80,11 +98,11 @@
       <recent name="C:\projects\android\RunningTracker\app\src\main\res\drawable" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\src\main\res\drawable-v24" />
       <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\pics" />
       <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker" />
       <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\src\main\res\drawable" />
       <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\src\main\java\at\co\netconsulting\runningtracker\pics" />
-      <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\src\main\res\mipmap-xxhdpi" />
     </key>
     <key name="android.template.1810736474">
       <recent name="at.co.netconsulting.runningtracker" />
@@ -159,20 +177,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00001" summary="* API Key deleted">
-      <created>1689802626709</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1689802626709</updated>
-    </task>
-    <task id="LOCAL-00002" summary="* calculation of distance covered finished in ForeGroundService.java&#10;* unnecessary locationlistener in MapsActivity.java removed">
-      <created>1689860500484</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1689860500484</updated>
     </task>
     <task id="LOCAL-00003" summary="* display speed in notification&#10;* minSpeedLimit changed to long&#10;* bestProvider changed to &quot;GPS&quot;">
       <created>1689889416511</created>
@@ -496,7 +500,28 @@
       <option name="project" value="LOCAL" />
       <updated>1691040230994</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="SettingsActivity.java: onTextChanged method refactored">
+      <created>1691043039158</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1691043039158</updated>
+    </task>
+    <task id="LOCAL-00050" summary="* strings.xml: current location renamed to starting position">
+      <created>1691052374580</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1691052374582</updated>
+    </task>
+    <task id="LOCAL-00051" summary="* MapsActivity.java: by clicking polyline, polyline transforms to dots">
+      <created>1691052452934</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1691052452935</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -512,10 +537,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* automatically zoom in when position is found&#10;* organize imports" />
-    <MESSAGE value="* adding AlertDialog if location service is not enabled" />
-    <MESSAGE value="* adding start/stop image&#10;* changing button img start/stop depending on their use case" />
-    <MESSAGE value="* README.md moved" />
     <MESSAGE value="* Log message replaced by Timber" />
     <MESSAGE value="* useless comments removed&#10;* minimum speed limit removed&#10;* Log message replaced with Timber&#10;* SharedPreferences in SettingsActivity.java fixed" />
     <MESSAGE value="* count up timer in notification added&#10;* kalman filter added&#10;* export of kalman filter data added" />
@@ -537,7 +558,11 @@
     <MESSAGE value="* Uppercase letters for buttons fixed" />
     <MESSAGE value="* SettingsActivity.java: if pause is clicked, comment field is automatically field for a better examination&#10;* SettingsActivity.java: TextWatcher for EditText implemented" />
     <MESSAGE value="* SettingsActivity.java: switch pause fixed&#10;* ForegroundService.java: logmessage enhanced&#10;* MapsActivity.java: depending on switch activated or not, alertDialog will be shown" />
-    <option name="LAST_COMMIT_MESSAGE" value="* SettingsActivity.java: switch pause fixed&#10;* ForegroundService.java: logmessage enhanced&#10;* MapsActivity.java: depending on switch activated or not, alertDialog will be shown" />
+    <MESSAGE value="SettingsActivity.java: onTextChanged method refactored" />
+    <MESSAGE value="* strings.xml: current location renamed to starting position&#10;* MapsActivity.java: wrong behavior if cancel button is clicked" />
+    <MESSAGE value="* strings.xml: current location renamed to starting position" />
+    <MESSAGE value="* MapsActivity.java: by clicking polyline, polyline transforms to dots" />
+    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: by clicking polyline, polyline transforms to dots" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -553,19 +578,9 @@
           <option name="timeStamp" value="303" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>313</line>
-          <option name="timeStamp" value="331" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>107</line>
-          <option name="timeStamp" value="339" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>122</line>
-          <option name="timeStamp" value="342" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java</url>
+          <line>86</line>
+          <option name="timeStamp" value="393" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
