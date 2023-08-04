@@ -19,6 +19,8 @@ Start the app and that`s it.
 ![](app/pics/settings.png)
 ![](app/pics/comment_dialog.png)
 ![](app/pics/screen_lock.png)
+![](app/pics/select_run.png)
+![](app/pics/statistics.png)
 
 ## Contributing
 

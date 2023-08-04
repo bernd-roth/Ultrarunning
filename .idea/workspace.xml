@@ -9,19 +9,19 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* StatisticsActivity.java: statistical overview of last run (max. speed, distance, avg. speed), introducing a graph about path/velocity diagram">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* StaticFields.java: DecimalFormat taken from StatisticsActivity.java and put to StaticFields.java&#10;* AndroidManifest.xml: exported set to false&#10;* strings.xml: title for activity renamed">
+      <change afterPath="$PROJECT_DIR$/app/pics/select_run.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/pics/statistics.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/StaticFields.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/StaticFields.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/pics/settings.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/pics/settings.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[11181JEC202031]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\bernd\.android\avd\Pixel_3a_API_33_x86_64.avd]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -92,8 +92,8 @@
       <recent name="C:\projects\android\RunningTracker\app\src\main\res\drawable" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\src\main\res\drawable-v24" />
       <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\pics" />
+      <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\src\main\res\drawable-v24" />
       <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker" />
       <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\src\main\res\drawable" />
       <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\src\main\java\at\co\netconsulting\runningtracker\pics" />
@@ -171,13 +171,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00004" summary="* speed in notification fixed">
-      <created>1689915857816</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1689915857816</updated>
     </task>
     <task id="LOCAL-00005" summary="* notification enhanced for readability&#10;* textview in MapsActivity.java deleted">
       <created>1689920289240</created>
@@ -515,7 +508,14 @@
       <option name="project" value="LOCAL" />
       <updated>1691151347831</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="* StaticFields.java: DecimalFormat taken from StatisticsActivity.java and put to StaticFields.java&#10;* AndroidManifest.xml: exported set to false&#10;* strings.xml: title for activity renamed">
+      <created>1691153027378</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1691153027379</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -531,7 +531,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* useless comments removed&#10;* minimum speed limit removed&#10;* Log message replaced with Timber&#10;* SharedPreferences in SettingsActivity.java fixed" />
     <MESSAGE value="* count up timer in notification added&#10;* kalman filter added&#10;* export of kalman filter data added" />
     <MESSAGE value="* dialog for saving your last run&#10;* changing notification" />
     <MESSAGE value="* Battery optimization removed&#10;* changed settings pic" />
@@ -556,7 +555,8 @@
     <MESSAGE value="* strings.xml: current location renamed to starting position" />
     <MESSAGE value="* MapsActivity.java: by clicking polyline, polyline transforms to dots" />
     <MESSAGE value="* StatisticsActivity.java: statistical overview of last run (max. speed, distance, avg. speed), introducing a graph about path/velocity diagram" />
-    <option name="LAST_COMMIT_MESSAGE" value="* StatisticsActivity.java: statistical overview of last run (max. speed, distance, avg. speed), introducing a graph about path/velocity diagram" />
+    <MESSAGE value="* StaticFields.java: DecimalFormat taken from StatisticsActivity.java and put to StaticFields.java&#10;* AndroidManifest.xml: exported set to false&#10;* strings.xml: title for activity renamed" />
+    <option name="LAST_COMMIT_MESSAGE" value="* StaticFields.java: DecimalFormat taken from StatisticsActivity.java and put to StaticFields.java&#10;* AndroidManifest.xml: exported set to false&#10;* strings.xml: title for activity renamed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
