@@ -80,7 +80,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private boolean gps_enabled;
     private boolean startingPoint;
     private BroadcastReceiver receiver;
-    private boolean isPauseRecordingClicked, isSwitchPausedActivated;
+    private boolean isPauseRecordingClicked, isSwitchPausedActivated, isSwitchGoToLastLocation;
+    private DatabaseHandler db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +142,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE, Context.MODE_PRIVATE);
         isSwitchPausedActivated = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE, false);
+
+        sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, Context.MODE_PRIVATE);
+        isSwitchGoToLastLocation = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, false);
     }
 
     private void createListenerAndfillPolyPoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
@@ -205,6 +209,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         locationManager = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         isDisableZoomCamera = true;
         startingPoint = true;
+        db = new DatabaseHandler(this);
     }
 
     private void checkIfLocationIsEnabled() {
@@ -280,6 +285,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setPadding(0,0,0,90);
         mMap.getUiSettings().setMapToolbarEnabled(true);
+
+        if(isSwitchGoToLastLocation) {
+            int lastEntry = db.getLastEntry();
+            if(lastEntry!=0) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(db.getSingleEntry(lastEntry).getLat(), db.getSingleEntry(lastEntry).getLng()), 16.0f));
+            }
+        }
     }
 
     @Override
@@ -322,7 +334,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 if(isSwitchPausedActivated) {
                     fadingButtons(R.id.fabPauseRecording);
                 }
-
                 break;
             case R.id.fabStopRecording:
                 stopService(new Intent(this, ForegroundService.class));
@@ -349,7 +360,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     sendBroadcastToForegroundService(null);
                     isPauseRecordingClicked = false;
                 }
-
                 break;
             case R.id.fabStatistics:
                 Intent intentStatistics = new Intent(MapsActivity.this, StatisticsActivity.class);

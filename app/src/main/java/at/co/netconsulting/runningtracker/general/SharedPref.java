@@ -11,4 +11,5 @@ public class SharedPref {
     public static final String STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER = "MIN_DISTANCE_METER";
     public static final String STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE = "SAVE_ON_COMMENT_PAUSE";
     public static final String STATIC_SHARED_PREF_RECORDING_PROFIL = "RECORDING_PROFIL";
+    public static final String STATIC_SHARED_PREF_GO_TO_LAST_LOCATION = "GO_TO_LAST_LOCATION";
 }

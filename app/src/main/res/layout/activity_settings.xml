@@ -7,197 +7,214 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <View
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="#c0c0c0"/>
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textViewMapType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/google_map_type" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
 
-            <RadioGroup
-                android:id="@+id/radioGroupMaptype"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <RadioButton
-                    android:id="@+id/radioButton_map_type_normal"
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/textViewMapType"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/normal"
-                    android:onClick="onClickRadioButtonNormal"/>
-                <RadioButton
-                    android:id="@+id/radioButton_map_type_hybrid"
-                    android:layout_width="wrap_content"
+                    android:text="@string/google_map_type" />
+
+                <RadioGroup
+                    android:id="@+id/radioGroupMaptype"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:id="@+id/radioButton_map_type_normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/normal"
+                        android:onClick="onClickRadioButtonNormal"/>
+                    <RadioButton
+                        android:id="@+id/radioButton_map_type_hybrid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/hybrid"
+                        android:onClick="onClickRadioButtonHybrid"/>
+                    <RadioButton
+                        android:id="@+id/radioButton_map_none"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/none"
+                        android:onClick="onClickRadioButtonNone"/>
+                    <RadioButton
+                        android:id="@+id/radioButton_map_type_terrain"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/terrain"
+                        android:onClick="onClickRadioButtonTerrain"/>
+                    <RadioButton
+                        android:id="@+id/radioButton_map_type_satellite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/satellite"
+                        android:onClick="onClickRadioButtonSatellite"/>
+                </RadioGroup>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
+
+                <TextView
+                    android:id="@+id/textViewRecordingProfil"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/hybrid"
-                    android:onClick="onClickRadioButtonHybrid"/>
-                <RadioButton
-                    android:id="@+id/radioButton_map_none"
-                    android:layout_width="wrap_content"
+                    android:text="@string/recording_profil" />
+
+                <RadioGroup
+                    android:id="@+id/radioGroupRecordingProfil"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RadioButton
+                        android:id="@+id/radioButtonExact"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/oneSecondOneMeter"
+                        android:onClick="onClickRadioButtonBatteryGroup"/>
+                    <RadioButton
+                        android:id="@+id/radioButtonNormalBattery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/oneSecondTenMeter"
+                        android:onClick="onClickRadioButtonBatteryGroup"/>
+                    <RadioButton
+                        android:id="@+id/radioButtonSavingBattery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/thirteenSecondTwentyMeter"
+                        android:onClick="onClickRadioButtonBatteryGroup"/>
+                    <RadioButton
+                        android:id="@+id/radioButtonMaximumSavingBattery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/thirteenMinutesOneHundredMeter"
+                        android:onClick="onClickRadioButtonBatteryGroup"/>
+                    <RadioButton
+                        android:id="@+id/radioButtonFast"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/oneSecondTenMeter"
+                        android:onClick="onClickRadioButtonBatteryGroup"/>
+                    <RadioButton
+                        android:id="@+id/radioButtonIndividual"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/individual"
+                        android:onClick="onClickRadioButtonBatteryGroup"/>
+                </RadioGroup>
+
+                <TextView
+                    android:id="@+id/textViewMinDistanceMeter"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/none"
-                    android:onClick="onClickRadioButtonNone"/>
-                <RadioButton
-                    android:id="@+id/radioButton_map_type_terrain"
-                    android:layout_width="wrap_content"
+                    android:text="@string/update_minimum_distance_meter" />
+
+                <EditText
+                    android:id="@+id/editTextNumberSignedMinimumDistanceMeter"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/terrain"
-                    android:onClick="onClickRadioButtonTerrain"/>
-                <RadioButton
-                    android:id="@+id/radioButton_map_type_satellite"
-                    android:layout_width="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/any_number"
+                    android:inputType="numberDecimal" />
+
+                <TextView
+                    android:id="@+id/textViewMinTimeMs"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/satellite"
-                    android:onClick="onClickRadioButtonSatellite"/>
-            </RadioGroup>
+                    android:text="@string/update_minimum_time_sec" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="#c0c0c0"/>
-
-            <TextView
-                android:id="@+id/textViewRecordingProfil"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/recording_profil" />
-
-            <RadioGroup
-                android:id="@+id/radioGroupRecordingProfil"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <RadioButton
-                    android:id="@+id/radioButtonExact"
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/editTextNumberSignedMinimumTimeMs"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/oneSecondOneMeter"
-                    android:onClick="onClickRadioButtonBatteryGroup"/>
-                <RadioButton
-                    android:id="@+id/radioButtonNormalBattery"
-                    android:layout_width="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/any_number"
+                    android:inputType="numberDecimal" />
+
+                <Button
+                    android:id="@+id/buttonSave"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/oneSecondTenMeter"
-                    android:onClick="onClickRadioButtonBatteryGroup"/>
-                <RadioButton
-                    android:id="@+id/radioButtonSavingBattery"
-                    android:layout_width="wrap_content"
+                    android:text="@string/save"
+                    android:onClick="save"/>
+
+                <Switch
+                    android:id="@+id/switchGoToLastLocation"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/thirteenSecondTwentyMeter"
-                    android:onClick="onClickRadioButtonBatteryGroup"/>
-                <RadioButton
-                    android:id="@+id/radioButtonMaximumSavingBattery"
-                    android:layout_width="wrap_content"
+                    android:text="@string/goToLastLocation"
+                    android:onClick="goToLastLocation"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
+
+                <Switch
+                    android:id="@+id/switchCommentPause"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/thirteenMinutesOneHundredMeter"
-                    android:onClick="onClickRadioButtonBatteryGroup"/>
-                <RadioButton
-                    android:id="@+id/radioButtonFast"
-                    android:layout_width="wrap_content"
+                    android:text="@string/saveAndCommentPause"
+                    android:onClick="saveAndCommentPause"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
+
+                <TextView
+                    android:id="@+id/textViewExportDatabase"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/oneSecondTenMeter"
-                    android:onClick="onClickRadioButtonBatteryGroup"/>
-                <RadioButton
-                    android:id="@+id/radioButtonIndividual"
-                    android:layout_width="wrap_content"
+                    android:text="@string/export_all_entries_from_database" />
+
+                <Button
+                    android:id="@+id/buttonExport"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/individual"
-                    android:onClick="onClickRadioButtonBatteryGroup"/>
-            </RadioGroup>
+                    android:text="@string/export"
+                    android:onClick="export"/>
 
-            <TextView
-                android:id="@+id/textViewMinDistanceMeter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/update_minimum_distance_meter" />
+                <TextView
+                    android:id="@+id/textViewDeleteDatabase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/delete_all_entries_from_database" />
 
-            <EditText
-                android:id="@+id/editTextNumberSignedMinimumDistanceMeter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Number between 1 and 10"
-                android:inputType="numberDecimal" />
+                <Button
+                    android:id="@+id/buttonDelete"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/delete"
+                    android:onClick="delete"/>
 
-            <TextView
-                android:id="@+id/textViewMinTimeMs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/update_minimum_time_sec" />
+                <TextView
+                    android:id="@+id/textViewKalmanFilter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/normalize_data_with_kalman_filter" />
 
-            <EditText
-                android:id="@+id/editTextNumberSignedMinimumTimeMs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Number between 1 and 10"
-                android:inputType="numberDecimal" />
+                <Button
+                    android:id="@+id/buttonNormalizeWithKalmanFilter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="startKalmanFilter"
+                    android:text="@string/kalmanfilter" />
 
-            <Switch
-                android:id="@+id/switchCommentPause"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/saveAndCommentPause"
-                android:onClick="saveAndCommentPause"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="#c0c0c0"/>
-
-            <Button
-                android:id="@+id/buttonSave"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/save"
-                android:onClick="save"/>
-
-            <TextView
-                android:id="@+id/textViewExportDatabase"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/export_all_entries_from_database" />
-
-            <Button
-                android:id="@+id/buttonExport"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/export"
-                android:onClick="export"/>
-
-            <TextView
-                android:id="@+id/textViewDeleteDatabase"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/delete_all_entries_from_database" />
-
-            <Button
-                android:id="@+id/buttonDelete"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/delete"
-                android:onClick="delete"/>
-
-            <TextView
-                android:id="@+id/textViewKalmanFilter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/normalize_data_with_kalman_filter" />
-
-            <Button
-                android:id="@+id/buttonNormalizeWithKalmanFilter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="startKalmanFilter"
-                android:text="@string/kalmanfilter" />
-
-        </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
     </FrameLayout>
 </LinearLayout>

@@ -69,4 +69,6 @@
     <string name="thirteenSecondTwentyMeter">30 sec. 20 meter</string>
     <string name="thirteenMinutesOneHundredMeter">30 min. 100 meter</string>
     <string name="individual">Individual</string>
+    <string name="any_number">Any number</string>
+    <string name="goToLastLocation">Go to last location</string>
 </resources>

@@ -46,8 +46,8 @@ public class SettingsActivity extends BaseActivity {
     private long minTimeMs;
     private DatabaseHandler db;
     private ProgressDialog dialog;
-    private Switch switchCommentPause;
-    private boolean isCommentOnPause, isCommentedOnPause;
+    private Switch switchCommentPause, switchGoToLastLocation;
+    private boolean isCommentOnPause, isCommentedOnPause, isGoToLastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +61,7 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -103,18 +104,28 @@ public class SettingsActivity extends BaseActivity {
                 recordingProfil = sh.getString(sharedPrefKey, "Individual");
                 if(recordingProfil.equals("Exact")) {
                     radioButtonExact.setChecked(true);
+                    break;
                 } else if(recordingProfil.equals("Normal")) {
                     radioButtonNormalBattery.setChecked(true);
+                    break;
                 } else if(recordingProfil.equals("Saving_Battery")) {
                     radioButtonSavingBattery.setChecked(true);
+                    break;
                 } else if(recordingProfil.equals("Maximum_Saving_Battery")) {
                     radioButtonMaximumSavingBattery.setChecked(true);
+                    break;
                 }else if(recordingProfil.equals("Fast")) {
                     radioButtonFast.setChecked(true);
+                    break;
                 } else if(recordingProfil.equals("Individual")) {
                     radioButtonIndividual.setChecked(true);
                     buttonSave.setEnabled(true);
+                    break;
                 }
+            case SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isGoToLastLocation = sh.getBoolean(sharedPrefKey, false);
+                switchGoToLastLocation.setChecked(isGoToLastLocation);
                 break;
         }
     }
@@ -150,6 +161,7 @@ public class SettingsActivity extends BaseActivity {
         buttonDelete.setTransformationMethod(null);
 
         switchCommentPause = findViewById(R.id.switchCommentPause);
+        switchGoToLastLocation = findViewById(R.id.switchGoToLastLocation);
 
         dialog = new ProgressDialog(this);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -249,6 +261,13 @@ public class SettingsActivity extends BaseActivity {
 
             editor.putString(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, "Individual");
             editor.commit();
+        }  else if(sharedPreference.equals("GO_TO_LAST_LOCATION")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            boolean isGoToLastLocation = switchGoToLastLocation.isChecked();
+            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, isGoToLastLocation);
+            editor.commit();
         }
     }
 
@@ -312,6 +331,16 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("Individual");
                 buttonSave.setEnabled(true);
                 break;
+        }
+    }
+
+    public void goToLastLocation(View view) {
+        if(switchGoToLastLocation.isChecked()) {
+            isGoToLastLocation=true;
+            saveSharedPreferences("GO_TO_LAST_LOCATION");
+        } else {
+            isGoToLastLocation=false;
+            saveSharedPreferences("GO_TO_LAST_LOCATION");
         }
     }
 
