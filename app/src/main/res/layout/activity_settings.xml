@@ -65,6 +65,54 @@
                 android:background="#c0c0c0"/>
 
             <TextView
+                android:id="@+id/textViewRecordingProfil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/recording_profil" />
+
+            <RadioGroup
+                android:id="@+id/radioGroupRecordingProfil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/radioButtonExact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/oneSecondOneMeter"
+                    android:onClick="onClickRadioButtonBatteryGroup"/>
+                <RadioButton
+                    android:id="@+id/radioButtonNormalBattery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/oneSecondTenMeter"
+                    android:onClick="onClickRadioButtonBatteryGroup"/>
+                <RadioButton
+                    android:id="@+id/radioButtonSavingBattery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/thirteenSecondTwentyMeter"
+                    android:onClick="onClickRadioButtonBatteryGroup"/>
+                <RadioButton
+                    android:id="@+id/radioButtonMaximumSavingBattery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/thirteenMinutesOneHundredMeter"
+                    android:onClick="onClickRadioButtonBatteryGroup"/>
+                <RadioButton
+                    android:id="@+id/radioButtonFast"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/oneSecondTenMeter"
+                    android:onClick="onClickRadioButtonBatteryGroup"/>
+                <RadioButton
+                    android:id="@+id/radioButtonIndividual"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/individual"
+                    android:onClick="onClickRadioButtonBatteryGroup"/>
+            </RadioGroup>
+
+            <TextView
                 android:id="@+id/textViewMinDistanceMeter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

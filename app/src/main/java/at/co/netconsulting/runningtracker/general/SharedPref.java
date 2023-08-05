@@ -10,4 +10,5 @@ public class SharedPref {
     public static final String STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS = "MIN_TIME_MS";
     public static final String STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER = "MIN_DISTANCE_METER";
     public static final String STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE = "SAVE_ON_COMMENT_PAUSE";
+    public static final String STATIC_SHARED_PREF_RECORDING_PROFIL = "RECORDING_PROFIL";
 }

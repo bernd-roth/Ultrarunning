@@ -31,18 +31,24 @@ public class SettingsActivity extends BaseActivity {
     private EditText editTextNumberSignedMinimumTimeMs;
     private EditText editTextNumberSignedMinimumDistanceMeter;
     private Button buttonSave, buttonNormalizeWithKalmanFilter, buttonExport, buttonDelete;
-    private String mapType;
+    private String mapType, recordingProfil;
     private RadioButton radioButtonNormal,
             radioButtonHybrid,
             radioButtonNone,
             radioButtonTerrain,
-            radioButtonSatellite;
+            radioButtonSatellite,
+            radioButtonExact,
+            radioButtonNormalBattery,
+            radioButtonSavingBattery,
+            radioButtonMaximumSavingBattery,
+            radioButtonFast,
+            radioButtonIndividual;
     private int minDistanceMeter;
     private long minTimeMs;
     private DatabaseHandler db;
     private ProgressDialog dialog;
     private Switch switchCommentPause;
-    private boolean isCommentOnPause, isCommentedOnPause;
+    private boolean isCommentOnPause, isCommentedOnPause, isRecProfil;
     private boolean editTextDistance, editTextTime;
 
     @Override
@@ -56,6 +62,7 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -93,50 +100,73 @@ public class SettingsActivity extends BaseActivity {
                 isCommentedOnPause = sh.getBoolean(sharedPrefKey, Boolean.parseBoolean(StaticFields.STATIC_SAVE_ON_COMMENT_PAUSE));
                 switchCommentPause.setChecked(isCommentedOnPause);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                recordingProfil = sh.getString(sharedPrefKey, "Individual");
+                if(recordingProfil.equals("Exact"))
+                    radioButtonExact.setChecked(true);
+                else if(recordingProfil.equals("Normal"))
+                    radioButtonNormalBattery.setChecked(true);
+                else if(recordingProfil.equals("Saving_Battery"))
+                    radioButtonSavingBattery.setChecked(true);
+                else if(recordingProfil.equals("Maximum_Saving_Battery"))
+                    radioButtonMaximumSavingBattery.setChecked(true);
+                else if(recordingProfil.equals("Fast"))
+                    radioButtonFast.setChecked(true);
+                else if(recordingProfil.equals("Individual"))
+                    radioButtonIndividual.setChecked(true);
+                break;
         }
     }
 
     private void initObjects() {
         editTextNumberSignedMinimumTimeMs = findViewById(R.id.editTextNumberSignedMinimumTimeMs);
-        editTextNumberSignedMinimumTimeMs.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                onTextChangeEditText(s, "time");
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+//        editTextNumberSignedMinimumTimeMs.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                onTextChangeEditText(s, "time");
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//            }
+//        });
         editTextNumberSignedMinimumDistanceMeter = findViewById(R.id.editTextNumberSignedMinimumDistanceMeter);
-        editTextNumberSignedMinimumDistanceMeter.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                onTextChangeEditText(s, "distance");
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+//        editTextNumberSignedMinimumDistanceMeter.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                onTextChangeEditText(s, "distance");
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//            }
+//        });
 
         buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setTransformationMethod(null);
-        buttonSave.setEnabled(false);
+//        buttonSave.setEnabled(false);
 
         radioButtonNormal = findViewById(R.id.radioButton_map_type_normal);
         radioButtonHybrid = findViewById(R.id.radioButton_map_type_hybrid);
         radioButtonNone = findViewById(R.id.radioButton_map_none);
         radioButtonTerrain = findViewById(R.id.radioButton_map_type_terrain);
         radioButtonSatellite = findViewById(R.id.radioButton_map_type_satellite);
+
+        radioButtonExact = findViewById(R.id.radioButtonExact);
+        radioButtonNormalBattery = findViewById(R.id.radioButtonNormalBattery);
+        radioButtonSavingBattery = findViewById(R.id.radioButtonSavingBattery);
+        radioButtonMaximumSavingBattery = findViewById(R.id.radioButtonMaximumSavingBattery);
+        radioButtonFast = findViewById(R.id.radioButtonFast);
+        radioButtonIndividual = findViewById(R.id.radioButtonIndividual);
 
         buttonNormalizeWithKalmanFilter = findViewById(R.id.buttonNormalizeWithKalmanFilter);
         buttonNormalizeWithKalmanFilter.setTransformationMethod(null);
@@ -159,54 +189,54 @@ public class SettingsActivity extends BaseActivity {
         db = new DatabaseHandler(this);
     }
 
-    private void onTextChangeEditText(CharSequence s, String whichEditText) {
-        int length = s.length();
-
-        if(whichEditText.equals("distance")) {
-            if (length == 0) {
-                buttonSave.setEnabled(false);
-                editTextDistance = false;
-            } else {
-                int number = Integer.parseInt(s.toString());
-                if (length > 0 && length < 3) {
-                    Timber.d("Length: %s", length);
-                    if (number > 0 && number < 11) {
-                        Timber.d("Number: %s", number);
-                        editTextDistance = true;
-                    } else {
-                        buttonSave.setEnabled(false);
-                        editTextDistance = false;
-                    }
-                } else {
-                    buttonSave.setEnabled(false);
-                    editTextDistance = false;
-                }
-            }
-        } else {
-            if (length == 0) {
-                buttonSave.setEnabled(false);
-                editTextTime = false;
-            } else {
-                int number = Integer.parseInt(s.toString());
-                if (length > 0 && length < 3) {
-                    Timber.d("Length: %s", length);
-                    if (number > 0 && number < 11) {
-                        Timber.d("Number: %s", number);
-                        editTextTime = true;
-                    } else {
-                        buttonSave.setEnabled(false);
-                        editTextTime = false;
-                    }
-                } else {
-                    buttonSave.setEnabled(false);
-                    editTextTime = false;
-                }
-            }
-        }
-        if (editTextDistance && editTextTime) {
-            buttonSave.setEnabled(true);
-        }
-    }
+//    private void onTextChangeEditText(CharSequence s, String whichEditText) {
+//        int length = s.length();
+//
+//        if(whichEditText.equals("distance")) {
+//            if (length == 0) {
+//                buttonSave.setEnabled(false);
+//                editTextDistance = false;
+//            } else {
+//                int number = Integer.parseInt(s.toString());
+//                if (length > 0 && length < 3) {
+//                    Timber.d("Length: %s", length);
+//                    if (number > 0 && number < 11) {
+//                        Timber.d("Number: %s", number);
+//                        editTextDistance = true;
+//                    } else {
+//                        buttonSave.setEnabled(false);
+//                        editTextDistance = false;
+//                    }
+//                } else {
+//                    buttonSave.setEnabled(false);
+//                    editTextDistance = false;
+//                }
+//            }
+//        } else {
+//            if (length == 0) {
+//                buttonSave.setEnabled(false);
+//                editTextTime = false;
+//            } else {
+//                int number = Integer.parseInt(s.toString());
+//                if (length > 0 && length < 3) {
+//                    Timber.d("Length: %s", length);
+//                    if (number > 0 && number < 11) {
+//                        Timber.d("Number: %s", number);
+//                        editTextTime = true;
+//                    } else {
+//                        buttonSave.setEnabled(false);
+//                        editTextTime = false;
+//                    }
+//                } else {
+//                    buttonSave.setEnabled(false);
+//                    editTextTime = false;
+//                }
+//            }
+//        }
+//        if (editTextDistance && editTextTime) {
+//            buttonSave.setEnabled(true);
+//        }
+//    }
 
     private void saveSharedPreferences(String sharedPreference) {
         if(sharedPreference.equals("MAP_TYPE_NORMAL")) {
@@ -260,6 +290,42 @@ public class SettingsActivity extends BaseActivity {
             boolean isCommentPauseChecked = switchCommentPause.isChecked();
             editor.putBoolean(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE, isCommentPauseChecked);
             editor.commit();
+        } else if(sharedPreference.equals("Exact")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            editor.putString(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, "Exact");
+            editor.commit();
+        } else if(sharedPreference.equals("Normal")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            editor.putString(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, "Normal");
+            editor.commit();
+        } else if(sharedPreference.equals("Saving_Battery")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            editor.putString(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, "Saving_Battery");
+            editor.commit();
+        } else if(sharedPreference.equals("Maximum_Saving_Battery")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            editor.putString(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, "Maximum_Saving_Battery");
+            editor.commit();
+        } else if(sharedPreference.equals("Fast")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            editor.putString(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, "Fast");
+            editor.commit();
+        } else if(sharedPreference.equals("Individual")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            editor.putString(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, "Individual");
+            editor.commit();
         }
     }
 
@@ -270,6 +336,53 @@ public class SettingsActivity extends BaseActivity {
         } else {
             isCommentOnPause=false;
             saveSharedPreferences("SAVE_ON_COMMENT_PAUSE");
+        }
+    }
+
+    public void onClickRadioButtonBatteryGroup(View view) {
+        switch (view.getResources().getResourceEntryName(view.getId())) {
+            case "radioButtonExact":
+                editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(1));
+                editTextNumberSignedMinimumTimeMs.setText(String.valueOf(1));
+                saveSharedPreferences("MIN_DISTANCE_METER");
+                saveSharedPreferences("MIN_TIME_MS");
+                saveSharedPreferences("Exact");
+                break;
+            case "radioButtonNormalBattery":
+                editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(10));
+                editTextNumberSignedMinimumTimeMs.setText(String.valueOf(1));
+                saveSharedPreferences("MIN_DISTANCE_METER");
+                saveSharedPreferences("MIN_TIME_MS");
+                saveSharedPreferences("Normal");
+                break;
+            case "radioButtonSavingBattery":
+                editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(20));
+                editTextNumberSignedMinimumTimeMs.setText(String.valueOf(30));
+                saveSharedPreferences("MIN_DISTANCE_METER");
+                saveSharedPreferences("MIN_TIME_MS");
+                saveSharedPreferences("Saving_Battery");
+                break;
+            case "radioButtonMaximumSavingBattery":
+                editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(100));
+                editTextNumberSignedMinimumTimeMs.setText(String.valueOf(1800));
+                saveSharedPreferences("MIN_DISTANCE_METER");
+                saveSharedPreferences("MIN_TIME_MS");
+                saveSharedPreferences("Maximum_Saving_Battery");
+                break;
+            case "radioButtonFast":
+                editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(10));
+                editTextNumberSignedMinimumTimeMs.setText(String.valueOf(1));
+                saveSharedPreferences("MIN_DISTANCE_METER");
+                saveSharedPreferences("MIN_TIME_MS");
+                saveSharedPreferences("Fast");
+                break;
+            case "radioButtonIndividual":
+                editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(1));
+                editTextNumberSignedMinimumTimeMs.setText(String.valueOf(1));
+                saveSharedPreferences("MIN_DISTANCE_METER");
+                saveSharedPreferences("MIN_TIME_MS");
+                saveSharedPreferences("Individual");
+                break;
         }
     }
 
