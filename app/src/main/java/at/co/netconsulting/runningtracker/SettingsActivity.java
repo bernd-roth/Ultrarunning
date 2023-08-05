@@ -26,7 +26,6 @@ import timber.log.Timber;
 
 public class SettingsActivity extends BaseActivity {
 
-    private boolean isSwitchBatteryOptimization;
     private SharedPreferences sharedpreferences;
     private EditText editTextNumberSignedMinimumTimeMs;
     private EditText editTextNumberSignedMinimumDistanceMeter;
@@ -48,8 +47,7 @@ public class SettingsActivity extends BaseActivity {
     private DatabaseHandler db;
     private ProgressDialog dialog;
     private Switch switchCommentPause;
-    private boolean isCommentOnPause, isCommentedOnPause, isRecProfil;
-    private boolean editTextDistance, editTextTime;
+    private boolean isCommentOnPause, isCommentedOnPause;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,57 +101,31 @@ public class SettingsActivity extends BaseActivity {
             case SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 recordingProfil = sh.getString(sharedPrefKey, "Individual");
-                if(recordingProfil.equals("Exact"))
+                if(recordingProfil.equals("Exact")) {
                     radioButtonExact.setChecked(true);
-                else if(recordingProfil.equals("Normal"))
+                } else if(recordingProfil.equals("Normal")) {
                     radioButtonNormalBattery.setChecked(true);
-                else if(recordingProfil.equals("Saving_Battery"))
+                } else if(recordingProfil.equals("Saving_Battery")) {
                     radioButtonSavingBattery.setChecked(true);
-                else if(recordingProfil.equals("Maximum_Saving_Battery"))
+                } else if(recordingProfil.equals("Maximum_Saving_Battery")) {
                     radioButtonMaximumSavingBattery.setChecked(true);
-                else if(recordingProfil.equals("Fast"))
+                }else if(recordingProfil.equals("Fast")) {
                     radioButtonFast.setChecked(true);
-                else if(recordingProfil.equals("Individual"))
+                } else if(recordingProfil.equals("Individual")) {
                     radioButtonIndividual.setChecked(true);
+                    buttonSave.setEnabled(true);
+                }
                 break;
         }
     }
 
     private void initObjects() {
         editTextNumberSignedMinimumTimeMs = findViewById(R.id.editTextNumberSignedMinimumTimeMs);
-//        editTextNumberSignedMinimumTimeMs.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                onTextChangeEditText(s, "time");
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//            }
-//        });
         editTextNumberSignedMinimumDistanceMeter = findViewById(R.id.editTextNumberSignedMinimumDistanceMeter);
-//        editTextNumberSignedMinimumDistanceMeter.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                onTextChangeEditText(s, "distance");
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//            }
-//        });
 
         buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setTransformationMethod(null);
-//        buttonSave.setEnabled(false);
+        buttonSave.setEnabled(false);
 
         radioButtonNormal = findViewById(R.id.radioButton_map_type_normal);
         radioButtonHybrid = findViewById(R.id.radioButton_map_type_hybrid);
@@ -188,55 +160,6 @@ public class SettingsActivity extends BaseActivity {
 
         db = new DatabaseHandler(this);
     }
-
-//    private void onTextChangeEditText(CharSequence s, String whichEditText) {
-//        int length = s.length();
-//
-//        if(whichEditText.equals("distance")) {
-//            if (length == 0) {
-//                buttonSave.setEnabled(false);
-//                editTextDistance = false;
-//            } else {
-//                int number = Integer.parseInt(s.toString());
-//                if (length > 0 && length < 3) {
-//                    Timber.d("Length: %s", length);
-//                    if (number > 0 && number < 11) {
-//                        Timber.d("Number: %s", number);
-//                        editTextDistance = true;
-//                    } else {
-//                        buttonSave.setEnabled(false);
-//                        editTextDistance = false;
-//                    }
-//                } else {
-//                    buttonSave.setEnabled(false);
-//                    editTextDistance = false;
-//                }
-//            }
-//        } else {
-//            if (length == 0) {
-//                buttonSave.setEnabled(false);
-//                editTextTime = false;
-//            } else {
-//                int number = Integer.parseInt(s.toString());
-//                if (length > 0 && length < 3) {
-//                    Timber.d("Length: %s", length);
-//                    if (number > 0 && number < 11) {
-//                        Timber.d("Number: %s", number);
-//                        editTextTime = true;
-//                    } else {
-//                        buttonSave.setEnabled(false);
-//                        editTextTime = false;
-//                    }
-//                } else {
-//                    buttonSave.setEnabled(false);
-//                    editTextTime = false;
-//                }
-//            }
-//        }
-//        if (editTextDistance && editTextTime) {
-//            buttonSave.setEnabled(true);
-//        }
-//    }
 
     private void saveSharedPreferences(String sharedPreference) {
         if(sharedPreference.equals("MAP_TYPE_NORMAL")) {
@@ -347,6 +270,7 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Exact");
+                buttonSave.setEnabled(false);
                 break;
             case "radioButtonNormalBattery":
                 editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(10));
@@ -354,6 +278,7 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Normal");
+                buttonSave.setEnabled(false);
                 break;
             case "radioButtonSavingBattery":
                 editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(20));
@@ -361,6 +286,7 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Saving_Battery");
+                buttonSave.setEnabled(false);
                 break;
             case "radioButtonMaximumSavingBattery":
                 editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(100));
@@ -368,6 +294,7 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Maximum_Saving_Battery");
+                buttonSave.setEnabled(false);
                 break;
             case "radioButtonFast":
                 editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(10));
@@ -375,6 +302,7 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Fast");
+                buttonSave.setEnabled(false);
                 break;
             case "radioButtonIndividual":
                 editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(1));
@@ -382,6 +310,7 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Individual");
+                buttonSave.setEnabled(true);
                 break;
         }
     }
