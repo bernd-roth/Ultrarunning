@@ -339,5 +339,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_DATETIME_IN_MS + " LONG"
                 + ")";
         db.execSQL(CREATE_RUNS_TABLE);
+
+        String CREATE_INDEX_TABLE =
+                "CREATE UNIQUE INDEX idx_number_of_run ON " + TABLE_RUNS + "(" + KEY_NUMBER_OF_RUN +");";
+        db.execSQL(CREATE_INDEX_TABLE);
     }
 }

@@ -1,27 +1,19 @@
 package at.co.netconsulting.runningtracker;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
-
 import androidx.preference.PreferenceFragmentCompat;
-
-import com.google.android.gms.maps.model.LatLng;
-
 import java.io.File;
 import java.util.List;
-
 import at.co.netconsulting.runningtracker.calculation.GPSDataFactory;
 import at.co.netconsulting.runningtracker.calculation.KalmanFilter;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
@@ -29,7 +21,6 @@ import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
-import timber.log.Timber;
 
 public class SettingsActivity extends BaseActivity {
 
@@ -53,7 +44,6 @@ public class SettingsActivity extends BaseActivity {
     private int minDistanceMeter;
     private long minTimeMs;
     private DatabaseHandler db;
-    private ProgressDialog dialog;
     private Switch switchCommentPause, switchGoToLastLocation;
     private boolean isCommentOnPause, isCommentedOnPause, isGoToLastLocation;
 
@@ -183,13 +173,6 @@ public class SettingsActivity extends BaseActivity {
 
         switchCommentPause = findViewById(R.id.switchCommentPause);
         switchGoToLastLocation = findViewById(R.id.switchGoToLastLocation);
-
-        dialog = new ProgressDialog(this);
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.setTitle("Loading");
-        dialog.setMessage("Loading. Please wait...");
-        dialog.setIndeterminate(true);
-        dialog.setCanceledOnTouchOutside(false);
 
         db = new DatabaseHandler(this);
     }
@@ -466,12 +449,6 @@ public class SettingsActivity extends BaseActivity {
 
     public void startKalmanFilter(View view) {
         buttonNormalizeWithKalmanFilter.setEnabled(false);
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.setTitle(getResources().getString(R.string.working_with_kalman_filter));
-        dialog.setMessage(getResources().getString(R.string.work_in_progress));
-        dialog.setIndeterminate(true);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
 
         File file = new File(getApplicationContext().getExternalFilesDir(null), "Kalman_filtered.csv");
         try {
@@ -484,6 +461,5 @@ public class SettingsActivity extends BaseActivity {
         new KalmanFilter(getApplicationContext());
         new GPSDataFactory(db);
         buttonNormalizeWithKalmanFilter.setEnabled(true);
-        dialog.cancel();
     }
 }
