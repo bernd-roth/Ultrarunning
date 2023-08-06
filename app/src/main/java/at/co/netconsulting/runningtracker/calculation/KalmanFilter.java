@@ -80,7 +80,7 @@ public class KalmanFilter {
     }
 
     private void exportNewPoint(float speed, double longitude, double latitude, long timestamp) {
-        GPSSingleData newGPSdata = new GPSSingleData(speed, longitude, latitude, timestamp);
+        GPSSingleData newGPSdata = new GPSSingleData(timestamp, longitude, latitude, speed);
         exporter.writeData(newGPSdata.toString());
     }
 }

@@ -24,7 +24,9 @@ public class Importer {
         float speed;
         long dateTimeInMs;
 
-        for(Run s : db.getEntriesForKalmanFilter()) {
+        List<Run> allRuns = db.getEntriesForKalmanFilter();
+
+        for(Run s : allRuns) {
             id = s.getId();
             lat = s.getLat();
             lng = s.getLng();

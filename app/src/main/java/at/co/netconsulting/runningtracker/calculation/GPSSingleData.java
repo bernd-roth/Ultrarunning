@@ -6,7 +6,7 @@ public class GPSSingleData {
     private double lat;
     private long timestamp;
 
-    public GPSSingleData(float speed, double lon, double lat, long timestamp) {
+    public GPSSingleData(long timestamp, double lon, double lat, float speed) {
         this.speed = speed;
         this.lon = lon;
         this.lat = lat;

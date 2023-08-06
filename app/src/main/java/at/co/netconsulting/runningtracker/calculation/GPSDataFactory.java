@@ -37,8 +37,8 @@ public class GPSDataFactory {
     private GPSSingleData proccessLine(String gpsLine) {
         if(!gpsLine.isEmpty()) {
             String[] gpsParts = gpsLine.split(" ");
-            return new GPSSingleData(Float.valueOf(gpsParts[1]), Double.valueOf(gpsParts[2]),
-                    Double.valueOf(gpsParts[3]), Long.valueOf(gpsParts[4]));
+            return new GPSSingleData(Long.valueOf(gpsParts[4]), Double.valueOf(gpsParts[2]),
+                    Double.valueOf(gpsParts[3]), Float.valueOf(gpsParts[1]));
         } else {
             return new GPSSingleData(0, 0, 0, 0);
         }

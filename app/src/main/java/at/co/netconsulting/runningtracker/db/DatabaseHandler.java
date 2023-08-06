@@ -313,9 +313,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             file = new File(context.getExternalFilesDir(null), "Kalman_filtered.csv");
             boolean fileExists = file.createNewFile();
             if(fileExists) {
-                csvWrite = new CSVWriter(new FileWriter(file, true));
-            } else {
                 csvWrite = new CSVWriter(new FileWriter(file));
+            } else {
+                csvWrite = new CSVWriter(new FileWriter(file, true));
             }
             csvWrite.writeNext(lineSplitted);
             csvWrite.close();
