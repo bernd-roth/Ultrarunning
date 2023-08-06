@@ -64,10 +64,10 @@
     <!-- SettingsActivity -->
     <string name="saveAndCommentPause">Save and comment, if pausing in database</string>
     <string name="recording_profil">Recording Profil</string>
-    <string name="oneSecondOneMeter">1 sec. 1 meter</string>
-    <string name="oneSecondTenMeter">1 sec. 10 meter</string>
-    <string name="thirteenSecondTwentyMeter">30 sec. 20 meter</string>
-    <string name="thirteenMinutesOneHundredMeter">30 min. 100 meter</string>
+    <string name="oneSecondOneMeter">Exact</string>
+    <string name="oneSecondTenMeter">Normal</string>
+    <string name="thirteenSecondTwentyMeter">Battery saving</string>
+    <string name="thirteenMinutesOneHundredMeter">Maximum battery saving</string>
     <string name="individual">Individual</string>
     <string name="any_number">Any number</string>
     <string name="goToLastLocation">Go to last location</string>

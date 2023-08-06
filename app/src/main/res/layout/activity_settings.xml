@@ -102,12 +102,12 @@
                         android:layout_height="wrap_content"
                         android:text="@string/thirteenMinutesOneHundredMeter"
                         android:onClick="onClickRadioButtonBatteryGroup"/>
-                    <RadioButton
-                        android:id="@+id/radioButtonFast"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/oneSecondTenMeter"
-                        android:onClick="onClickRadioButtonBatteryGroup"/>
+<!--                    <RadioButton-->
+<!--                        android:id="@+id/radioButtonFast"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="@string/oneSecondTenMeter"-->
+<!--                        android:onClick="onClickRadioButtonBatteryGroup"/>-->
                     <RadioButton
                         android:id="@+id/radioButtonIndividual"
                         android:layout_width="wrap_content"

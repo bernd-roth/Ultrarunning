@@ -40,7 +40,7 @@ public class SettingsActivity extends BaseActivity {
             radioButtonNormalBattery,
             radioButtonSavingBattery,
             radioButtonMaximumSavingBattery,
-            radioButtonFast,
+//            radioButtonFast,
             radioButtonIndividual;
     private int minDistanceMeter;
     private long minTimeMs;
@@ -104,22 +104,32 @@ public class SettingsActivity extends BaseActivity {
                 recordingProfil = sh.getString(sharedPrefKey, "Individual");
                 if(recordingProfil.equals("Exact")) {
                     radioButtonExact.setChecked(true);
+                    editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
+                    editTextNumberSignedMinimumTimeMs.setEnabled(false);
                     break;
                 } else if(recordingProfil.equals("Normal")) {
                     radioButtonNormalBattery.setChecked(true);
+                    editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
+                    editTextNumberSignedMinimumTimeMs.setEnabled(false);
                     break;
                 } else if(recordingProfil.equals("Saving_Battery")) {
                     radioButtonSavingBattery.setChecked(true);
+                    editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
+                    editTextNumberSignedMinimumTimeMs.setEnabled(false);
                     break;
                 } else if(recordingProfil.equals("Maximum_Saving_Battery")) {
                     radioButtonMaximumSavingBattery.setChecked(true);
+                    editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
+                    editTextNumberSignedMinimumTimeMs.setEnabled(false);
                     break;
-                }else if(recordingProfil.equals("Fast")) {
-                    radioButtonFast.setChecked(true);
-                    break;
+//                }else if(recordingProfil.equals("Fast")) {
+//                    radioButtonFast.setChecked(true);
+//                    break;
                 } else if(recordingProfil.equals("Individual")) {
                     radioButtonIndividual.setChecked(true);
                     buttonSave.setEnabled(true);
+                    editTextNumberSignedMinimumDistanceMeter.setEnabled(true);
+                    editTextNumberSignedMinimumTimeMs.setEnabled(true);
                     break;
                 }
             case SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION:
@@ -148,7 +158,7 @@ public class SettingsActivity extends BaseActivity {
         radioButtonNormalBattery = findViewById(R.id.radioButtonNormalBattery);
         radioButtonSavingBattery = findViewById(R.id.radioButtonSavingBattery);
         radioButtonMaximumSavingBattery = findViewById(R.id.radioButtonMaximumSavingBattery);
-        radioButtonFast = findViewById(R.id.radioButtonFast);
+        //radioButtonFast = findViewById(R.id.radioButtonFast);
         radioButtonIndividual = findViewById(R.id.radioButtonIndividual);
 
         buttonNormalizeWithKalmanFilter = findViewById(R.id.buttonNormalizeWithKalmanFilter);
@@ -290,6 +300,8 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Exact");
                 buttonSave.setEnabled(false);
+                editTextNumberSignedMinimumTimeMs.setEnabled(false);
+                editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
             case "radioButtonNormalBattery":
                 editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(10));
@@ -298,6 +310,8 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Normal");
                 buttonSave.setEnabled(false);
+                editTextNumberSignedMinimumTimeMs.setEnabled(false);
+                editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
             case "radioButtonSavingBattery":
                 editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(20));
@@ -306,6 +320,8 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Saving_Battery");
                 buttonSave.setEnabled(false);
+                editTextNumberSignedMinimumTimeMs.setEnabled(false);
+                editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
             case "radioButtonMaximumSavingBattery":
                 editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(100));
@@ -314,6 +330,8 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Maximum_Saving_Battery");
                 buttonSave.setEnabled(false);
+                editTextNumberSignedMinimumTimeMs.setEnabled(false);
+                editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
             case "radioButtonFast":
                 editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(10));
@@ -322,6 +340,8 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Fast");
                 buttonSave.setEnabled(false);
+                editTextNumberSignedMinimumTimeMs.setEnabled(false);
+                editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
             case "radioButtonIndividual":
                 editTextNumberSignedMinimumDistanceMeter.setText(String.valueOf(1));
@@ -330,6 +350,8 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Individual");
                 buttonSave.setEnabled(true);
+                editTextNumberSignedMinimumTimeMs.setEnabled(true);
+                editTextNumberSignedMinimumDistanceMeter.setEnabled(true);
                 break;
         }
     }
