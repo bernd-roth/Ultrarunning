@@ -114,7 +114,7 @@ public class ForegroundService extends Service implements LocationListener {
                         minutes[0] = 0;
                     }
                 }
-                Timber.d("%s:%s:%s", hours[0], minutes[0], seconds[0]);
+                Timber.d("%02d:%02d:%02d", hours[0], minutes[0], seconds[0]);
             }
         }, 0, 1000);
     }
@@ -200,12 +200,12 @@ public class ForegroundService extends Service implements LocationListener {
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle("Still trying to gather information!")
                 .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText("Distance covered: 0 meter"
-                                + "\nCurrent speed: 0 km/h"
+                        .bigText("Distance covered: 0.00 Km"
+                                + "\nCurrent speed: 0 Km/h"
                                 + "\nNumber of satellites: 0/" + satelliteCount
                                 + "\nLocation accuracy: 0 m"
-                                + "\nAltitude: 0 meter"
-                                + "\nTime: 0:0:0"))
+                                + "\nAltitude: 0 Meter"
+                                + "\nTime: 00:00:00"))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
@@ -387,13 +387,13 @@ public class ForegroundService extends Service implements LocationListener {
         long second = seconds[0];
 
         manager.notify(NOTIFICATION_ID /* ID of notification */, notificationBuilder
-            .setContentTitle("Distance covered: " + String.format("%.2f meter", calc))
+            .setContentTitle("Distance covered: " + String.format("%.2f Km", calc/1000))
             .setStyle(new NotificationCompat.BigTextStyle()
-            .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " km/h"
+            .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " Km/h"
                                         + "\nNumber of satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
                                         + "\nLocation accuracy: " + String.format("%.2f", accuracy)
-                                        + "\nAltitude: " + String.format("%.2f", altitude)
-                                        + "\nTime: " + String.format("%s:%s:%s", hour, minute, second)))
+                                        + "\nAltitude: " + String.format("%.2f Meter", altitude)
+                                        + "\nTime: " + String.format("%02d:%02d:%02d", hour, minute, second)))
                 .setLargeIcon(BitmapFactory. decodeResource (this.getResources() , R.drawable. icon_notification ))
             .build());
         //pause button was not pressed yet
