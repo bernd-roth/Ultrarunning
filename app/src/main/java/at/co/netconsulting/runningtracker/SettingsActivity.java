@@ -1,12 +1,15 @@
 package at.co.netconsulting.runningtracker;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -14,7 +17,10 @@ import android.widget.Switch;
 
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.File;
+import java.util.List;
 
 import at.co.netconsulting.runningtracker.calculation.GPSDataFactory;
 import at.co.netconsulting.runningtracker.calculation.KalmanFilter;
@@ -22,6 +28,7 @@ import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
+import at.co.netconsulting.runningtracker.pojo.Run;
 import timber.log.Timber;
 
 public class SettingsActivity extends BaseActivity {
@@ -29,7 +36,8 @@ public class SettingsActivity extends BaseActivity {
     private SharedPreferences sharedpreferences;
     private EditText editTextNumberSignedMinimumTimeMs;
     private EditText editTextNumberSignedMinimumDistanceMeter;
-    private Button buttonSave, buttonNormalizeWithKalmanFilter, buttonExport, buttonDelete;
+    private Button buttonSave, buttonNormalizeWithKalmanFilter, buttonExport, buttonDelete,
+            buttonDeleteSingleEntry;
     private String mapType, recordingProfil;
     private RadioButton radioButtonNormal,
             radioButtonHybrid,
@@ -169,6 +177,9 @@ public class SettingsActivity extends BaseActivity {
 
         buttonDelete = findViewById(R.id.buttonDelete);
         buttonDelete.setTransformationMethod(null);
+
+        buttonDeleteSingleEntry = findViewById(R.id.buttonDeleteSingleEntry);
+        buttonDeleteSingleEntry.setTransformationMethod(null);
 
         switchCommentPause = findViewById(R.id.switchCommentPause);
         switchGoToLastLocation = findViewById(R.id.switchGoToLastLocation);
@@ -379,9 +390,53 @@ public class SettingsActivity extends BaseActivity {
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
     }
 
-    public void delete(View v)
+    public void delete(View view)
     {
-        db.delete();
+        if(getResources().getResourceName(view.getId()).equals("textViewDeleteDatabase")) {
+            db.delete();
+        } else {
+            showAlertDialogForSelectingWhichEntryToDelete();  
+        }
+    }
+
+    private void showAlertDialogForSelectingWhichEntryToDelete() {
+        DatabaseHandler db = new DatabaseHandler(this);
+        List<Run> allEntries = db.getAllEntriesGroupedByRun();
+
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(SettingsActivity.this);
+        if(allEntries.size()<=0) {
+            builderSingle.setTitle(getResources().getString(R.string.no_run_available));
+        } else {
+            builderSingle.setTitle(getResources().getString(R.string.select_one_run));
+        }
+        builderSingle.setIcon(R.drawable.icon_notification);
+
+        // prevents closing alertdialog when clicking outside of it
+        builderSingle.setCancelable(false);
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(SettingsActivity.this, android.R.layout.select_dialog_singlechoice);
+        for(int i = 0; i<allEntries.size(); i++) {
+            arrayAdapter.add(allEntries.get(i).getNumber_of_run() + "-DateTime: " + allEntries.get(i).getDateTime());
+        }
+
+        builderSingle.setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String numberOfRun = arrayAdapter.getItem(which);
+                String[] splittedString = numberOfRun.split("-");
+                int intNumberOfRun = Integer.parseInt(splittedString[0]);
+
+                db.deleteSingleEntry(intNumberOfRun);
+            }
+        });
+        builderSingle.show();
     }
 
     public void export(View v)

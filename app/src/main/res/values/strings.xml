@@ -71,4 +71,6 @@
     <string name="individual">Individual</string>
     <string name="any_number">Any number</string>
     <string name="goToLastLocation">Go to last location</string>
+    <string name="delete_single_entry">Choose run to delete</string>
+    <string name="delete_chosen_single_entry">Delete single entry</string>
 </resources>

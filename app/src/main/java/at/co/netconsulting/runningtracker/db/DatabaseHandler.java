@@ -267,6 +267,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.delete(TABLE_RUNS, null, null);
     }
 
+    public void deleteSingleEntry(int number_of_run) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_RUNS, "number_of_run = ?", new String[]{String.valueOf(number_of_run)});
+    }
+
     public void deleteLastRun(int number_of_run) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_RUNS, "number_of_run = ?", new String[]{String.valueOf(number_of_run)});

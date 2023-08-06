@@ -202,6 +202,19 @@
                     android:onClick="delete"/>
 
                 <TextView
+                    android:id="@+id/textViewDeleteSingleEntry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/delete_chosen_single_entry" />
+
+                <Button
+                    android:id="@+id/buttonDeleteSingleEntry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/delete_single_entry"
+                    android:onClick="delete"/>
+
+                <TextView
                     android:id="@+id/textViewKalmanFilter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
