@@ -83,6 +83,7 @@ public class ForegroundService extends Service implements LocationListener {
     private BroadcastReceiver broadcastReceiver;
     private String bundlePause;
     private boolean isCommentOnPause;
+    private int laps;
 
     @Override
     public void onCreate() {
@@ -139,6 +140,7 @@ public class ForegroundService extends Service implements LocationListener {
         dateObj = LocalDateTime.now();
         formatDateTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         t = new Timer();
+        laps=0;
         initCallbacks();
     }
 
@@ -165,6 +167,7 @@ public class ForegroundService extends Service implements LocationListener {
             run.setMeters_covered(calc);
             run.setSpeed(speed);
             run.setDateTimeInMs(currentMilliseconds);
+            run.setLaps(laps);
             db.addRun(run);
         }
     }
@@ -186,6 +189,7 @@ public class ForegroundService extends Service implements LocationListener {
             run.setSpeed(speed);
             run.setDateTimeInMs(currentMilliseconds);
             run.setComment(commentOnPause);
+            run.setLaps(laps);
             db.addRun(run);
         }
     }
@@ -276,6 +280,9 @@ public class ForegroundService extends Service implements LocationListener {
 
         Location.distanceBetween(oldDoubleLat, oldDoubleLng, newDoubleLat, newDoubleLng, result);
         calc += result[0];
+        if(calc>1000) {
+            laps+=1;
+        }
         sendBroadcastToMapsActivity(polylinePoints);
     }
 

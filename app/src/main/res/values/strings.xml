@@ -27,6 +27,7 @@
     <string name="no_run_available">Currently, there is no run available!</string>
     <string name="select_one_run">Select one run</string>
     <string name="buttonCancel">Cancel</string>
+    <string name="buttonOk">Okay</string>
     <string name="save_exercise">Save exercise and comment it?</string>
     <string name="comment_exercise">Comment on your last exercise</string>
     <string name="current_location">Current location</string>

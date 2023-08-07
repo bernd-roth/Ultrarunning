@@ -1,14 +1,19 @@
 package at.co.netconsulting.runningtracker;
 
 import static at.co.netconsulting.runningtracker.general.StaticFields.df;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -17,6 +22,8 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -43,9 +50,13 @@ public class StatisticsActivity extends AppCompatActivity {
         initObjects();
         callDatabase();
 
+        Description desc = new Description();
+        desc.setText("Velocity");
+
         mChart = findViewById(R.id.linechart);
         mChart.setTouchEnabled(true);
         mChart.setPinchZoom(true);
+        mChart.setDescription(desc);
         MyMarkerView mv = new MyMarkerView(getApplicationContext(), R.layout.custom_marker_view);
         mv.setChartView(mChart);
         mChart.setMarker(mv);
@@ -71,16 +82,37 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void findHighestLowestValuesSpeed() {
-        for(int i = 0;i<listOfRun.size();i++) {
-            meters = (float) listOfRun.get(i).getMeters_covered();
-            speed = (float) listOfRun.get(i).getSpeed();
-            values.add(new Entry(meters, speed));
-            float mSpeed = listOfRun.get(i).getSpeed();
-            maxSpeed.add(mSpeed);
-            avgSpeed+=speed;
+        if(listOfRun.size()>0) {
+            for (int i = 0; i < listOfRun.size(); i++) {
+                meters = (float) listOfRun.get(i).getMeters_covered();
+                speed = (float) listOfRun.get(i).getSpeed();
+                values.add(new Entry(meters, speed));
+                float mSpeed = listOfRun.get(i).getSpeed();
+                maxSpeed.add(mSpeed);
+                avgSpeed += speed;
+            }
+            mSpeed = Collections.max(maxSpeed);
+            avgSpeed /= listOfRun.size();
         }
-        mSpeed = Collections.max(maxSpeed);
-        avgSpeed /= listOfRun.size();
+    }
+
+    private void showAlertDialog() {
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(StatisticsActivity.this);
+        if(listOfRun.size()==0) {
+            builderSingle.setTitle(getResources().getString(R.string.no_run_available));
+        }
+        builderSingle.setIcon(R.drawable.icon_notification);
+
+        // prevents closing alertdialog when clicking outside of it
+        builderSingle.setCancelable(false);
+
+        builderSingle.setPositiveButton(getResources().getString(R.string.buttonOk), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builderSingle.show();
     }
 
     public void renderData() {

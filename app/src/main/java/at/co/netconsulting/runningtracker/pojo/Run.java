@@ -11,6 +11,7 @@ public class Run {
     private String comment;
     private int number_of_run;
     private long dateTimeInMs;
+    private int laps;
 
     public Run() {
     }
@@ -27,7 +28,7 @@ public class Run {
         this.dateTimeInMs = dateTimeInMs;
     }
 
-    public Run(int id, String dateTime, double lat, double lng, double meters_covered, float speed, int heart_rate, String comment, int number_of_run, long dateTimeInMs) {
+    public Run(int id, String dateTime, double lat, double lng, double meters_covered, float speed, int heart_rate, String comment, int number_of_run, long dateTimeInMs, int tlaps) {
         this.id = id;
         this.dateTime = dateTime;
         this.lat = lat;
@@ -38,6 +39,7 @@ public class Run {
         this.comment = comment;
         this.number_of_run = number_of_run;
         this.dateTimeInMs = dateTimeInMs;
+        this.laps = laps;
     }
 
     public void setId(int id) {
@@ -110,5 +112,13 @@ public class Run {
 
     public void setNumber_of_run(int number_of_run) {
         this.number_of_run = number_of_run;
+    }
+
+    public int getLaps() {
+        return laps;
+    }
+
+    public void setLaps(int laps) {
+        this.laps = laps;
     }
 }
