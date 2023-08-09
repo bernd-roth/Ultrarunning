@@ -14,7 +14,7 @@ import java.util.List;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     private static final String DATABASE_NAME = "DATABASE_RUN";
     private static final String TABLE_RUNS = "TABLE_RUN";
     private static final String KEY_ID = "id";
@@ -351,7 +351,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_RUNS_TABLE);
 
         String CREATE_INDEX_TABLE =
-                "CREATE UNIQUE INDEX idx_number_of_run ON " + TABLE_RUNS + "(" + KEY_NUMBER_OF_RUN +");";
+                "CREATE INDEX idx_number_of_run ON " + TABLE_RUNS + "(" + KEY_NUMBER_OF_RUN +");";
         db.execSQL(CREATE_INDEX_TABLE);
     }
 }
