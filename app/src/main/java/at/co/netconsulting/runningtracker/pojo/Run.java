@@ -16,19 +16,7 @@ public class Run {
     public Run() {
     }
 
-    public Run(int number_of_run) {
-        this.number_of_run = number_of_run;
-    }
-
-    public long getDateTimeInMs() {
-        return dateTimeInMs;
-    }
-
-    public void setDateTimeInMs(long dateTimeInMs) {
-        this.dateTimeInMs = dateTimeInMs;
-    }
-
-    public Run(int id, String dateTime, double lat, double lng, double meters_covered, float speed, int heart_rate, String comment, int number_of_run, long dateTimeInMs, int tlaps) {
+    public Run(int id, String dateTime, double lat, double lng, double meters_covered, float speed, int heart_rate, String comment, int number_of_run, long dateTimeInMs, int laps) {
         this.id = id;
         this.dateTime = dateTime;
         this.lat = lat;
@@ -114,11 +102,23 @@ public class Run {
         this.number_of_run = number_of_run;
     }
 
-    public int getLaps() {
-        return laps;
-    }
-
     public void setLaps(int laps) {
         this.laps = laps;
+    }
+
+    public Run(int number_of_run) {
+        this.number_of_run = number_of_run;
+    }
+
+    public long getDateTimeInMs() {
+        return dateTimeInMs;
+    }
+
+    public void setDateTimeInMs(long dateTimeInMs) {
+        this.dateTimeInMs = dateTimeInMs;
+    }
+
+    public int getLaps() {
+        return laps;
     }
 }
