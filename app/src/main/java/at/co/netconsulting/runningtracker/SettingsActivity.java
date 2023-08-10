@@ -1,6 +1,7 @@
 package at.co.netconsulting.runningtracker;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -46,6 +47,7 @@ public class SettingsActivity extends BaseActivity {
     private DatabaseHandler db;
     private Switch switchCommentPause, switchGoToLastLocation;
     private boolean isCommentOnPause, isCommentedOnPause, isGoToLastLocation;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,6 +175,12 @@ public class SettingsActivity extends BaseActivity {
 
         switchCommentPause = findViewById(R.id.switchCommentPause);
         switchGoToLastLocation = findViewById(R.id.switchGoToLastLocation);
+
+        progressDialog = new ProgressDialog(SettingsActivity.this);
+        progressDialog.setMessage("Exporting..."); // Setting Message
+        progressDialog.setTitle("Exporting recorded runs"); // Setting Title
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
+        progressDialog.setCancelable(false);
 
         db = new DatabaseHandler(this);
     }
@@ -375,7 +383,9 @@ public class SettingsActivity extends BaseActivity {
 
     public void delete(View view)
     {
-        if(getResources().getResourceName(view.getId()).equals("textViewDeleteDatabase")) {
+        Button buttonDelete = (Button)view;
+        String buttonText = buttonDelete.getText().toString();
+        if(buttonText.equals("Delete")) {
             db.delete();
         } else {
             showAlertDialogForSelectingWhichEntryToDelete();  
@@ -422,9 +432,18 @@ public class SettingsActivity extends BaseActivity {
         builderSingle.show();
     }
 
-    public void export(View v)
-    {
-        db.exportTableContent();
+    public void export(View v) {
+        progressDialog.show(); // Display Progress Dialog
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    db.exportTableContent();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                progressDialog.dismiss();
+            }
+        }).start();
     }
 
     public void onClickRadioButtonNormal(View view) {
