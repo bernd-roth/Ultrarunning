@@ -84,6 +84,7 @@ public class ForegroundService extends Service implements LocationListener {
     private boolean isCommentOnPause;
     private int laps;
     private int numberOfsatellitesInUse;
+    private int lapCounter;
 
     @Override
     public void onCreate() {
@@ -123,6 +124,7 @@ public class ForegroundService extends Service implements LocationListener {
         formatDateTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         t = new Timer();
         laps=0;
+        lapCounter=0;
         initCallbacks();
     }
 
@@ -192,8 +194,9 @@ public class ForegroundService extends Service implements LocationListener {
                         .bigText("Distance covered: 0.00 Km"
                                 + "\nCurrent speed: 0 Km/h"
                                 + "\nNumber of satellites: 0/" + satelliteCount
-                                + "\nLocation accuracy: 0 m"
+                                + "\nLocation accuracy: 0 Meter"
                                 + "\nAltitude: 0 Meter"
+                                + "\nLaps: " + String.format("%03d", lapCounter)
                                 + "\nTime: " + String.format("%02d:%02d:%02d", hour, minute, second)))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
                 //.setContentIntent(pendingIntent)
@@ -224,9 +227,9 @@ public class ForegroundService extends Service implements LocationListener {
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " Km/h"
                                         + "\nNumber of satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
-                                        + "\nLocation accuracy: " + String.format("%.2f", accuracy)
+                                        + "\nLocation accuracy: " + String.format("%.2f Meter", accuracy)
                                         + "\nAltitude: " + String.format("%.2f Meter", altitude)
-                                        + "\nLaps: " + String.format("%03d Meter", laps)
+                                        + "\nLaps: " + String.format("%03d", lapCounter)
                                         + "\nTime: " + String.format("%02d:%02d:%02d", hours[0], minutes[0], seconds[0])))
                         .setLargeIcon(BitmapFactory. decodeResource (getResources() , R.drawable. icon_notification ))
                         .build());
@@ -293,10 +296,16 @@ public class ForegroundService extends Service implements LocationListener {
 
         Location.distanceBetween(oldDoubleLat, oldDoubleLng, newDoubleLat, newDoubleLng, result);
         calc += result[0];
-        if(calc>1000) {
-            laps+=1;
-        }
+        lapCounter += result[0];
+        calculateLaps(lapCounter);
         sendBroadcastToMapsActivity(polylinePoints);
+    }
+
+    private void calculateLaps(int lapCounter) {
+        if(lapCounter>=1000) {
+            laps+=1;
+            lapCounter=0;
+        }
     }
 
     private void sendBroadcastToMapsActivity(ArrayList<LatLng> polylinePoints) {
