@@ -62,7 +62,6 @@ public class ForegroundService extends Service implements LocationListener {
     private LocationManager locationManager;
     private float calc;
     private float[] result;
-    private float minimumSpeedLimit;
     private ArrayList<LatLng> polylinePoints;
     private DateTimeFormatter formatDateTime;
     private LocalDateTime dateObj;
@@ -84,6 +83,7 @@ public class ForegroundService extends Service implements LocationListener {
     private String bundlePause;
     private boolean isCommentOnPause;
     private int laps;
+    private int numberOfsatellitesInUse;
 
     @Override
     public void onCreate() {
@@ -100,24 +100,6 @@ public class ForegroundService extends Service implements LocationListener {
         locationManager = getLocationManager();
         getLastKnownLocation(locationManager);
         configureBroadcastReceiver();
-    }
-
-    private void createTimer() {
-        t.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                seconds[0] += 1;
-                if (seconds[0] == 60) {
-                    minutes[0] += 1;
-                    seconds[0] = 0;
-                    if (minutes[0] == 60) {
-                        hours[0] += 1;
-                        minutes[0] = 0;
-                    }
-                }
-                Timber.d("%02d:%02d:%02d", hours[0], minutes[0], seconds[0]);
-            }
-        }, 0, 1000);
     }
 
     private void getLastKnownLocation(LocationManager locationManager) {
@@ -199,7 +181,10 @@ public class ForegroundService extends Service implements LocationListener {
         initObjects();
         createNotificationChannel();
         createPendingIntent();
-        createTimer();
+
+        long hour = hours[0];
+        long minute = minutes[0];
+        long second = seconds[0];
 
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle("Still trying to gather information!")
@@ -209,7 +194,7 @@ public class ForegroundService extends Service implements LocationListener {
                                 + "\nNumber of satellites: 0/" + satelliteCount
                                 + "\nLocation accuracy: 0 m"
                                 + "\nAltitude: 0 Meter"
-                                + "\nTime: 00:00:00"))
+                                + "\nTime: " + String.format("%02d:%02d:%02d", hour, minute, second)))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
@@ -220,6 +205,34 @@ public class ForegroundService extends Service implements LocationListener {
                 .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
 
         notification = notificationBuilder.build();
+
+        t.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                seconds[0] += 1;
+                if (seconds[0] == 60) {
+                    minutes[0] += 1;
+                    seconds[0] = 0;
+                    if (minutes[0] == 60) {
+                        hours[0] += 1;
+                        minutes[0] = 0;
+                    }
+                }
+
+                manager.notify(NOTIFICATION_ID /* ID of notification */, notificationBuilder
+                        .setContentTitle("Distance covered: " + String.format("%.2f Km", calc/1000))
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " Km/h"
+                                        + "\nNumber of satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
+                                        + "\nLocation accuracy: " + String.format("%.2f", accuracy)
+                                        + "\nAltitude: " + String.format("%.2f Meter", altitude)
+                                        + "\nLaps: " + String.format("%03d Meter", laps)
+                                        + "\nTime: " + String.format("%02d:%02d:%02d", hours[0], minutes[0], seconds[0])))
+                        .setLargeIcon(BitmapFactory. decodeResource (getResources() , R.drawable. icon_notification ))
+                        .build());
+
+            }
+        }, 0, 1000);
 
         startForeground(NOTIFICATION_ID, notification);
 
@@ -375,11 +388,9 @@ public class ForegroundService extends Service implements LocationListener {
 
         //get speed
         speed = (location.getSpeed() / 1000) * 3600;
-        Timber.d("SPEED: %s", String.valueOf(location.getSpeed()));
 
         //number of satellites
-        int numberOfsatellitesInUse = location.getExtras().getInt("satellites");
-        Timber.d("NUMBER OF SATELLITES: %s", String.valueOf(location.getExtras().getInt("satellites")));
+        numberOfsatellitesInUse = location.getExtras().getInt("satellites");
 
         if (polylinePoints.size() > 1) {
             calculateDistance();
@@ -389,20 +400,6 @@ public class ForegroundService extends Service implements LocationListener {
         accuracy = location.getAccuracy();
         currentSpeed = (location.getSpeed() / 1000) * 3600;
 
-        long hour = hours[0];
-        long minute = minutes[0];
-        long second = seconds[0];
-
-        manager.notify(NOTIFICATION_ID /* ID of notification */, notificationBuilder
-            .setContentTitle("Distance covered: " + String.format("%.2f Km", calc/1000))
-            .setStyle(new NotificationCompat.BigTextStyle()
-            .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " Km/h"
-                                        + "\nNumber of satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
-                                        + "\nLocation accuracy: " + String.format("%.2f", accuracy)
-                                        + "\nAltitude: " + String.format("%.2f Meter", altitude)
-                                        + "\nTime: " + String.format("%02d:%02d:%02d", hour, minute, second)))
-                .setLargeIcon(BitmapFactory. decodeResource (this.getResources() , R.drawable. icon_notification ))
-            .build());
         //pause button was not pressed yet
         if(bundlePause==null) {
             saveToDatabase();
