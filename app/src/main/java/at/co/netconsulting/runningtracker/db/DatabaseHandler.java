@@ -63,7 +63,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_COMMENT, run.getComment());
         values.put(KEY_NUMBER_OF_RUN, run.getNumber_of_run());
         values.put(KEY_DATETIME_IN_MS, run.getDateTimeInMs());
-        values.put(KEY_LAPS, run.getDateTimeInMs());
+        values.put(KEY_LAPS, run.getLaps());
 
         // Inserting Row
         db.insert(TABLE_RUNS, null, values);
