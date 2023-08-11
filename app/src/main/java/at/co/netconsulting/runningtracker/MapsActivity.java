@@ -289,7 +289,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         if(isSwitchGoToLastLocation) {
             int lastEntry = db.getLastEntry();
             if(lastEntry!=0) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(db.getSingleEntry(lastEntry).getLat(), db.getSingleEntry(lastEntry).getLng()), 16.0f));
+                if(db.getSingleEntry(lastEntry)!=null) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(db.getSingleEntry(lastEntry).getLat(), db.getSingleEntry(lastEntry).getLng()), 16.0f));
+                }
             }
         }
     }

@@ -33,6 +33,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private CSVWriter csvWrite;
     private SQLiteDatabase db;
     private Cursor curCSV;
+    private Run run;
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -78,21 +79,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_RUNS, new String[] { KEY_ID,
                         KEY_DATE_TIME, KEY_LAT, KEY_LNG, KEY_METERS_COVERED, KEY_SPEED, KEY_HEART_RATE, KEY_COMMENT, KEY_NUMBER_OF_RUN, KEY_DATETIME_IN_MS, KEY_LAPS }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
-        if (cursor != null)
-            cursor.moveToFirst();
-
-        Run run = new Run(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1),
-                cursor.getDouble(2),
-                cursor.getDouble(3),
-                cursor.getDouble(4),
-                cursor.getInt(5),
-                cursor.getInt(6),
-                cursor.getString(7),
-                cursor.getInt(8),
-                cursor.getLong(9),
-                cursor.getInt(10)
-        );
+        if (cursor != null && cursor.moveToFirst()) {
+            run = new Run(Integer.parseInt(cursor.getString(0)),
+                    cursor.getString(1),
+                    cursor.getDouble(2),
+                    cursor.getDouble(3),
+                    cursor.getDouble(4),
+                    cursor.getInt(5),
+                    cursor.getInt(6),
+                    cursor.getString(7),
+                    cursor.getInt(8),
+                    cursor.getLong(9),
+                    cursor.getInt(10)
+            );
+        }
         return run;
     }
 

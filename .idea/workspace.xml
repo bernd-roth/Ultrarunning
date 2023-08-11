@@ -9,9 +9,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* ForegroundService.java: Lap counter fixed; Notification fixed">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* ForegroundService.java: Lap counter fixed in Notification again&#10;* StatisticsActivity.java: wrong physical unit when displaying avgSpeed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,20 +169,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00021" summary="* added altitude in notification">
-      <created>1690392557571</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1690392557571</updated>
-    </task>
-    <task id="LOCAL-00022" summary="* altitude, accuracy implemented&#10;* removeUpdates implemented&#10;* normalize GPS data with Kalman-filter&#10;* Task scheduler removed">
-      <created>1690490755378</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1690490755378</updated>
     </task>
     <task id="LOCAL-00023" summary="* automatically zoom in when position is found&#10;* organize imports">
       <created>1690561377531</created>
@@ -512,7 +499,21 @@
       <option name="project" value="LOCAL" />
       <updated>1691700504984</updated>
     </task>
-    <option name="localTasksCounter" value="70" />
+    <task id="LOCAL-00070" summary="* ForegroundService.java: Lap counter fixed in Notificaiton, wrong variable used; wrong variable type used for lapCounter">
+      <created>1691730359576</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1691730359577</updated>
+    </task>
+    <task id="LOCAL-00071" summary="* ForegroundService.java: Lap counter fixed in Notification again&#10;* StatisticsActivity.java: wrong physical unit when displaying avgSpeed">
+      <created>1691768962773</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1691768962781</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -528,8 +529,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* Uppercase letters for buttons fixed" />
-    <MESSAGE value="* SettingsActivity.java: if pause is clicked, comment field is automatically field for a better examination&#10;* SettingsActivity.java: TextWatcher for EditText implemented" />
     <MESSAGE value="* SettingsActivity.java: switch pause fixed&#10;* ForegroundService.java: logmessage enhanced&#10;* MapsActivity.java: depending on switch activated or not, alertDialog will be shown" />
     <MESSAGE value="SettingsActivity.java: onTextChanged method refactored" />
     <MESSAGE value="* strings.xml: current location renamed to starting position&#10;* MapsActivity.java: wrong behavior if cancel button is clicked" />
@@ -553,7 +552,9 @@
     <MESSAGE value="* Run.java: adding getter/setter" />
     <MESSAGE value="* ForegroundService.java: CountUp-Timer enhanced and moved to notification" />
     <MESSAGE value="* ForegroundService.java: Lap counter fixed; Notification fixed" />
-    <option name="LAST_COMMIT_MESSAGE" value="* ForegroundService.java: Lap counter fixed; Notification fixed" />
+    <MESSAGE value="* ForegroundService.java: Lap counter fixed in Notificaiton, wrong variable used; wrong variable type used for lapCounter" />
+    <MESSAGE value="* ForegroundService.java: Lap counter fixed in Notification again&#10;* StatisticsActivity.java: wrong physical unit when displaying avgSpeed" />
+    <option name="LAST_COMMIT_MESSAGE" value="* ForegroundService.java: Lap counter fixed in Notification again&#10;* StatisticsActivity.java: wrong physical unit when displaying avgSpeed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -564,9 +565,9 @@
           <option name="timeStamp" value="379" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java</url>
-          <line>304</line>
-          <option name="timeStamp" value="381" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
+          <line>291</line>
+          <option name="timeStamp" value="394" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
