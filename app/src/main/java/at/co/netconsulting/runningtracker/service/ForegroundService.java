@@ -297,11 +297,11 @@ public class ForegroundService extends Service implements LocationListener {
         Location.distanceBetween(oldDoubleLat, oldDoubleLng, newDoubleLat, newDoubleLng, result);
         calc += result[0];
         lapCounter += result[0];
-        calculateLaps(lapCounter);
+        calculateLaps();
         sendBroadcastToMapsActivity(polylinePoints);
     }
 
-    private void calculateLaps(float lapCounter) {
+    private void calculateLaps() {
         if(lapCounter>=1000) {
             laps+=1;
             lapCounter=0;

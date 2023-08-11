@@ -64,7 +64,7 @@ public class StatisticsActivity extends AppCompatActivity {
         renderData();
         textViewMaxSpeed.setText("Max. speed: " +  df.format(mSpeed) + " km/h");
         textViewDistance.setText("Distance: " + df.format(meters) + " meter");
-        textViewAvgSpeed.setText("Avg: speed: " + df.format(avgSpeed) + " meter");
+        textViewAvgSpeed.setText("Avg: speed: " + df.format(avgSpeed) + " km/h");
     }
 
     private void callDatabase() {
