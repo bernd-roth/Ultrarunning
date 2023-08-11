@@ -9,9 +9,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* Adding lap counting &gt; 1000 meter&#10;* removing description label from graph">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* ForegroundService.java: Lap counter fixed; Notification fixed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,48 +168,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00015" summary="* new table columns&#10;* receive last entry from table for number of runs">
-      <created>1690103732857</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1690103732857</updated>
-    </task>
-    <task id="LOCAL-00016" summary="* introducing new settings: minDistance, minTimeMs&#10;* removing if speed&gt;minimumSpeedLimit">
-      <created>1690123975658</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1690123975658</updated>
-    </task>
-    <task id="LOCAL-00017" summary="* removed comments&#10;* if condition speed&gt;minimumSpeedLimit removed">
-      <created>1690142100172</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1690142100172</updated>
-    </task>
-    <task id="LOCAL-00018" summary="* calculating speed from m/s to km/h&#10;* truncating database in SettingsActivity.java">
-      <created>1690224824406</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1690224824406</updated>
-    </task>
-    <task id="LOCAL-00019" summary="* moving static fields to separate class">
-      <created>1690273798621</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1690273798621</updated>
-    </task>
-    <task id="LOCAL-00020" summary="* requesting permission for location, and notification&#10;* exporting tracked challenges via SettingsActivity.java">
-      <created>1690311396860</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1690311396860</updated>
     </task>
     <task id="LOCAL-00021" summary="* added altitude in notification">
       <created>1690392557571</created>
@@ -512,7 +470,49 @@
       <option name="project" value="LOCAL" />
       <updated>1691390188590</updated>
     </task>
-    <option name="localTasksCounter" value="64" />
+    <task id="LOCAL-00064" summary="* DatabaseHandler.java: CREATE UNIQUE INDEX changed to CREATE INDEX">
+      <created>1691600462210</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1691600462211</updated>
+    </task>
+    <task id="LOCAL-00065" summary="* SettingsActivity.java: ProgressDialog for exporting data; Deleting all data not working - fixed.">
+      <created>1691679413309</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1691679413309</updated>
+    </task>
+    <task id="LOCAL-00066" summary="* DatabaseHandler.java: Saving number of runs fixed">
+      <created>1691679512984</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1691679512984</updated>
+    </task>
+    <task id="LOCAL-00067" summary="* Run.java: adding getter/setter">
+      <created>1691679561938</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1691679561939</updated>
+    </task>
+    <task id="LOCAL-00068" summary="* ForegroundService.java: CountUp-Timer enhanced and moved to notification">
+      <created>1691679681361</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1691679681361</updated>
+    </task>
+    <task id="LOCAL-00069" summary="* ForegroundService.java: Lap counter fixed; Notification fixed">
+      <created>1691700504984</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1691700504984</updated>
+    </task>
+    <option name="localTasksCounter" value="70" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -528,12 +528,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* DatabaseHandler.java: useless curCSV removed&#10;* ProgressDialog when working with Kalman-Filter introduced" />
-    <MESSAGE value="* MapsActivity.java: sendBroadcast sends &quot;Pause&quot; or null, fading buttons enhanced&#10;* ForegroundService.java: BroadcastReceiver receives either &quot;Pause&quot; or null&#10;* SharedPref.java: new Broadcast_Action introduced" />
-    <MESSAGE value="* MapsActivity.java: unnecessary comments removed, isPauseRecordingClicked enhanced" />
-    <MESSAGE value="* MapsActivity.java: fixed wrong behaviour when pause button is clicked" />
-    <MESSAGE value="* strings.xml: strings from different activities extracted" />
-    <MESSAGE value="* strings.xml: strings from different activities extracted&#10;* MapsActivity.java: AlertDialog must not be empty anymore, if track is saved" />
     <MESSAGE value="* Uppercase letters for buttons fixed" />
     <MESSAGE value="* SettingsActivity.java: if pause is clicked, comment field is automatically field for a better examination&#10;* SettingsActivity.java: TextWatcher for EditText implemented" />
     <MESSAGE value="* SettingsActivity.java: switch pause fixed&#10;* ForegroundService.java: logmessage enhanced&#10;* MapsActivity.java: depending on switch activated or not, alertDialog will be shown" />
@@ -553,35 +547,26 @@
     <MESSAGE value="* KalmanFilter enhanced" />
     <MESSAGE value="* SettingsActivity.java:  ProgressDialog removed&#10;* DatabaseHandler.java: index created for table" />
     <MESSAGE value="* Adding lap counting &gt; 1000 meter&#10;* removing description label from graph" />
-    <option name="LAST_COMMIT_MESSAGE" value="* Adding lap counting &gt; 1000 meter&#10;* removing description label from graph" />
+    <MESSAGE value="* DatabaseHandler.java: CREATE UNIQUE INDEX changed to CREATE INDEX" />
+    <MESSAGE value="* SettingsActivity.java: ProgressDialog for exporting data; Deleting all data not working - fixed." />
+    <MESSAGE value="* DatabaseHandler.java: Saving number of runs fixed" />
+    <MESSAGE value="* Run.java: adding getter/setter" />
+    <MESSAGE value="* ForegroundService.java: CountUp-Timer enhanced and moved to notification" />
+    <MESSAGE value="* ForegroundService.java: Lap counter fixed; Notification fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="* ForegroundService.java: Lap counter fixed; Notification fixed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>353</line>
-          <option name="timeStamp" value="344" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java</url>
+          <line>174</line>
+          <option name="timeStamp" value="379" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>357</line>
-          <option name="timeStamp" value="345" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>268</line>
-          <option name="timeStamp" value="347" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>504</line>
-          <option name="timeStamp" value="350" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>385</line>
-          <option name="timeStamp" value="367" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java</url>
+          <line>304</line>
+          <option name="timeStamp" value="381" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

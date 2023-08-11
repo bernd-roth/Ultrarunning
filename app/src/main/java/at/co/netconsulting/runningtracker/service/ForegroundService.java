@@ -84,7 +84,7 @@ public class ForegroundService extends Service implements LocationListener {
     private boolean isCommentOnPause;
     private int laps;
     private int numberOfsatellitesInUse;
-    private int lapCounter;
+    private float lapCounter;
 
     @Override
     public void onCreate() {
@@ -196,7 +196,7 @@ public class ForegroundService extends Service implements LocationListener {
                                 + "\nNumber of satellites: 0/" + satelliteCount
                                 + "\nLocation accuracy: 0 Meter"
                                 + "\nAltitude: 0 Meter"
-                                + "\nLaps: " + String.format("%03d", lapCounter)
+                                + "\nLaps: " + String.format("%03d", laps)
                                 + "\nTime: " + String.format("%02d:%02d:%02d", hour, minute, second)))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
                 //.setContentIntent(pendingIntent)
@@ -229,7 +229,7 @@ public class ForegroundService extends Service implements LocationListener {
                                         + "\nNumber of satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
                                         + "\nLocation accuracy: " + String.format("%.2f Meter", accuracy)
                                         + "\nAltitude: " + String.format("%.2f Meter", altitude)
-                                        + "\nLaps: " + String.format("%03d", lapCounter)
+                                        + "\nLaps: " + String.format("%03d", laps)
                                         + "\nTime: " + String.format("%02d:%02d:%02d", hours[0], minutes[0], seconds[0])))
                         .setLargeIcon(BitmapFactory. decodeResource (getResources() , R.drawable. icon_notification ))
                         .build());
@@ -301,7 +301,7 @@ public class ForegroundService extends Service implements LocationListener {
         sendBroadcastToMapsActivity(polylinePoints);
     }
 
-    private void calculateLaps(int lapCounter) {
+    private void calculateLaps(float lapCounter) {
         if(lapCounter>=1000) {
             laps+=1;
             lapCounter=0;
