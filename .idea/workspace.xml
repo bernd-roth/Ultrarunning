@@ -9,9 +9,12 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* DatabaseHandler.java: cursor null handling implemented when calling getSingleEntry(int lastEntry)">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: Bundle implemented in onResume, onStop in order to display FloatingActionButton if necessary.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +53,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="2M2AzuN6eEhGJsLnHYrGlckxFsz" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -70,8 +73,8 @@
     <property name="android-custom-viewC:/Users/bernd/AppData/Local/Android/Sdk/sources/android-33/android/view/View.java_SELECTED" value="View" />
     <property name="cidr.known.project.marker" value="true" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/main/res/drawable" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="project.structure.last.edited" value="Suggestions" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/libs" />
+    <property name="project.structure.last.edited" value="Dependencies" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
@@ -85,6 +88,7 @@
       <recent name="at.co.netconsulting.runningtracker.service" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\libs" />
       <recent name="C:\projects\android\RunningTracker\app\src\main\res" />
       <recent name="C:\projects\android\RunningTracker\app\src\main\res\drawable" />
     </key>
@@ -168,13 +172,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00024" summary="* adding AlertDialog if location service is not enabled">
-      <created>1690567639747</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1690567639747</updated>
     </task>
     <task id="LOCAL-00025" summary="* adding start/stop image&#10;* changing button img start/stop depending on their use case">
       <created>1690578468416</created>
@@ -512,7 +509,14 @@
       <option name="project" value="LOCAL" />
       <updated>1691780777830</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="* MapsActivity.java: Bundle implemented in onResume, onStop in order to display FloatingActionButton if necessary.">
+      <created>1691937011599</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1691937011600</updated>
+    </task>
+    <option name="localTasksCounter" value="74" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -528,7 +532,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="SettingsActivity.java: onTextChanged method refactored" />
     <MESSAGE value="* strings.xml: current location renamed to starting position&#10;* MapsActivity.java: wrong behavior if cancel button is clicked" />
     <MESSAGE value="* strings.xml: current location renamed to starting position" />
     <MESSAGE value="* MapsActivity.java: by clicking polyline, polyline transforms to dots" />
@@ -553,7 +556,8 @@
     <MESSAGE value="* ForegroundService.java: Lap counter fixed in Notificaiton, wrong variable used; wrong variable type used for lapCounter" />
     <MESSAGE value="* ForegroundService.java: Lap counter fixed in Notification again&#10;* StatisticsActivity.java: wrong physical unit when displaying avgSpeed" />
     <MESSAGE value="* DatabaseHandler.java: cursor null handling implemented when calling getSingleEntry(int lastEntry)" />
-    <option name="LAST_COMMIT_MESSAGE" value="* DatabaseHandler.java: cursor null handling implemented when calling getSingleEntry(int lastEntry)" />
+    <MESSAGE value="* MapsActivity.java: Bundle implemented in onResume, onStop in order to display FloatingActionButton if necessary." />
+    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: Bundle implemented in onResume, onStop in order to display FloatingActionButton if necessary." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

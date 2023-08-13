@@ -14,7 +14,7 @@ import java.util.List;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static final String DATABASE_NAME = "DATABASE_RUN";
     private static final String TABLE_RUNS = "TABLE_RUN";
     private static final String KEY_ID = "id";
@@ -228,7 +228,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 allEntryList.add(run);
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return allEntryList;
+    }
+
+    public void addSampleRun(int meters) {
+        db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_DATE_TIME, "01/01/2023");
+        values.put(KEY_LAT, "16");
+        values.put(KEY_LNG, "14");
+        values.put(KEY_METERS_COVERED, meters);
+        values.put(KEY_SPEED, "10");
+        values.put(KEY_HEART_RATE, "0");
+        values.put(KEY_COMMENT, "");
+        values.put(KEY_NUMBER_OF_RUN, "1");
+        values.put(KEY_DATETIME_IN_MS, "12345678");
+        values.put(KEY_LAPS, 1);
+
+        // Inserting Row
+        db.insert(TABLE_RUNS, null, values);
+        //2nd argument is String containing nullColumnHack
+        db.close(); // Closing database connection
     }
 
     public List<Run> getEntriesForKalmanFilter() {

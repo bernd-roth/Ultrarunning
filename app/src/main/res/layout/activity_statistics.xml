@@ -12,34 +12,27 @@
 <!--        android:minHeight="?attr/actionBarSize"-->
 <!--        android:theme="?attr/actionBarTheme" />-->
 
-    <com.github.mikephil.charting.charts.LineChart
+    <LinearLayout
         android:id="@+id/linechart"
         android:layout_width="match_parent"
-        android:layout_height="482dp"
-        android:layout_centerInParent="true" />
+        android:layout_height="611dp"
+        android:orientation="vertical" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/textViewMaxSpeed"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content"
+        android:textSize="32dp" />
 
-        <TextView
-            android:id="@+id/textViewMaxSpeed"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="32dp" />
+    <TextView
+        android:id="@+id/textViewDistance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="32dp" />
 
-        <TextView
-            android:id="@+id/textViewDistance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="32dp" />
-
-        <TextView
+    <TextView
             android:id="@+id/textViewAvgSpeed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="32dp" />
-    </LinearLayout>
 </LinearLayout>
