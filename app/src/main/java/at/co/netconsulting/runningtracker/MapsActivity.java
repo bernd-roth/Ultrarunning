@@ -128,7 +128,17 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     protected void onResume() {
         super.onResume();
         loadSharedPreferences();
-        //redraw Google Map, calling GoogleMap will fail du to NPE
+        //retrieving Bundle when returning
+        if (this.getIntent().getExtras() != null) {
+            Bundle bundle = this.getIntent().getExtras();
+            boolean isStopButtonVisible = bundle.getBoolean("StopButtonIsVisible");
+            if(isStopButtonVisible) {
+                fabStartRecording.setVisibility(View.INVISIBLE);
+                fabStopRecording.setVisibility(View.VISIBLE);
+                fabPauseRecording.setVisibility(View.VISIBLE);
+            }
+        }
+        //redraw Google Map, calling GoogleMap will fail due to NPE
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -297,8 +307,24 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     }
 
     @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
+        int isVisible = fabStopRecording.getVisibility();
+        if(isVisible==0) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("StopButtonIsVisible", true);
+            this.getIntent().putExtras(bundle);
+        }
     }
 
     @Override
@@ -468,6 +494,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     fabStopRecording.startAnimation(fadeInAnimation);
                     fabPauseRecording.startAnimation(fadeInAnimation);
                     fabStartRecording.startAnimation(fadeOutAnimation);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("StopButtonIsVisible", true);
+                    getIntent().putExtras(bundle);
                 }
             }, 2000);// set time as per your requirement
         } else if(fabButton==R.id.fabStopRecording) {
