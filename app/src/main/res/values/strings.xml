@@ -74,4 +74,6 @@
     <string name="goToLastLocation">Go to last location</string>
     <string name="delete_single_entry">Choose run to delete</string>
     <string name="delete_chosen_single_entry">Delete single entry</string>
+    <string name="person">Runner`s name</string>
+    <string name="anonym_person">Anonym</string>
 </resources>

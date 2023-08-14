@@ -14,7 +14,7 @@ import java.util.List;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     private static final String DATABASE_NAME = "DATABASE_RUN";
     private static final String TABLE_RUNS = "TABLE_RUN";
     private static final String KEY_ID = "id";
@@ -29,6 +29,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_DATETIME_IN_MS = "date_time_ms";
     private static final String KEY_LAPS = "laps";
     private static final String KEY_ALTITUDE = "altitude";
+    private static final String KEY_PERSON = "person";
     private Context context;
     private File file;
     private CSVWriter csvWrite;
@@ -67,6 +68,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_DATETIME_IN_MS, run.getDateTimeInMs());
         values.put(KEY_LAPS, run.getLaps());
         values.put(KEY_ALTITUDE, run.getAltitude());
+        values.put(KEY_PERSON, run.getPerson());
 
         // Inserting Row
         db.insert(TABLE_RUNS, null, values);
@@ -79,7 +81,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_RUNS, new String[] { KEY_ID,
-                        KEY_DATE_TIME, KEY_LAT, KEY_LNG, KEY_METERS_COVERED, KEY_SPEED, KEY_HEART_RATE, KEY_COMMENT, KEY_NUMBER_OF_RUN, KEY_DATETIME_IN_MS, KEY_LAPS, KEY_ALTITUDE }, KEY_ID + "=?",
+                        KEY_DATE_TIME, KEY_LAT, KEY_LNG, KEY_METERS_COVERED, KEY_SPEED, KEY_HEART_RATE, KEY_COMMENT, KEY_NUMBER_OF_RUN, KEY_DATETIME_IN_MS, KEY_LAPS, KEY_ALTITUDE, KEY_PERSON }, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
             run = new Run(Integer.parseInt(cursor.getString(0)),
@@ -93,7 +95,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     cursor.getInt(8),
                     cursor.getLong(9),
                     cursor.getInt(10),
-                    cursor.getDouble(11)
+                    cursor.getDouble(11),
+                    cursor.getString(12)
             );
         }
         return run;
@@ -140,8 +143,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setComment(cursor.getString(7));
                 run.setNumber_of_run(cursor.getInt(8));
                 run.setDateTimeInMs(cursor.getInt(9));
-                run.setLaps(10);
-                run.setAltitude(11);
+                run.setLaps(cursor.getInt(10));
+                run.setAltitude(cursor.getDouble(11));
+                run.setPerson(cursor.getString(12));
                 // Adding contact to list
                 allEntryList.add(run);
             } while (cursor.moveToNext());
@@ -165,7 +169,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_NUMBER_OF_RUN + ", "
                 + KEY_DATETIME_IN_MS + ", "
                 + KEY_LAPS + ", "
-                + KEY_ALTITUDE
+                + KEY_ALTITUDE + ", "
+                + KEY_PERSON
                 + " FROM " + TABLE_RUNS + " GROUP BY " + KEY_NUMBER_OF_RUN;
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -187,6 +192,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setDateTimeInMs(cursor.getInt(9));
                 run.setLaps(cursor.getInt(10));
                 run.setAltitude(cursor.getDouble(11));
+                run.setPerson(cursor.getString(12));
                 // Adding contact to list
                 allEntryList.add(run);
             } while (cursor.moveToNext());
@@ -210,7 +216,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_NUMBER_OF_RUN + ", "
                 + KEY_DATETIME_IN_MS + ", "
                 + KEY_LAPS + ", "
-                + KEY_ALTITUDE
+                + KEY_ALTITUDE + ", "
+                + KEY_PERSON
                 + " FROM " + TABLE_RUNS + " WHERE " + KEY_NUMBER_OF_RUN + " = " + numberOfRun;
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -230,8 +237,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setComment(cursor.getString(7));
                 run.setNumber_of_run(cursor.getInt(8));
                 run.setDateTimeInMs(cursor.getInt(9));
-                run.setLaps(10);
-                run.setAltitude(11);
+                run.setLaps(cursor.getInt(10));
+                run.setAltitude(cursor.getDouble(11));
+                run.setPerson(cursor.getString(12));
                 // Adding contact to list
                 allEntryList.add(run);
             } while (cursor.moveToNext());
@@ -255,6 +263,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_DATETIME_IN_MS, "12345678"+meters);
         values.put(KEY_LAPS, 1);
         values.put(KEY_ALTITUDE, 283);
+        values.put(KEY_PERSON, "Anonym");
 
         // Inserting Row
         db.insert(TABLE_RUNS, null, values);
@@ -336,7 +345,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         curCSV.getString(8),
                         curCSV.getString(9),
                         curCSV.getString(10),
-                        curCSV.getString(11)
+                        curCSV.getString(11),
+                        curCSV.getString(12)
                 };
                 csvWrite.writeNext(arrStr);
             }
@@ -379,7 +389,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_NUMBER_OF_RUN + " INTEGER,"
                 + KEY_DATETIME_IN_MS + " LONG,"
                 + KEY_LAPS + " INTEGER,"
-                + KEY_ALTITUDE + " DOUBLE"
+                + KEY_ALTITUDE + " DOUBLE,"
+                + KEY_PERSON + " STRING"
                 + ")";
         db.execSQL(CREATE_RUNS_TABLE);
 

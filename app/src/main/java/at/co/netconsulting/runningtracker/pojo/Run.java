@@ -13,11 +13,14 @@ public class Run {
     private long dateTimeInMs;
     private int laps;
     private double altitude;
+    private String person;
 
     public Run() {
     }
 
-    public Run(int id, String dateTime, double lat, double lng, double meters_covered, float speed, int heart_rate, String comment, int number_of_run, long dateTimeInMs, int laps, double altitude) {
+    public Run(int id, String dateTime, double lat, double lng, double meters_covered,
+               float speed, int heart_rate, String comment, int number_of_run,
+               long dateTimeInMs, int laps, double altitude, String person) {
         this.id = id;
         this.dateTime = dateTime;
         this.lat = lat;
@@ -30,6 +33,7 @@ public class Run {
         this.dateTimeInMs = dateTimeInMs;
         this.laps = laps;
         this.altitude = altitude;
+        this.person = person;
     }
 
     public void setId(int id) {
@@ -130,5 +134,13 @@ public class Run {
 
     public void setAltitude(double altitude) {
         this.altitude = altitude;
+    }
+
+    public String getPerson() {
+        return person;
+    }
+
+    public void setPerson(String person) {
+        this.person = person;
     }
 }

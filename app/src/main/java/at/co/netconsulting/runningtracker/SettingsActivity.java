@@ -27,7 +27,7 @@ public class SettingsActivity extends BaseActivity {
 
     private SharedPreferences sharedpreferences;
     private EditText editTextNumberSignedMinimumTimeMs;
-    private EditText editTextNumberSignedMinimumDistanceMeter;
+    private EditText editTextNumberSignedMinimumDistanceMeter, editTextPerson;
     private Button buttonSave, buttonNormalizeWithKalmanFilter, buttonExport, buttonDelete,
             buttonDeleteSingleEntry;
     private String mapType, recordingProfil;
@@ -48,6 +48,7 @@ public class SettingsActivity extends BaseActivity {
     private Switch switchCommentPause, switchGoToLastLocation;
     private boolean isCommentOnPause, isCommentedOnPause, isGoToLastLocation;
     private ProgressDialog progressDialog;
+    private String person;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,7 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -137,12 +139,19 @@ public class SettingsActivity extends BaseActivity {
                 isGoToLastLocation = sh.getBoolean(sharedPrefKey, false);
                 switchGoToLastLocation.setChecked(isGoToLastLocation);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_PERSON:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                person = sh.getString(sharedPrefKey, "Anonym");
+                editTextPerson.setText(person);
+                buttonSave.setEnabled(true);
+                break;
         }
     }
 
     private void initObjects() {
         editTextNumberSignedMinimumTimeMs = findViewById(R.id.editTextNumberSignedMinimumTimeMs);
         editTextNumberSignedMinimumDistanceMeter = findViewById(R.id.editTextNumberSignedMinimumDistanceMeter);
+        editTextPerson = findViewById(R.id.editTextPerson);
 
         buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setTransformationMethod(null);
@@ -280,6 +289,13 @@ public class SettingsActivity extends BaseActivity {
             boolean isGoToLastLocation = switchGoToLastLocation.isChecked();
             editor.putBoolean(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, isGoToLastLocation);
             editor.commit();
+        }  else if(sharedPreference.equals("PERSON")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            String person = editTextPerson.getText().toString();
+            editor.putString(SharedPref.STATIC_SHARED_PREF_PERSON, person);
+            editor.commit();
         }
     }
 
@@ -379,10 +395,10 @@ public class SettingsActivity extends BaseActivity {
         saveSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
+        saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
     }
 
-    public void delete(View view)
-    {
+    public void delete(View view) {
         Button buttonDelete = (Button)view;
         String buttonText = buttonDelete.getText().toString();
         if(buttonText.equals("Delete")) {

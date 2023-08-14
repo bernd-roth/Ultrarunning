@@ -8,4 +8,5 @@ public class StaticFields {
     public final static int STATIC_LONG_MIN_TIME_MS = 10;
     public final static String STATIC_SAVE_ON_COMMENT_PAUSE = "COMMENT_AND_PAUSE";
     public final static DecimalFormat df = new DecimalFormat("0.00");
+    public final static String STATIC_STRING_PERSON = "Anonym";
 }

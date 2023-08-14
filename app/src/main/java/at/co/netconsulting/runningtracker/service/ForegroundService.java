@@ -85,6 +85,7 @@ public class ForegroundService extends Service implements LocationListener {
     private int laps;
     private int numberOfsatellitesInUse;
     private float lapCounter;
+    private String person;
 
     @Override
     public void onCreate() {
@@ -97,6 +98,7 @@ public class ForegroundService extends Service implements LocationListener {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
 
         locationManager = getLocationManager();
         getLastKnownLocation(locationManager);
@@ -153,6 +155,7 @@ public class ForegroundService extends Service implements LocationListener {
             run.setDateTimeInMs(currentMilliseconds);
             run.setLaps(laps);
             run.setAltitude(altitude);
+            run.setPerson(person);
             db.addRun(run);
         }
     }
@@ -379,11 +382,15 @@ public class ForegroundService extends Service implements LocationListener {
                 break;
             case SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                minTimeMs =  sh.getLong(sharedPrefKey, (long) StaticFields.STATIC_LONG_MIN_TIME_MS);
+                minTimeMs = sh.getLong(sharedPrefKey, (long) StaticFields.STATIC_LONG_MIN_TIME_MS);
                 break;
             case SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                isCommentOnPause =  sh.getBoolean(sharedPrefKey, Boolean.parseBoolean(StaticFields.STATIC_SAVE_ON_COMMENT_PAUSE));
+                isCommentOnPause = sh.getBoolean(sharedPrefKey, Boolean.parseBoolean(StaticFields.STATIC_SAVE_ON_COMMENT_PAUSE));
+                break;
+            case SharedPref.STATIC_SHARED_PREF_PERSON:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                person = sh.getString(sharedPrefKey, StaticFields.STATIC_STRING_PERSON);
                 break;
         }
     }

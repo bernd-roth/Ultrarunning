@@ -87,6 +87,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Toolbar toolbar;
     private TextView toolbar_title;
     private String coveredDistance;
+    private String person;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
