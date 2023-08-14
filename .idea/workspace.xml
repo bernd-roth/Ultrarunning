@@ -9,12 +9,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* DatabaseHandler.java: Cursor close fixed, addSampleRun data added&#10;* StatisticsActivity.java: implementation of achartengine because of faster rendering">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* StatisticsActivity.java: label textsize, zoomButton visibility, and filling points implemented">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/pojo/Run.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/pojo/Run.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -172,34 +171,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00026" summary="* adding start/stop image&#10;* changing button img start/stop depending on their use case">
-      <created>1690580683528</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1690580683528</updated>
-    </task>
-    <task id="LOCAL-00027" summary="* README.md moved">
-      <created>1690580770054</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1690580770054</updated>
-    </task>
-    <task id="LOCAL-00028" summary="* Log message replaced by Timber">
-      <created>1690580881623</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1690580881623</updated>
-    </task>
-    <task id="LOCAL-00029" summary="* useless comments removed&#10;* minimum speed limit removed&#10;* Log message replaced with Timber&#10;* SharedPreferences in SettingsActivity.java fixed">
-      <created>1690582490499</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1690582490499</updated>
     </task>
     <task id="LOCAL-00030" summary="* count up timer in notification added&#10;* kalman filter added&#10;* export of kalman filter data added">
       <created>1690671539785</created>
@@ -516,7 +487,35 @@
       <option name="project" value="LOCAL" />
       <updated>1691960891713</updated>
     </task>
-    <option name="localTasksCounter" value="75" />
+    <task id="LOCAL-00075" summary="* DatabaseHandler.java: adapting sample data&#10;* ForegroundService.java: broadcasting speed for displaying it in toolbar&#10;* MapsActivity.java: adding toolbar with overview of lat, lng, and speed">
+      <created>1692008628192</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1692008628193</updated>
+    </task>
+    <task id="LOCAL-00076" summary="* ForegroundService.java: broadcasting distance and speed for showing it in toolbar">
+      <created>1692026496366</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1692026496366</updated>
+    </task>
+    <task id="LOCAL-00077" summary="* MapsActivity.java: receiving distance and speed in broadcast for displaying it in toolbar">
+      <created>1692026551245</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1692026551246</updated>
+    </task>
+    <task id="LOCAL-00078" summary="* StatisticsActivity.java: label textsize, zoomButton visibility, and filling points implemented">
+      <created>1692026623930</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1692026623930</updated>
+    </task>
+    <option name="localTasksCounter" value="79" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -532,10 +531,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* strings.xml: current location renamed to starting position" />
-    <MESSAGE value="* MapsActivity.java: by clicking polyline, polyline transforms to dots" />
-    <MESSAGE value="* StatisticsActivity.java: statistical overview of last run (max. speed, distance, avg. speed), introducing a graph about path/velocity diagram" />
-    <MESSAGE value="* StaticFields.java: DecimalFormat taken from StatisticsActivity.java and put to StaticFields.java&#10;* AndroidManifest.xml: exported set to false&#10;* strings.xml: title for activity renamed" />
     <MESSAGE value="* pics added" />
     <MESSAGE value="* Recording Profil added&#10;* Strings added" />
     <MESSAGE value="* Save button is automatically activated/deactivated depending on recording profil" />
@@ -557,20 +552,29 @@
     <MESSAGE value="* DatabaseHandler.java: cursor null handling implemented when calling getSingleEntry(int lastEntry)" />
     <MESSAGE value="* MapsActivity.java: Bundle implemented in onResume, onStop in order to display FloatingActionButton if necessary." />
     <MESSAGE value="* DatabaseHandler.java: Cursor close fixed, addSampleRun data added&#10;* StatisticsActivity.java: implementation of achartengine because of faster rendering" />
-    <option name="LAST_COMMIT_MESSAGE" value="* DatabaseHandler.java: Cursor close fixed, addSampleRun data added&#10;* StatisticsActivity.java: implementation of achartengine because of faster rendering" />
+    <MESSAGE value="* DatabaseHandler.java: adapting sample data&#10;* ForegroundService.java: broadcasting speed for displaying it in toolbar&#10;* MapsActivity.java: adding toolbar with overview of lat, lng, and speed" />
+    <MESSAGE value="* ForegroundService.java: broadcasting distance and speed for showing it in toolbar" />
+    <MESSAGE value="* MapsActivity.java: receiving distance and speed in broadcast for displaying it in toolbar" />
+    <MESSAGE value="* StatisticsActivity.java: label textsize, zoomButton visibility, and filling points implemented" />
+    <option name="LAST_COMMIT_MESSAGE" value="* StatisticsActivity.java: label textsize, zoomButton visibility, and filling points implemented" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java</url>
-          <line>174</line>
+          <line>175</line>
           <option name="timeStamp" value="379" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>183</line>
+          <line>184</line>
           <option name="timeStamp" value="405" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java</url>
+          <line>154</line>
+          <option name="timeStamp" value="407" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

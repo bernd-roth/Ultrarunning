@@ -152,6 +152,7 @@ public class ForegroundService extends Service implements LocationListener {
             run.setSpeed(speed);
             run.setDateTimeInMs(currentMilliseconds);
             run.setLaps(laps);
+            run.setAltitude(altitude);
             db.addRun(run);
         }
     }
@@ -174,6 +175,7 @@ public class ForegroundService extends Service implements LocationListener {
             run.setDateTimeInMs(currentMilliseconds);
             run.setComment(commentOnPause);
             run.setLaps(laps);
+            run.setAltitude(altitude);
             db.addRun(run);
         }
     }
