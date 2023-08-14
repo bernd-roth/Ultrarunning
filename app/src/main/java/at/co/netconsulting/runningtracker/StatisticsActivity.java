@@ -60,6 +60,10 @@ public class StatisticsActivity extends Activity {
         mDataset.addSeries(mCurrentSeries);
         mCurrentRenderer = new XYSeriesRenderer();
         mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
+// here set the label and its size for all points in graph
+//        mCurrentRenderer.setDisplayChartValues(true);
+//        mCurrentRenderer.setChartValuesTextSize(45f);
+        mCurrentRenderer.setFillPoints(true);
         mRenderer.addSeriesRenderer(mCurrentRenderer);
     }
 
@@ -120,6 +124,8 @@ public class StatisticsActivity extends Activity {
             mRenderer.setYTitle("Speed");
             mRenderer.setShowGrid(true);
             mRenderer.setGridColor(Color.GRAY);
+            mRenderer.setLabelsTextSize(40f);
+            mRenderer.setZoomButtonsVisible(true);
             mChart = ChartFactory.getCubeLineChartView(this, mDataset, mRenderer, 0.3f);
             layout.addView(mChart);
         } else {
