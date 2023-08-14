@@ -314,6 +314,7 @@ public class ForegroundService extends Service implements LocationListener {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION, polylinePoints);
         bundle.putString("SPEED", String.valueOf(speed));
+        bundle.putString("DISTANCE", String.valueOf(calc));
         intent.putExtras(bundle);
         getApplicationContext().sendBroadcast(intent);
     }
