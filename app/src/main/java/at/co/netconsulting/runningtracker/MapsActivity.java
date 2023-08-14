@@ -28,6 +28,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -73,7 +75,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private boolean isDisableZoomCamera;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabPauseRecording;
     private double lastLat, lastLng;
-    private String mapType;
+    private String mapType, speed;
     private SupportMapFragment mapFragment;
     private String[] permissions;
     private LocationManager locationManager;
@@ -82,6 +84,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private BroadcastReceiver receiver;
     private boolean isPauseRecordingClicked, isSwitchPausedActivated, isSwitchGoToLastLocation;
     private DatabaseHandler db;
+    private Toolbar toolbar;
+    private TextView toolbar_title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,6 +166,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         if(!isServiceRunning) {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
+            toolbar_title.setText("Latitude: " + String.format("%.2f", lastLat) + "\tLongitude: " + String.format("%.2f", lastLng) + "\nSpeed: 0.0");
         } else {
             LatLng latLng = new LatLng(lastLat, lastLng);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
@@ -171,6 +176,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 startingPoint = false;
             } else {
                 polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+
+                int size = polylinePoints.size();
+                double lat = polylinePoints.get(size-1).latitude;
+                double lng = polylinePoints.get(size-1).longitude;
+
+                toolbar_title.setText("Latitude: " + String.format("%.2f", lat) + "\tLongitude: " + String.format("%.2f", lng) + "\nSpeed: " + speed);
             }
         }
     }
@@ -210,8 +221,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabStatistics = findViewById(R.id.fabStatistics);
         fabPauseRecording = findViewById(R.id.fabPauseRecording);
             fabPauseRecording.setVisibility(View.INVISIBLE);
-
         fabStatistics.setVisibility(View.VISIBLE);
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(Color.LTGRAY);
+        toolbar_title = findViewById(R.id.toolbar_title);
+
         polylinePoints = new ArrayList<>();
         polylinePointsTemp = new ArrayList<>();
         configureReceiver();
@@ -301,7 +315,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             if(lastEntry!=0) {
                 if(db.getSingleEntry(lastEntry)!=null) {
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(db.getSingleEntry(lastEntry).getLat(), db.getSingleEntry(lastEntry).getLng()), 16.0f));
+                    toolbar_title.setText("Latitude: " + String.format("%.2f", db.getSingleEntry(lastEntry).getLat()) + "\tLongitude: " + String.format("%.2f", db.getSingleEntry(lastEntry).getLng()) + "\nSpeed: " + speed);
+
                 }
+            } else {
+                toolbar_title.setText("Latitude: " + 0 + "\tLongitude: " + 0 + "\t\nSpeed: " + 0);
             }
         }
     }
@@ -600,6 +618,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             String action = intent.getAction();
             Timber.d("DataBroadcastReceiver %s", action);
             ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
+            speed = intent.getExtras().getString("SPEED");
 
             int size = polylinePoints.size();
 

@@ -9,12 +9,12 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: Bundle implemented in onResume, onStop in order to display FloatingActionButton if necessary.">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* DatabaseHandler.java: Cursor close fixed, addSampleRun data added&#10;* StatisticsActivity.java: implementation of achartengine because of faster rendering">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -172,13 +172,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00025" summary="* adding start/stop image&#10;* changing button img start/stop depending on their use case">
-      <created>1690578468416</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1690578468417</updated>
     </task>
     <task id="LOCAL-00026" summary="* adding start/stop image&#10;* changing button img start/stop depending on their use case">
       <created>1690580683528</created>
@@ -516,7 +509,14 @@
       <option name="project" value="LOCAL" />
       <updated>1691937011600</updated>
     </task>
-    <option name="localTasksCounter" value="74" />
+    <task id="LOCAL-00074" summary="* DatabaseHandler.java: Cursor close fixed, addSampleRun data added&#10;* StatisticsActivity.java: implementation of achartengine because of faster rendering">
+      <created>1691960891713</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1691960891713</updated>
+    </task>
+    <option name="localTasksCounter" value="75" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -532,7 +532,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* strings.xml: current location renamed to starting position&#10;* MapsActivity.java: wrong behavior if cancel button is clicked" />
     <MESSAGE value="* strings.xml: current location renamed to starting position" />
     <MESSAGE value="* MapsActivity.java: by clicking polyline, polyline transforms to dots" />
     <MESSAGE value="* StatisticsActivity.java: statistical overview of last run (max. speed, distance, avg. speed), introducing a graph about path/velocity diagram" />
@@ -557,7 +556,8 @@
     <MESSAGE value="* ForegroundService.java: Lap counter fixed in Notification again&#10;* StatisticsActivity.java: wrong physical unit when displaying avgSpeed" />
     <MESSAGE value="* DatabaseHandler.java: cursor null handling implemented when calling getSingleEntry(int lastEntry)" />
     <MESSAGE value="* MapsActivity.java: Bundle implemented in onResume, onStop in order to display FloatingActionButton if necessary." />
-    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: Bundle implemented in onResume, onStop in order to display FloatingActionButton if necessary." />
+    <MESSAGE value="* DatabaseHandler.java: Cursor close fixed, addSampleRun data added&#10;* StatisticsActivity.java: implementation of achartengine because of faster rendering" />
+    <option name="LAST_COMMIT_MESSAGE" value="* DatabaseHandler.java: Cursor close fixed, addSampleRun data added&#10;* StatisticsActivity.java: implementation of achartengine because of faster rendering" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -569,18 +569,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>499</line>
-          <option name="timeStamp" value="383" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>135</line>
-          <option name="timeStamp" value="392" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>323</line>
-          <option name="timeStamp" value="393" />
+          <line>183</line>
+          <option name="timeStamp" value="405" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
