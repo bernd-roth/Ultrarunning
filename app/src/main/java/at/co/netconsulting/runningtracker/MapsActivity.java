@@ -86,6 +86,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private DatabaseHandler db;
     private Toolbar toolbar;
     private TextView toolbar_title;
+    private String coveredDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,7 +167,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         if(!isServiceRunning) {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
-            toolbar_title.setText("Latitude: " + String.format("%.2f", lastLat) + "\tLongitude: " + String.format("%.2f", lastLng) + "\nSpeed: 0.0");
+            toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0");
         } else {
             LatLng latLng = new LatLng(lastLat, lastLng);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
@@ -181,7 +182,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 double lat = polylinePoints.get(size-1).latitude;
                 double lng = polylinePoints.get(size-1).longitude;
 
-                toolbar_title.setText("Latitude: " + String.format("%.2f", lat) + "\tLongitude: " + String.format("%.2f", lng) + "\nSpeed: " + speed);
+                toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
             }
         }
     }
@@ -315,11 +316,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             if(lastEntry!=0) {
                 if(db.getSingleEntry(lastEntry)!=null) {
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(db.getSingleEntry(lastEntry).getLat(), db.getSingleEntry(lastEntry).getLng()), 16.0f));
-                    toolbar_title.setText("Latitude: " + String.format("%.2f", db.getSingleEntry(lastEntry).getLat()) + "\tLongitude: " + String.format("%.2f", db.getSingleEntry(lastEntry).getLng()) + "\nSpeed: " + speed);
+                    toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0 Km/h");
 
                 }
             } else {
-                toolbar_title.setText("Latitude: " + 0 + "\tLongitude: " + 0 + "\t\nSpeed: " + 0);
+                toolbar_title.setText("Distance: 0.0 Km" + "\t\nSpeed: 0.0 Km/h");
             }
         }
     }
@@ -619,6 +620,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             Timber.d("DataBroadcastReceiver %s", action);
             ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
             speed = intent.getExtras().getString("SPEED");
+            coveredDistance = intent.getExtras().getString("DISTANCE");
 
             int size = polylinePoints.size();
 
