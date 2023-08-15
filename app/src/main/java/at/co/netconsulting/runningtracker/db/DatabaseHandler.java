@@ -398,4 +398,48 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 "CREATE INDEX idx_number_of_run ON " + TABLE_RUNS + "(" + KEY_NUMBER_OF_RUN +");";
         db.execSQL(CREATE_INDEX_TABLE);
     }
+
+    public Run getLastEntryOrderedById(int numberOfRun) {
+        String selectQuery = "SELECT "
+                + KEY_ID + ", "
+                + KEY_DATE_TIME + ", "
+                + KEY_LAT + ", "
+                + KEY_LNG + ", "
+                + KEY_METERS_COVERED + ", "
+                + KEY_SPEED + ", "
+                + KEY_HEART_RATE + ", "
+                + KEY_COMMENT + ", "
+                + KEY_NUMBER_OF_RUN + ", "
+                + KEY_DATETIME_IN_MS + ", "
+                + KEY_LAPS + ", "
+                + KEY_ALTITUDE + ", "
+                + KEY_PERSON
+                + " FROM " + TABLE_RUNS + " WHERE " + KEY_NUMBER_OF_RUN + " = " + numberOfRun
+                + " ORDER BY " + KEY_DATE_TIME + " DESC LIMIT 1";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        Run run = new Run();
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                run.setId(Integer.parseInt(cursor.getString(0)));
+                run.setDateTime(cursor.getString(1));
+                run.setLat(cursor.getDouble(2));
+                run.setLng(cursor.getDouble(3));
+                run.setMeters_covered(cursor.getDouble(4));
+                run.setSpeed((float) cursor.getDouble(5));
+                run.setHeart_rate(cursor.getInt(6));
+                run.setComment(cursor.getString(7));
+                run.setNumber_of_run(cursor.getInt(8));
+                run.setDateTimeInMs(cursor.getInt(9));
+                run.setLaps(cursor.getInt(10));
+                run.setAltitude(cursor.getDouble(11));
+                run.setPerson(cursor.getString(12));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return run;
+    }
 }

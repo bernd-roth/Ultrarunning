@@ -315,13 +315,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         if(isSwitchGoToLastLocation) {
             int lastEntry = db.getLastEntry();
             if(lastEntry!=0) {
-                if(db.getSingleEntry(lastEntry)!=null) {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(db.getSingleEntry(lastEntry).getLat(), db.getSingleEntry(lastEntry).getLng()), 16.0f));
+                if(db.getLastEntryOrderedById(lastEntry)!=null) {
+                    Run run = db.getLastEntryOrderedById(lastEntry);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(run.getLat(), run.getLng()), 16.0f));
                     toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0 Km/h");
-
+                } else {
+                    toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0 Km/h");
                 }
             } else {
-                toolbar_title.setText("Distance: 0.0 Km" + "\t\nSpeed: 0.0 Km/h");
+                toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0 Km/h");
             }
         }
     }
