@@ -86,7 +86,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private DatabaseHandler db;
     private Toolbar toolbar;
     private TextView toolbar_title;
-    private String coveredDistance;
+    private float coveredDistance;
     private String person;
 
     @Override
@@ -178,11 +178,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 startingPoint = false;
             } else {
                 polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-
-                int size = polylinePoints.size();
-                double lat = polylinePoints.get(size-1).latitude;
-                double lng = polylinePoints.get(size-1).longitude;
-
                 toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
             }
         }
@@ -623,7 +618,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             Timber.d("DataBroadcastReceiver %s", action);
             ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
             speed = intent.getExtras().getString("SPEED");
-            coveredDistance = intent.getExtras().getString("DISTANCE");
+            coveredDistance = intent.getExtras().getFloat("DISTANCE");
 
             int size = polylinePoints.size();
 
