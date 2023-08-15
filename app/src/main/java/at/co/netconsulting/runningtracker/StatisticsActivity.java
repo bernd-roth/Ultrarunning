@@ -71,6 +71,7 @@ public class StatisticsActivity extends Activity {
         if(listOfRun.size()>0) {
             for (int i = 0; i < listOfRun.size(); i++) {
                 meters = (float) listOfRun.get(i).getMeters_covered();
+                meters /= 1000;
                 speed = (float) listOfRun.get(i).getSpeed();
                 values.add(new Entry(meters, speed));
                 float mSpeed = listOfRun.get(i).getSpeed();
@@ -92,7 +93,7 @@ public class StatisticsActivity extends Activity {
         }
         findHighestLowestValuesSpeed();
         textViewMaxSpeed.setText("Max. speed: " +  df.format(mSpeed) + " km/h");
-        textViewDistance.setText("Distance: " + df.format(meters) + " meter");
+        textViewDistance.setText("Distance: " + df.format(meters) + " Kilometer");
         textViewAvgSpeed.setText("Avg: speed: " + df.format(avgSpeed) + " km/h");
     }
 
