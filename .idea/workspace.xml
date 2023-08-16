@@ -9,10 +9,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* show location from last run fixed">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* covered distance on toolbar format type error fixed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,11 +29,11 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="resourceFile" />
         <option value="valueResourceFile" />
         <option value="layoutResourceFile" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -98,6 +99,9 @@
       <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\src\main\java\at\co\netconsulting\runningtracker\pics" />
     </key>
     <key name="android.template.1810736474">
+      <recent name="at.co.netconsulting.runningtracker" />
+    </key>
+    <key name="ExtractSuperBase.RECENT_KEYS">
       <recent name="at.co.netconsulting.runningtracker" />
     </key>
   </component>
@@ -170,13 +174,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00034" summary="* fading start/stop button implemented">
-      <created>1690793314986</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1690793314986</updated>
     </task>
     <task id="LOCAL-00035" summary="* total number of satellites implemented">
       <created>1690794456467</created>
@@ -514,7 +511,14 @@
       <option name="project" value="LOCAL" />
       <updated>1692122283041</updated>
     </task>
-    <option name="localTasksCounter" value="83" />
+    <task id="LOCAL-00083" summary="* covered distance on toolbar format type error fixed">
+      <created>1692126441835</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1692126441836</updated>
+    </task>
+    <option name="localTasksCounter" value="84" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -530,7 +534,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* Readability  of numbers enhanced (Distance covered, Time, ...)" />
     <MESSAGE value="* Strings enhanced for readability&#10;* RadioGroupButton recording profil removed" />
     <MESSAGE value="* SettingsActivity.java: choose single entry to delete instead of entire database" />
     <MESSAGE value="* KalmanFilter enhanced" />
@@ -555,7 +558,8 @@
     <MESSAGE value="* altitude,and person added as a new column&#10;* person added in SettingsActivity.java for later evaluation" />
     <MESSAGE value="* meter converted to kilometer" />
     <MESSAGE value="* show location from last run fixed" />
-    <option name="LAST_COMMIT_MESSAGE" value="* show location from last run fixed" />
+    <MESSAGE value="* covered distance on toolbar format type error fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="* covered distance on toolbar format type error fixed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

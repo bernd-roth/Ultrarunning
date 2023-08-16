@@ -15,8 +15,30 @@
     <LinearLayout
         android:id="@+id/linechart"
         android:layout_width="match_parent"
-        android:layout_height="611dp"
+        android:layout_height="520dp"
         android:orientation="vertical" />
+
+    <LinearLayout
+        android:id="@+id/linechartforprogressbar"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="vertical" >
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progress="0" />
+
+        <TextView
+            android:id="@+id/textViewProgressbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="22dp"
+            android:text="Fetching data!\nThis may take a while!"/>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textViewMaxSpeed"

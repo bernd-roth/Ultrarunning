@@ -117,6 +117,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         } else {
             run.setNumber_of_run(0);
         }
+        cursor.close();
         return run.getNumber_of_run();
     }
 
