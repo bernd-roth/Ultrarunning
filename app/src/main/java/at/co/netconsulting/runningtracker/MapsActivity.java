@@ -448,8 +448,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapsActivity.this, android.R.layout.select_dialog_singlechoice);
         for(int i = 0; i<allEntries.size(); i++) {
             int count = db.countDataOfRun(allEntries.get(i).getNumber_of_run());
-            arrayAdapter.add("Run: " + allEntries.get(i).getNumber_of_run() + "\nDateTime: " + allEntries.get(i).getDateTime() +
-                    "\n" + count + " points to load");
+            arrayAdapter.add(allEntries.get(i).getDateTime()
+                    + "\n" + count + " points to load");
         }
 
         builderSingle.setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
@@ -462,9 +462,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String numberOfRun = arrayAdapter.getItem(which);
-                String[] splittedString = numberOfRun.split("-");
-                int intNumberOfRun = Integer.parseInt(splittedString[0]);
+                int numberOfRun = allEntries.get(which).getNumber_of_run();
 
                 final LatLng[] latLng = new LatLng[1];
 
@@ -475,7 +473,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     @Override
                     public void run() {
                         //Background work here
-                        List<Run> allEntries = db.getSingleEntryOrderedByDateTime(intNumberOfRun);
+                        List<Run> allEntries = db.getSingleEntryOrderedByDateTime(numberOfRun);
 
                         for(int i = 0; i<allEntries.size(); i++) {
                             latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
