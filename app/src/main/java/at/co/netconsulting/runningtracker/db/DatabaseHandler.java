@@ -249,6 +249,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return allEntryList;
     }
 
+    public int countDataOfRun(int numberOfRun) {
+        // Select All Query
+        String selectQuery = "SELECT COUNT("
+                + KEY_NUMBER_OF_RUN
+                + ") FROM " + TABLE_RUNS + " WHERE " + KEY_NUMBER_OF_RUN + " = " + numberOfRun;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        cursor.moveToFirst();
+        int count= cursor.getInt(0);
+        cursor.close();
+
+        return count;
+    }
+
     public void addSampleRun(int meters) {
         db = this.getWritableDatabase();
 

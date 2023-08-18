@@ -6,6 +6,7 @@ import static android.Manifest.permission.POST_NOTIFICATIONS;
 
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +18,7 @@ import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.text.Editable;
@@ -27,6 +29,7 @@ import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
@@ -51,11 +54,15 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.achartengine.ChartFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
@@ -70,7 +77,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     //Polyline
-    private Polyline polyline;
+    private Polyline polyline, polylineKalmanFiltered;
     private List<LatLng> polylinePoints, polylinePointsTemp;
     private boolean isDisableZoomCamera;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabPauseRecording;
@@ -440,7 +447,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapsActivity.this, android.R.layout.select_dialog_singlechoice);
         for(int i = 0; i<allEntries.size(); i++) {
-            arrayAdapter.add(allEntries.get(i).getNumber_of_run() + "-DateTime: " + allEntries.get(i).getDateTime());
+            int count = db.countDataOfRun(allEntries.get(i).getNumber_of_run());
+            arrayAdapter.add("Run: " + allEntries.get(i).getNumber_of_run() + "\nDateTime: " + allEntries.get(i).getDateTime() +
+                    "\n" + count + " points to load");
         }
 
         builderSingle.setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
@@ -457,14 +466,30 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 String[] splittedString = numberOfRun.split("-");
                 int intNumberOfRun = Integer.parseInt(splittedString[0]);
 
-                List<Run> allEntries = db.getSingleEntryOrderedByDateTime(intNumberOfRun);
-                LatLng latLng;
+                final LatLng[] latLng = new LatLng[1];
 
-                for(int i = 0;i<allEntries.size(); i++) {
-                    latLng = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
-                    polylinePoints.add(latLng);
-                }
-                fillPolyPoints(polylinePoints);
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Handler handler = new Handler(Looper.getMainLooper());
+
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Background work here
+                        List<Run> allEntries = db.getSingleEntryOrderedByDateTime(intNumberOfRun);
+
+                        for(int i = 0; i<allEntries.size(); i++) {
+                            latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
+                            polylinePoints.add(latLng[0]);
+                        }
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                //UI Thread work here
+                                fillPolyPoints(polylinePoints);
+                            }
+                        });
+                    }
+                });
             }
         });
         builderSingle.show();
@@ -609,6 +634,31 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         bundle.putString("Pausing", value);
         intent.putExtras(bundle);
         getApplicationContext().sendBroadcast(intent);
+    }
+
+    public void onClickShowRecordedPlusKalmanfilter(View view) {
+        mMap.clear();
+
+        //start with fetching and then filling polyline
+        int lastRun = db.getLastEntry();
+        List<Run> allEntries = db.getSingleEntryOrderedByDateTime(lastRun);
+        LatLng latLng;
+
+        for(int i = 0;i<allEntries.size(); i++) {
+            latLng = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
+            polylinePoints.add(latLng);
+        }
+        polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+
+        //start with fetching kalman filtered values and then filling polyline
+        lastRun = db.getLastEntry();
+        allEntries = db.getSingleEntryOrderedByDateTime(lastRun);
+
+        for(int i = 0;i<allEntries.size(); i++) {
+            latLng = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
+            polylinePoints.add(latLng);
+        }
+        polylineKalmanFiltered = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
     }
 
     private class DataBroadcastReceiver extends BroadcastReceiver {

@@ -76,4 +76,8 @@
     <string name="delete_chosen_single_entry">Delete single entry</string>
     <string name="person">Runner`s name</string>
     <string name="anonym_person">Anonym</string>
+    <string name="graph_plotting">Data successfully retrieved.\nPlotting your graph now!</string>
+    <string name="title_graph">Distance / Speed Graph</string>
+    <string name="title_x_axis">Distance</string>
+    <string name="title_y_axis">Speed</string>
 </resources>

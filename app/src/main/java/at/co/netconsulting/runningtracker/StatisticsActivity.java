@@ -51,7 +51,7 @@ public class StatisticsActivity extends Activity {
     private ProgressBar progressBar;
 
     private void initChart() {
-        mCurrentSeries = new XYSeries("Distance / Speed Graph");
+        mCurrentSeries = new XYSeries(getString(R.string.title_graph));
         mCurrentRenderer = new XYSeriesRenderer();
         mCurrentRenderer.setPointStyle(PointStyle.CIRCLE);
 // here set the label and its size for all points in graph
@@ -83,6 +83,8 @@ public class StatisticsActivity extends Activity {
 
         int intLastEntry = db.getLastEntry();
         listOfRun = db.getSingleEntryOrderedByDateTime(intLastEntry);
+        textViewProgressbar.setText(R.string.graph_plotting);
+
         int sizeOfList = listOfRun.size();
         int counter = 0, result = 0, i = 0;
 
@@ -160,9 +162,9 @@ public class StatisticsActivity extends Activity {
             });
 
             //callDatabase();
-            mRenderer.setXTitle("Distance");
+            mRenderer.setXTitle(getString(R.string.title_x_axis));
             mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00));
-            mRenderer.setYTitle("Speed");
+            mRenderer.setYTitle(getString(R.string.title_y_axis));
             mRenderer.setShowGrid(true);
             mRenderer.setGridColor(Color.GRAY);
             mRenderer.setLabelsTextSize(40f);
