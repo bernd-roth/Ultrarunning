@@ -9,11 +9,14 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* covered distance on toolbar format type error fixed">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: beautifying source code">
+      <change afterPath="$PROJECT_DIR$/app/google-services.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,8 +35,8 @@
         <option value="resourceFile" />
         <option value="valueResourceFile" />
         <option value="layoutResourceFile" />
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -72,7 +75,7 @@
     <property name="android-custom-viewC:/Users/bernd/AppData/Local/Android/Sdk/sources/android-33/android/view/View.java_SELECTED" value="View" />
     <property name="cidr.known.project.marker" value="true" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/main/res/drawable" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/libs" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/app" />
     <property name="project.structure.last.edited" value="Dependencies" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -87,6 +90,7 @@
       <recent name="at.co.netconsulting.runningtracker.service" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app" />
       <recent name="Z:\bernd\selbstgeschriebeneprogramme\android\RunningTracker\app\libs" />
       <recent name="C:\projects\android\RunningTracker\app\src\main\res" />
       <recent name="C:\projects\android\RunningTracker\app\src\main\res\drawable" />
@@ -174,27 +178,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00035" summary="* total number of satellites implemented">
-      <created>1690794456467</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1690794456467</updated>
-    </task>
-    <task id="LOCAL-00036" summary="* display recorded tracks by selecting single track from table&#10;* new icon for choosing track to display">
-      <created>1690807047497</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1690807047497</updated>
-    </task>
-    <task id="LOCAL-00037" summary="* ForegroundService.java: minor string change&#10;* moving hardcoded strings to strings.xml">
-      <created>1690814215820</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1690814215820</updated>
     </task>
     <task id="LOCAL-00038" summary="* MapsActivity.java: polylinePoints cleared before filling it with old data">
       <created>1690821906886</created>
@@ -518,7 +501,28 @@
       <option name="project" value="LOCAL" />
       <updated>1692126441836</updated>
     </task>
-    <option name="localTasksCounter" value="84" />
+    <task id="LOCAL-00084" summary="* Added progressbar and preventing of ANR, if mass of data needs to be loaded">
+      <created>1692192500754</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1692192500755</updated>
+    </task>
+    <task id="LOCAL-00085" summary="* MapsActivity.java: loading data in background for preventing ANR&#10;* Starting with showing the difference from Kalman filtered track and gps track">
+      <created>1692364454796</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1692364454797</updated>
+    </task>
+    <task id="LOCAL-00086" summary="* MapsActivity.java: beautifying source code">
+      <created>1692371374012</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1692371374012</updated>
+    </task>
+    <option name="localTasksCounter" value="87" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -534,10 +538,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* Strings enhanced for readability&#10;* RadioGroupButton recording profil removed" />
-    <MESSAGE value="* SettingsActivity.java: choose single entry to delete instead of entire database" />
-    <MESSAGE value="* KalmanFilter enhanced" />
-    <MESSAGE value="* SettingsActivity.java:  ProgressDialog removed&#10;* DatabaseHandler.java: index created for table" />
     <MESSAGE value="* Adding lap counting &gt; 1000 meter&#10;* removing description label from graph" />
     <MESSAGE value="* DatabaseHandler.java: CREATE UNIQUE INDEX changed to CREATE INDEX" />
     <MESSAGE value="* SettingsActivity.java: ProgressDialog for exporting data; Deleting all data not working - fixed." />
@@ -559,14 +559,18 @@
     <MESSAGE value="* meter converted to kilometer" />
     <MESSAGE value="* show location from last run fixed" />
     <MESSAGE value="* covered distance on toolbar format type error fixed" />
-    <option name="LAST_COMMIT_MESSAGE" value="* covered distance on toolbar format type error fixed" />
+    <MESSAGE value="* Added progressbar and preventing of ANR, if mass of data needs to be loaded" />
+    <MESSAGE value="* adding names for strings.xml" />
+    <MESSAGE value="* MapsActivity.java: loading data in background for preventing ANR&#10;* Starting with showing the difference from Kalman filtered track and gps track" />
+    <MESSAGE value="* MapsActivity.java: beautifying source code" />
+    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: beautifying source code" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java</url>
-          <line>178</line>
+          <line>176</line>
           <option name="timeStamp" value="379" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
@@ -574,27 +578,12 @@
           <line>397</line>
           <option name="timeStamp" value="410" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>172</line>
-          <option name="timeStamp" value="420" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>169</line>
-          <option name="timeStamp" value="421" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>176</line>
-          <option name="timeStamp" value="422" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>179</line>
-          <option name="timeStamp" value="423" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="java.lang.String" memberName="shadow$_klass_" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
 </project>

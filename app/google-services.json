@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "878894747062",
+    "firebase_url": "https://runningtracker-378504-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "runningtracker-378504",
+    "storage_bucket": "runningtracker-378504.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:878894747062:android:555c32388d60f95d230517",
+        "android_client_info": {
+          "package_name": "at.co.netconsulting.runningtracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "878894747062-471nqo5riih9bucac71g4uus5dh0sv15.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCk6LBgO6-Rsk8-TMi1cHDMapVU7_pL_hk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "878894747062-471nqo5riih9bucac71g4uus5dh0sv15.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

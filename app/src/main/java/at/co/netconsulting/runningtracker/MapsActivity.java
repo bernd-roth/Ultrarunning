@@ -3,10 +3,8 @@ package at.co.netconsulting.runningtracker;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.POST_NOTIFICATIONS;
-
 import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,17 +27,14 @@ import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import androidx.appcompat.widget.Toolbar;
-
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -52,10 +47,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.achartengine.ChartFactory;
-
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -63,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
@@ -77,8 +73,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     //Polyline
-    private Polyline polyline, polylineKalmanFiltered;
-    private List<LatLng> polylinePoints, polylinePointsTemp;
+    private Polyline polyline, polylineKalmanFiltered, polylineOtherPerson;
+    private List<LatLng> polylinePoints, polylinePointsTemp, polylinePointsOtherPerson;
     private boolean isDisableZoomCamera;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabPauseRecording;
     private double lastLat, lastLng;
@@ -87,7 +83,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private String[] permissions;
     private LocationManager locationManager;
     private boolean gps_enabled;
-    private boolean startingPoint;
+    private boolean startingPoint, startingPointJulia;
     private BroadcastReceiver receiver;
     private boolean isPauseRecordingClicked, isSwitchPausedActivated, isSwitchGoToLastLocation;
     private DatabaseHandler db;
@@ -181,13 +177,61 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
 
             if(startingPoint) {
-                mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location)));
+                mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location))).showInfoWindow();
                 startingPoint = false;
             } else {
-                polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
                 toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
+
+                //check if firebase has some values left and draw it
+                getFirebaseDatabase(polylinePoints);
             }
         }
+    }
+
+    private void getFirebaseDatabase(List<LatLng> polylinePoints) {
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        DatabaseReference user1 = myRef.child("Bernd");
+        DatabaseReference user2 = myRef.child("Julia");
+
+        //get value
+        user1.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DataSnapshot snapshot = task.getResult();
+
+                    Double lat = snapshot.child("lat").getValue(Double.class);
+                    Double lon = snapshot.child("lon").getValue(Double.class);
+
+                    //User Bernd
+                    polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+                } else {
+                    Timber.d("Exception addOnCompleteListener: %s", task.getException().getMessage());
+                }
+            }
+        });
+
+        user2.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DataSnapshot snapshot = task.getResult();
+
+                    Double lat = snapshot.child("lat").getValue(Double.class);
+                    Double lon = snapshot.child("lon").getValue(Double.class);
+
+                    //User Julia
+                    if(startingPointJulia) {
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title("Julia")).showInfoWindow();
+                        startingPointJulia=false;
+                    }
+                    polylinePointsOtherPerson.add(new LatLng(lat, lon));
+                    polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePointsOtherPerson).color(Color.BLACK).jointType(JointType.ROUND).width(15.0f));
+                } else {
+                    Timber.d("Exception addOnCompleteListener: %s", task.getException().getMessage());
+                }
+            }
+        });
     }
 
     private boolean isServiceRunning(String serviceName) {
@@ -224,7 +268,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabStopRecording.setVisibility(View.INVISIBLE);
         fabStatistics = findViewById(R.id.fabStatistics);
         fabPauseRecording = findViewById(R.id.fabPauseRecording);
-            fabPauseRecording.setVisibility(View.INVISIBLE);
+        fabPauseRecording.setVisibility(View.INVISIBLE);
         fabStatistics.setVisibility(View.VISIBLE);
         toolbar = findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(Color.LTGRAY);
@@ -232,11 +276,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         polylinePoints = new ArrayList<>();
         polylinePointsTemp = new ArrayList<>();
+        polylinePointsOtherPerson = new ArrayList<>();
         configureReceiver();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
-        locationManager = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         isDisableZoomCamera = true;
         startingPoint = true;
+        startingPointJulia = true;
         db = new DatabaseHandler(this);
     }
 
@@ -313,7 +359,22 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setPadding(0,0,0,90);
         mMap.getUiSettings().setMapToolbarEnabled(true);
+        mMap.setTrafficEnabled(true);
+        mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            @Override
+            public void onCameraMoveStarted(int reason) {
+                int mCameraMoveReason = reason;
+                if (mCameraMoveReason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+                    mMap.stopAnimation();
+                } else if(mCameraMoveReason == GoogleMap.OnCameraMoveStartedListener.REASON_API_ANIMATION) {
+                    goToLastLocation();
+                }
+            }
+        });
+        goToLastLocation();
+    }
 
+    private void goToLastLocation() {
         if(isSwitchGoToLastLocation) {
             int lastEntry = db.getLastEntry();
             if(lastEntry!=0) {
