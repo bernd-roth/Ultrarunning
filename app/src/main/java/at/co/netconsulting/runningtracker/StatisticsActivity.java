@@ -49,6 +49,7 @@ public class StatisticsActivity extends Activity {
     private ArrayList<Entry> values;
     private LinearLayout layout;
     private ProgressBar progressBar;
+    private int intLastEntry;
 
     private void initChart() {
         mCurrentSeries = new XYSeries(getString(R.string.title_graph));
@@ -81,38 +82,40 @@ public class StatisticsActivity extends Activity {
 //        for(int i = 1; i<50000; i++)
 //            db.addSampleRun(i);
 
-        int intLastEntry = db.getLastEntry();
-        listOfRun = db.getSingleEntryOrderedByDateTime(intLastEntry);
-        textViewProgressbar.setText(R.string.graph_plotting);
+        intLastEntry = db.getLastEntry();
+        if(intLastEntry!=0) {
+            listOfRun = db.getSingleEntryOrderedByDateTime(intLastEntry);
+            textViewProgressbar.setText(R.string.graph_plotting);
 
-        int sizeOfList = listOfRun.size();
-        int counter = 0, result = 0, i = 0;
+            int sizeOfList = listOfRun.size();
+            int counter = 0, result = 0, i = 0;
 
-        for(Run run : listOfRun) {
-            mCurrentSeries.add(run.getMeters_covered(), run.getSpeed());
-            counter++;
-            result = (counter*100)/sizeOfList;
+            for (Run run : listOfRun) {
+                mCurrentSeries.add(run.getMeters_covered(), run.getSpeed());
+                counter++;
+                result = (counter * 100) / sizeOfList;
 
-            //findLowestHighestValues
-            meters = (float) listOfRun.get(i).getMeters_covered();
-            meters /= 1000;
-            speed = (float) listOfRun.get(i).getSpeed();
-            values.add(new Entry(meters, speed));
-            float mSpeed = listOfRun.get(i).getSpeed();
-            maxSpeed.add(mSpeed);
-            avgSpeed += speed;
+                //findLowestHighestValues
+                meters = (float) listOfRun.get(i).getMeters_covered();
+                meters /= 1000;
+                speed = (float) listOfRun.get(i).getSpeed();
+                values.add(new Entry(meters, speed));
+                float mSpeed = listOfRun.get(i).getSpeed();
+                maxSpeed.add(mSpeed);
+                avgSpeed += speed;
 
-            i++;
-            //set progress
-            progressBar.setProgress(result);
+                i++;
+                //set progress
+                progressBar.setProgress(result);
+            }
+
+            mSpeed = Collections.max(maxSpeed);
+            avgSpeed /= sizeOfList;
+
+            textViewMaxSpeed.setText("Max. speed: " + df.format(mSpeed) + " km/h");
+            textViewDistance.setText("Distance: " + df.format(meters) + " Kilometer");
+            textViewAvgSpeed.setText("Avg: speed: " + df.format(avgSpeed) + " km/h");
         }
-
-        mSpeed = Collections.max(maxSpeed);
-        avgSpeed /= sizeOfList;
-
-        textViewMaxSpeed.setText("Max. speed: " +  df.format(mSpeed) + " km/h");
-        textViewDistance.setText("Distance: " + df.format(meters) + " Kilometer");
-        textViewAvgSpeed.setText("Avg: speed: " + df.format(avgSpeed) + " km/h");
     }
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,10 +155,15 @@ public class StatisticsActivity extends Activity {
                         @Override
                         public void run() {
                             //UI Thread work here
-                            mChart = ChartFactory.getCubeLineChartView(getApplicationContext(), mDataset, mRenderer, 0.3f);
-                            layout.addView(mChart);
-                            progressBar.setVisibility(View.INVISIBLE);
-                            textViewProgressbar.setVisibility(View.INVISIBLE);
+                            if(intLastEntry!=0) {
+                                mChart = ChartFactory.getCubeLineChartView(getApplicationContext(), mDataset, mRenderer, 0.3f);
+                                layout.addView(mChart);
+                                progressBar.setVisibility(View.INVISIBLE);
+                                textViewProgressbar.setVisibility(View.INVISIBLE);
+                            } else {
+                                textViewProgressbar.setVisibility(View.INVISIBLE);
+                                textViewMaxSpeed.setText("Currently, you do not have any runs in your database!");
+                            }
                         }
                     });
                 }

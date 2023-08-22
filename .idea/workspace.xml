@@ -9,14 +9,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: beautifying source code">
-      <change afterPath="$PROJECT_DIR$/app/google-services.json" afterDir="false" />
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* ForegroundService.java: Adding firebase access&#10;* MapsActivity.java: showing another user on maps; enable/disable animateCamera if map is dragged">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -178,13 +173,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00038" summary="* MapsActivity.java: polylinePoints cleared before filling it with old data">
-      <created>1690821906886</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1690821906886</updated>
     </task>
     <task id="LOCAL-00039" summary="* MapsActivity.java: Live drawing enhanced">
       <created>1690842874485</created>
@@ -522,7 +510,14 @@
       <option name="project" value="LOCAL" />
       <updated>1692371374012</updated>
     </task>
-    <option name="localTasksCounter" value="87" />
+    <task id="LOCAL-00087" summary="* ForegroundService.java: Adding firebase access&#10;* MapsActivity.java: showing another user on maps; enable/disable animateCamera if map is dragged">
+      <created>1692649024698</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1692649024699</updated>
+    </task>
+    <option name="localTasksCounter" value="88" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -538,7 +533,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* Adding lap counting &gt; 1000 meter&#10;* removing description label from graph" />
     <MESSAGE value="* DatabaseHandler.java: CREATE UNIQUE INDEX changed to CREATE INDEX" />
     <MESSAGE value="* SettingsActivity.java: ProgressDialog for exporting data; Deleting all data not working - fixed." />
     <MESSAGE value="* DatabaseHandler.java: Saving number of runs fixed" />
@@ -563,7 +557,8 @@
     <MESSAGE value="* adding names for strings.xml" />
     <MESSAGE value="* MapsActivity.java: loading data in background for preventing ANR&#10;* Starting with showing the difference from Kalman filtered track and gps track" />
     <MESSAGE value="* MapsActivity.java: beautifying source code" />
-    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: beautifying source code" />
+    <MESSAGE value="* ForegroundService.java: Adding firebase access&#10;* MapsActivity.java: showing another user on maps; enable/disable animateCamera if map is dragged" />
+    <option name="LAST_COMMIT_MESSAGE" value="* ForegroundService.java: Adding firebase access&#10;* MapsActivity.java: showing another user on maps; enable/disable animateCamera if map is dragged" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
