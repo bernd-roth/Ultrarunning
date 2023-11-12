@@ -9,9 +9,130 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* ForegroundService.java: Adding firebase access&#10;* MapsActivity.java: showing another user on maps; enable/disable animateCamera if map is dragged">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity+ForegroundService: firebase deactivated&#10;* MapsActivity: ANR caused by remove statement">
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/.idea/assetWizardSettings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/java/at/co/netconsulting/runningtracker/StaticFields.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/java/at/co/netconsulting/runningtracker/general/BaseActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-anydpi/ic_bar_chart.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-anydpi/ic_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-hdpi/ic_bar_chart.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-hdpi/ic_settings.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-mdpi/ic_bar_chart.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-mdpi/ic_settings.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-xhdpi/ic_bar_chart.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-xhdpi/ic_settings.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-xxhdpi/ic_bar_chart.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-xxhdpi/ic_settings.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable/ic_baseline_adjust_24.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/layout/activity_statistics.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/layout/settings_activity.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/menu/menu.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/menu/menu_statistics.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/mipmap-hdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/mipmap-mdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/mipmap-xhdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/values-land/dimens.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/values-w1240dp/dimens.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/values-w600dp/dimens.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/values/arrays.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/values/dimens.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/xml/root_preferences.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/gradle.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/apk/Parkingticket.apk" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/proguard-rules.pro" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/androidTest/java/at/co/netconsulting/parkingticket/ExampleInstrumentedTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/assets/auto.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/assets/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/assets/jquery.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/assets/leaflet-src.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/assets/leaflet.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/assets/leaflet.ie.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/assets/leaflet.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/assets/mapbox.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/assets/parkingplaces.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/ic_launcher-playstore.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/at/co/netconsulting/parkingticket/CalculationParkingTicket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/at/co/netconsulting/parkingticket/MainActivity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/at/co/netconsulting/parkingticket/Parkingplace.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/at/co/netconsulting/parkingticket/SettingsActivity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/at/co/netconsulting/parkingticket/SingletonParkscheinTicket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/at/co/netconsulting/parkingticket/broadcastreceiver/SmsBroadcastReceiver.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/at/co/netconsulting/parkingticket/general/BaseActivity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/at/co/netconsulting/parkingticket/general/StaticFields.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/at/co/netconsulting/parkingticket/pojo/ParkscheinCollection.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/at/co/netconsulting/parkingticket/profile/Profile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/at/co/netconsulting/parkingticket/service/ForegroundService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/drawable/ic_launcher_foreground.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/layout/activity_main.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/layout/activity_parkingpplaces.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/layout/activity_profile.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/layout/activity_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/layout/content_profile.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/layout/content_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/menu/menu_main.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/menu/menu_options.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/menu/menu_parkingplacesoverview.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/menu/menu_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/mipmap-hdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/mipmap-mdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/mipmap-xhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/mipmap-xxhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values-de/arrays.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values-de/colors.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values-de/dimens.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values-de/strings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values-de/themes.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values-land/dimens.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values-night/themes.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values-w1240dp/dimens.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values-w600dp/dimens.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values/arrays.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values/colors.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values/dimens.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values/strings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/res/values/themes.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/test/java/at/co/netconsulting/parkingticket/ExampleUnitTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../gradle.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../settings.gradle" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,22 +181,13 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
-    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="android-custom-viewC:/Users/bernd/AppData/Local/Android/Sdk/sources/android-33/android/view/View.java_SELECTED" value="View" />
-    <property name="cidr.known.project.marker" value="true" />
-    <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/main/res/drawable" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app" />
-    <property name="project.structure.last.edited" value="Dependencies" />
-    <property name="project.structure.proportion" value="0.17" />
-    <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "android-custom-viewC:/Users/bernd/AppData/Local/Android/Sdk/sources/android-33/android/view/View.java_SELECTED": "View",
+    "cidr.known.project.marker": "true"
+  }
+}]]></component>
   <component name="RecentsManager">
     <key name="android.template.-1983559038">
       <recent name="at.co.netconsulting.runningtracker" />
@@ -115,7 +227,6 @@
       <option name="ALL_USERS" value="false" />
       <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
       <option name="CLEAR_APP_STORAGE" value="false" />
-      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
       <option name="ACTIVITY_EXTRA_FLAGS" value="" />
       <option name="MODE" value="default_activity" />
       <option name="CLEAR_LOGCAT" value="false" />
@@ -131,6 +242,8 @@
         <option name="WORKING_DIR" value="" />
         <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
         <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
       </Auto>
       <Hybrid>
         <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
@@ -138,14 +251,21 @@
         <option name="WORKING_DIR" value="" />
         <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
         <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
       </Hybrid>
-      <Java />
+      <Java>
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Java>
       <Native>
         <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
         <option name="SHOW_STATIC_VARS" value="true" />
         <option name="WORKING_DIR" value="" />
         <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
         <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
       </Native>
       <Profilers>
         <option name="ADVANCED_PROFILING_ENABLED" value="false" />
@@ -154,7 +274,6 @@
         <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Sample (legacy)" />
         <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
         <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
-        <option name="PROFILING_MODE" value="NOT_SET" />
       </Profilers>
       <option name="DEEP_LINK" value="" />
       <option name="ACTIVITY_CLASS" value="" />
@@ -533,7 +652,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* DatabaseHandler.java: CREATE UNIQUE INDEX changed to CREATE INDEX" />
     <MESSAGE value="* SettingsActivity.java: ProgressDialog for exporting data; Deleting all data not working - fixed." />
     <MESSAGE value="* DatabaseHandler.java: Saving number of runs fixed" />
     <MESSAGE value="* Run.java: adding getter/setter" />
@@ -558,7 +676,8 @@
     <MESSAGE value="* MapsActivity.java: loading data in background for preventing ANR&#10;* Starting with showing the difference from Kalman filtered track and gps track" />
     <MESSAGE value="* MapsActivity.java: beautifying source code" />
     <MESSAGE value="* ForegroundService.java: Adding firebase access&#10;* MapsActivity.java: showing another user on maps; enable/disable animateCamera if map is dragged" />
-    <option name="LAST_COMMIT_MESSAGE" value="* ForegroundService.java: Adding firebase access&#10;* MapsActivity.java: showing another user on maps; enable/disable animateCamera if map is dragged" />
+    <MESSAGE value="* MapsActivity+ForegroundService: firebase deactivated&#10;* MapsActivity: ANR caused by remove statement" />
+    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity+ForegroundService: firebase deactivated&#10;* MapsActivity: ANR caused by remove statement" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

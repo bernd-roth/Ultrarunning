@@ -154,7 +154,7 @@ public class ForegroundService extends Service implements LocationListener {
             run.setAltitude(altitude);
             run.setPerson(person);
             db.addRun(run);
-            saveToFirebase(run);
+            //saveToFirebase(run);
         }
     }
 
@@ -421,7 +421,7 @@ public class ForegroundService extends Service implements LocationListener {
         //pause button was not pressed yet
         if(bundlePause==null) {
             saveToDatabase();
-            saveToFirebase(run);
+            //saveToFirebase(run);
         } else {
             if(isCommentOnPause) {
                 saveToDatabaseWithComment("Paused");
@@ -429,26 +429,26 @@ public class ForegroundService extends Service implements LocationListener {
         }
     }
 
-    private void saveToFirebase(Run run) {
-        Run param = run;
-
-        HashMap<String, Object> location = new HashMap<>();
-        location.put("lat", param.getLat());
-        location.put("lon", param.getLng());
-        location.put("distance", param.getMeters_covered());
-
-        //save value
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference usersRef = db.child("Users");
-        DatabaseReference personRef;
-
-        if(person.equals("Bernd")) {
-            personRef = usersRef.child("Bernd");
-        } else {
-            personRef = usersRef.child("Julia");
-        }
-        personRef.setValue(location);
-    }
+//    private void saveToFirebase(Run run) {
+//        Run param = run;
+//
+//        HashMap<String, Object> location = new HashMap<>();
+//        location.put("lat", param.getLat());
+//        location.put("lon", param.getLng());
+//        location.put("distance", param.getMeters_covered());
+//
+//        //save value
+//        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+//        DatabaseReference usersRef = db.child("Users");
+//        DatabaseReference personRef;
+//
+//        if(person.equals("Bernd")) {
+//            personRef = usersRef.child("Bernd");
+//        } else {
+//            personRef = usersRef.child("Julia");
+//        }
+//        personRef.setValue(location);
+//    }
 
     @Override
     public void onLocationChanged(@NonNull List<Location> locations) {

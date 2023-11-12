@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,6 +39,7 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Dot;
 import com.google.android.gms.maps.model.Gap;
@@ -53,8 +55,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -168,6 +174,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
     private void createListenerAndfillPolyPoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
         boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
+        //isServiceRunning = true; // FIXME
 
         if(!isServiceRunning) {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
@@ -175,17 +182,46 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         } else {
             LatLng latLng = new LatLng(lastLat, lastLng);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+            Projection projection = mMap.getProjection();
 
             if(startingPoint) {
                 mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location))).showInfoWindow();
-                startingPoint = false;
-            } else {
-                toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
-
-                //check if firebase has some values left and draw it
-                getFirebaseDatabase(polylinePoints);
+                                startingPoint = false;
+                            } else {
+                //                polylinePoints = groupPoints(polylinePoints, projection);
+                //
+                                List<LatLng> latLngs = polylinePoints;
+                //                //double lat = latLngs.get(latLngs.size()-1).latitude;
+                //                //double lon = latLngs.get(latLngs.size()-1).longitude;
+                                //latLngs.remove(latLngs.size()-1);
+                //                //latLngs.add(new LatLng(lat, lon));
+                //
+                polylinePoints = new ArrayList<>();
+                                for(int i = 0; i<=1000000; i++) {
+                                    polylinePoints.add(new LatLng(48.182347, 16.362552));
+                                }
+                                polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+                                toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
+                //
+                //                //check if firebase has some values left and draw it
+                //                //getFirebaseDatabase(polylinePoints);
             }
         }
+    }
+
+    private static List<LatLng> groupPoints(List<LatLng> polylinePoints, Projection projection) {
+        ArrayList<LatLng> result = new ArrayList<LatLng>();
+        Map<Point, LatLng> groupedPoints = new HashMap<Point, LatLng>();
+        for (LatLng xlatLng : polylinePoints) {
+            Point p = projection.toScreenLocation(xlatLng);
+            LatLng x = groupedPoints.get(p);
+            if (!groupedPoints.containsKey(p)) {
+                groupedPoints.put(p, xlatLng);
+                result.add(xlatLng);
+            }
+        }
+        Timber.d("result %s", result);
+        return result;
     }
 
     private void getFirebaseDatabase(List<LatLng> polylinePoints) {
@@ -437,10 +473,28 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 Intent intentForegroundService = new Intent(contextFabRecording, ForegroundService.class);
                 intentForegroundService.setAction("ACTION_START");
                 contextFabRecording.startForegroundService(intentForegroundService);
-                //createListenerAndfillPolyPoints(lastLat, lastLng);
+                createListenerAndfillPolyPoints(lastLat, lastLng, Arrays.asList(new LatLng[] {
+                    new LatLng(48.182347,16.362552),
+                    new LatLng(48.182347,16.362552),
+                    new LatLng(48.182347,16.362552),
+                    new LatLng(48.182733,16.363947),
+                    new LatLng(48.183048,16.364420),
+                    new LatLng(48.183148,16.364892),
+                    new LatLng(48.183334,16.365407),
+                    new LatLng(48.183735,16.365042),
+                    new LatLng(48.183825,16.364900),
+                    new LatLng(48.184054,16.364718),
+                    new LatLng(48.184197,16.364525),
+                    new LatLng(45.427070,10.986505),
+                    new LatLng(45.427026,10.986528),
+                    new LatLng(45.426977,10.986518),
+                    new LatLng(45.426940,10.986512),
+                    new LatLng(45.426921,10.986582),
+                    new LatLng(45.426910,10.986684),
+                }));
                 LatLng latLng = new LatLng(lastLat, lastLng);
                 //markerName = mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location)));
-                mMap.clear();
+//                mMap.clear();
 
                 fadingButtons(R.id.fabRecording);
 
@@ -568,7 +622,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         polyline.setClickable(true);
 
         mMap.addMarker(new MarkerOptions().position(latLng).title(getString(R.string.starting_position)));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 16));
         mMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
             @Override
             public void onPolylineClick(@NonNull Polyline polyline) {
