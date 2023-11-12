@@ -49,14 +49,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -172,7 +165,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         isSwitchGoToLastLocation = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, false);
     }
 
-    private void createListenerAndfillPolyPoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
+    private void createPolypoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
         boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
         //isServiceRunning = true; // FIXME
 
@@ -186,15 +179,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
             if(startingPoint) {
                 mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location))).showInfoWindow();
-                                startingPoint = false;
-                            } else {
-                                polylinePoints = groupPoints(polylinePoints, projection);
+                startingPoint = false;
+            } else {
+                polylinePoints = groupPoints(polylinePoints, projection);
 
-                                polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-                                toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
+                polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+                toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
 
-                //                //check if firebase has some values left and draw it
-                //                //getFirebaseDatabase(polylinePoints);
+                //check if firebase has some values left and draw it
+                //getFirebaseDatabase(polylinePoints);
             }
         }
     }
@@ -771,7 +764,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 lastLng = lastEntry.longitude;
                 polylinePointsTemp.add(lastEntry);
             }
-            createListenerAndfillPolyPoints(lastLat, lastLng, polylinePointsTemp);
+            createPolypoints(lastLat, lastLng, polylinePointsTemp);
         }
     }
 }
