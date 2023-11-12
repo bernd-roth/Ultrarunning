@@ -10,42 +10,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity+ForegroundService: firebase deactivated&#10;* MapsActivity: ANR caused by remove statement">
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/.idea/assetWizardSettings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/java/at/co/netconsulting/runningtracker/StaticFields.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/java/at/co/netconsulting/runningtracker/general/BaseActivity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-anydpi/ic_bar_chart.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-anydpi/ic_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-hdpi/ic_bar_chart.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-hdpi/ic_settings.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-mdpi/ic_bar_chart.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-mdpi/ic_settings.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-xhdpi/ic_bar_chart.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-xhdpi/ic_settings.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-xxhdpi/ic_bar_chart.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable-xxhdpi/ic_settings.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/drawable/ic_baseline_adjust_24.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/layout/activity_statistics.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/layout/settings_activity.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/menu/menu.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/menu/menu_statistics.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/mipmap-hdpi/ic_launcher.webp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/mipmap-mdpi/ic_launcher.webp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/mipmap-xhdpi/ic_launcher.webp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/values-land/dimens.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/values-w1240dp/dimens.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/values-w600dp/dimens.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/values/arrays.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/values/dimens.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../RunningTracker/app/src/main/res/xml/root_preferences.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../.idea/.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../.idea/compiler.xml" beforeDir="false" />
@@ -54,12 +18,8 @@
       <change beforePath="$PROJECT_DIR$/../.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../LICENSE" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/apk/Parkingticket.apk" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/build.gradle" beforeDir="false" />
@@ -180,12 +140,15 @@
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+    <option name="showVisibilityIcons" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.cidr.known.project.marker": "true",
     "android-custom-viewC:/Users/bernd/AppData/Local/Android/Sdk/sources/android-33/android/view/View.java_SELECTED": "View",
-    "cidr.known.project.marker": "true"
+    "cidr.known.project.marker": "true",
+    "settings.editor.selected.configurable": "preferences.lookFeel"
   }
 }]]></component>
   <component name="RecentsManager">

@@ -188,21 +188,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location))).showInfoWindow();
                                 startingPoint = false;
                             } else {
-                //                polylinePoints = groupPoints(polylinePoints, projection);
-                //
-                                List<LatLng> latLngs = polylinePoints;
-                //                //double lat = latLngs.get(latLngs.size()-1).latitude;
-                //                //double lon = latLngs.get(latLngs.size()-1).longitude;
-                                //latLngs.remove(latLngs.size()-1);
-                //                //latLngs.add(new LatLng(lat, lon));
-                //
-                polylinePoints = new ArrayList<>();
-                                for(int i = 0; i<=1000000; i++) {
-                                    polylinePoints.add(new LatLng(48.182347, 16.362552));
-                                }
+                                polylinePoints = groupPoints(polylinePoints, projection);
+
                                 polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
                                 toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
-                //
+
                 //                //check if firebase has some values left and draw it
                 //                //getFirebaseDatabase(polylinePoints);
             }
@@ -224,7 +214,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         return result;
     }
 
-    private void getFirebaseDatabase(List<LatLng> polylinePoints) {
+/*    private void getFirebaseDatabase(List<LatLng> polylinePoints) {
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Users");
         DatabaseReference user1 = myRef.child("Bernd");
         DatabaseReference user2 = myRef.child("Julia");
@@ -268,7 +258,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 }
             }
         });
-    }
+    }*/
 
     private boolean isServiceRunning(String serviceName) {
         boolean serviceRunning = false;
@@ -473,28 +463,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 Intent intentForegroundService = new Intent(contextFabRecording, ForegroundService.class);
                 intentForegroundService.setAction("ACTION_START");
                 contextFabRecording.startForegroundService(intentForegroundService);
-                createListenerAndfillPolyPoints(lastLat, lastLng, Arrays.asList(new LatLng[] {
-                    new LatLng(48.182347,16.362552),
-                    new LatLng(48.182347,16.362552),
-                    new LatLng(48.182347,16.362552),
-                    new LatLng(48.182733,16.363947),
-                    new LatLng(48.183048,16.364420),
-                    new LatLng(48.183148,16.364892),
-                    new LatLng(48.183334,16.365407),
-                    new LatLng(48.183735,16.365042),
-                    new LatLng(48.183825,16.364900),
-                    new LatLng(48.184054,16.364718),
-                    new LatLng(48.184197,16.364525),
-                    new LatLng(45.427070,10.986505),
-                    new LatLng(45.427026,10.986528),
-                    new LatLng(45.426977,10.986518),
-                    new LatLng(45.426940,10.986512),
-                    new LatLng(45.426921,10.986582),
-                    new LatLng(45.426910,10.986684),
-                }));
-                LatLng latLng = new LatLng(lastLat, lastLng);
+
+                //LatLng latLng = new LatLng(lastLat, lastLng);
                 //markerName = mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location)));
-//                mMap.clear();
+                mMap.clear();
 
                 fadingButtons(R.id.fabRecording);
 
