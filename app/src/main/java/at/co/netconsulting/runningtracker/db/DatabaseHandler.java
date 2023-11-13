@@ -207,7 +207,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Select All Query
         String selectQuery = "SELECT "
                 + KEY_LAT + ", "
-                + KEY_LNG
+                + KEY_LNG + ", "
+                + KEY_SPEED
                 + " FROM " + TABLE_RUNS + " WHERE " + KEY_NUMBER_OF_RUN + " = " + numberOfRun;
 
         SQLiteDatabase db = this.getWritableDatabase();

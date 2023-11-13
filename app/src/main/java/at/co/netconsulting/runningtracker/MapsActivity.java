@@ -64,6 +64,7 @@ import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
+import at.co.netconsulting.runningtracker.pojo.ColoredPoint;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.service.ForegroundService;
 import timber.log.Timber;
@@ -555,20 +556,27 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     public void run() {
                         //Background work here
                         List<Run> allEntries = db.getSingleEntryOrderedByDateTime(numberOfRun);
+                        List<ColoredPoint> sourcePoints = new ArrayList<>();
 
                         for(int i = 0; i<allEntries.size(); i++) {
                             latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
+                            if(allEntries.get(i).getSpeed()>7) {
+                                sourcePoints.add(new ColoredPoint(latLng[0], Color.GREEN));
+                            } else {
+                                sourcePoints.add(new ColoredPoint(latLng[0], Color.RED));
+                            }
                             polylinePoints.add(latLng[0]);
                         }
 
-                        if(allEntries.size()>=10000) {
-                            polylinePoints = PolyUtil.simplify(polylinePoints, 10); //FIXME: tolerance set to 10 meters, make it adjustable
-                        }
+                        //if(allEntries.size()>=10000) {
+                        //    polylinePoints = PolyUtil.simplify(polylinePoints, 10); //FIXME: tolerance set to 10 meters, make it adjustable
+                        //}
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
                                 //UI Thread work here
-                                fillPolyPoints(polylinePoints);
+                                //fillPolyPoints(polylinePoints);
+                                showPolyline(sourcePoints);
                             }
                         });
                     }
@@ -576,6 +584,43 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             }
         });
         builderSingle.show();
+    }
+
+    private void showPolyline(List<ColoredPoint> points) {
+        mMap.clear();
+        if (points.size() < 2)
+            return;
+
+        int ix = 0;
+        ColoredPoint currentPoint  = points.get(ix);
+        int currentColor = currentPoint.color;
+        List<LatLng> currentSegment = new ArrayList<>();
+        currentSegment.add(currentPoint.coords);
+        ix++;
+
+        while (ix < points.size()) {
+            currentPoint = points.get(ix);
+
+            if (currentPoint.color == currentColor) {
+                currentSegment.add(currentPoint.coords);
+            } else {
+                currentSegment.add(currentPoint.coords);
+                mMap.addPolyline(new PolylineOptions()
+                        .addAll(currentSegment)
+                        .color(currentColor)
+                        .width(20));
+                currentColor = currentPoint.color;
+                currentSegment.clear();
+                currentSegment.add(currentPoint.coords);
+            }
+            ix++;
+        }
+
+        polyline = mMap.addPolyline(new PolylineOptions().addAll(currentSegment).color(currentColor).jointType(JointType.ROUND).width(15.0f));
+        //polyline.setClickable(true);
+
+        //mMap.addMarker(new MarkerOptions().position(latLng).title(getString(R.string.starting_position)));
+        //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 16));
     }
 
     private void fillPolyPoints(List<LatLng> polylinePoints) {

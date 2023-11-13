@@ -67,7 +67,6 @@ public class ForegroundService extends Service implements LocationListener {
     private LatLng latLng;
     private int minDistanceMeter;
     private long minTimeMs;
-    private float speed;
     private double altitude;
     private float accuracy, currentSpeed;
     private long currentMilliseconds;
@@ -148,7 +147,7 @@ public class ForegroundService extends Service implements LocationListener {
             run.setLng(currentLongitude);
             run.setNumber_of_run(lastRun);
             run.setMeters_covered(calc);
-            run.setSpeed(speed);
+            run.setSpeed(currentSpeed);
             run.setDateTimeInMs(currentMilliseconds);
             run.setLaps(laps);
             run.setAltitude(altitude);
@@ -172,7 +171,7 @@ public class ForegroundService extends Service implements LocationListener {
             run.setLng(currentLongitude);
             run.setNumber_of_run(lastRun);
             run.setMeters_covered(calc);
-            run.setSpeed(speed);
+            run.setSpeed(currentSpeed);
             run.setDateTimeInMs(currentMilliseconds);
             run.setComment(commentOnPause);
             run.setLaps(laps);
@@ -316,7 +315,7 @@ public class ForegroundService extends Service implements LocationListener {
         intent.setAction(SharedPref.STATIC_BROADCAST_ACTION);
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION, polylinePoints);
-        bundle.putString("SPEED", String.valueOf(speed));
+        bundle.putString("SPEED", String.valueOf(currentSpeed));
         bundle.putFloat("DISTANCE", calc);
         intent.putExtras(bundle);
         getApplicationContext().sendBroadcast(intent);
@@ -403,9 +402,6 @@ public class ForegroundService extends Service implements LocationListener {
         latLng = new LatLng(currentLatitude, currentLongitude);
 
         polylinePoints.add(latLng);
-
-        //get speed
-        speed = (location.getSpeed() / 1000) * 3600;
 
         //number of satellites
         numberOfsatellitesInUse = location.getExtras().getInt("satellites");
