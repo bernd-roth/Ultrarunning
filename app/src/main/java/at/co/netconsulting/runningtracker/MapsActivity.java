@@ -50,6 +50,7 @@ import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.maps.android.PolyUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,7 +90,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Toolbar toolbar;
     private TextView toolbar_title;
     private float coveredDistance;
-    private String person;
+
+    private PolyUtil polyUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,7 +199,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         Map<Point, LatLng> groupedPoints = new HashMap<Point, LatLng>();
         for (LatLng xlatLng : polylinePoints) {
             Point p = projection.toScreenLocation(xlatLng);
-            LatLng x = groupedPoints.get(p);
             if (!groupedPoints.containsKey(p)) {
                 groupedPoints.put(p, xlatLng);
                 result.add(xlatLng);
@@ -502,11 +503,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 this.startActivity(intentSettings);
                 break;
             case R.id.fabTracks:
-                showAlertDialogWithTtracks();
+                showAlertDialogWithTracks();
         }
     }
 
-    private void showAlertDialogWithTtracks() {
+    private void showAlertDialogWithTracks() {
         DatabaseHandler db = new DatabaseHandler(this);
         List<Run> allEntries = db.getAllEntriesGroupedByRun();
 
@@ -559,11 +560,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
                             polylinePoints.add(latLng[0]);
                         }
+                        List simplifiedPolyline = PolyUtil.simplify(polylinePoints, 40); //FIXME: tolerance set to 40 meters, make it adjustable
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
                                 //UI Thread work here
-                                fillPolyPoints(polylinePoints);
+                                fillPolyPoints(simplifiedPolyline);
                             }
                         });
                     }

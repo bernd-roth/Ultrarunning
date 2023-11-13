@@ -36,6 +36,11 @@ public class Run {
         this.person = person;
     }
 
+    public Run(double lat, double lng) {
+        this.lat = lat;
+        this.lng = lng;
+    }
+
     public void setId(int id) {
         this.id = id;
     }

@@ -206,19 +206,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Select All Query
         String selectQuery = "SELECT "
-                + KEY_ID + ", "
-                + KEY_DATE_TIME + ", "
                 + KEY_LAT + ", "
-                + KEY_LNG + ", "
-                + KEY_METERS_COVERED + ", "
-                + KEY_SPEED + ", "
-                + KEY_HEART_RATE + ", "
-                + KEY_COMMENT + ", "
-                + KEY_NUMBER_OF_RUN + ", "
-                + KEY_DATETIME_IN_MS + ", "
-                + KEY_LAPS + ", "
-                + KEY_ALTITUDE + ", "
-                + KEY_PERSON
+                + KEY_LNG
                 + " FROM " + TABLE_RUNS + " WHERE " + KEY_NUMBER_OF_RUN + " = " + numberOfRun;
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -228,19 +217,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Run run = new Run();
-                run.setId(Integer.parseInt(cursor.getString(0)));
-                run.setDateTime(cursor.getString(1));
-                run.setLat(cursor.getDouble(2));
-                run.setLng(cursor.getDouble(3));
-                run.setMeters_covered(cursor.getDouble(4));
-                run.setSpeed((float) cursor.getDouble(5));
-                run.setHeart_rate(cursor.getInt(6));
-                run.setComment(cursor.getString(7));
-                run.setNumber_of_run(cursor.getInt(8));
-                run.setDateTimeInMs(cursor.getInt(9));
-                run.setLaps(cursor.getInt(10));
-                run.setAltitude(cursor.getDouble(11));
-                run.setPerson(cursor.getString(12));
+                run.setLat(cursor.getDouble(0));
+                run.setLng(cursor.getDouble(1));
                 // Adding contact to list
                 allEntryList.add(run);
             } while (cursor.moveToNext());
