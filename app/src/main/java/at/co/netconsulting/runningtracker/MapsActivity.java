@@ -560,12 +560,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
                             polylinePoints.add(latLng[0]);
                         }
-                        List simplifiedPolyline = PolyUtil.simplify(polylinePoints, 40); //FIXME: tolerance set to 40 meters, make it adjustable
+
+                        if(allEntries.size()>=10000) {
+                            polylinePoints = PolyUtil.simplify(polylinePoints, 10); //FIXME: tolerance set to 10 meters, make it adjustable
+                        }
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
                                 //UI Thread work here
-                                fillPolyPoints(simplifiedPolyline);
+                                fillPolyPoints(polylinePoints);
                             }
                         });
                     }
