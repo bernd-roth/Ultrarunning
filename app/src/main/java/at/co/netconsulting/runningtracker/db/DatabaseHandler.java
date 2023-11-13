@@ -220,6 +220,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 Run run = new Run();
                 run.setLat(cursor.getDouble(0));
                 run.setLng(cursor.getDouble(1));
+                run.setSpeed(cursor.getFloat(2));
                 // Adding contact to list
                 allEntryList.add(run);
             } while (cursor.moveToNext());

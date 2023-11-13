@@ -560,8 +560,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
                         for(int i = 0; i<allEntries.size(); i++) {
                             latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
-                            if(allEntries.get(i).getSpeed()>7) {
+                            //FIXME make speed adjustable
+                            if(allEntries.get(i).getSpeed()>6.5) {
                                 sourcePoints.add(new ColoredPoint(latLng[0], Color.GREEN));
+                            } else if(allEntries.get(i).getSpeed()>5.5 &&
+                                    allEntries.get(i).getSpeed()<6.5){
+                                sourcePoints.add(new ColoredPoint(latLng[0], Color.YELLOW));
                             } else {
                                 sourcePoints.add(new ColoredPoint(latLng[0], Color.RED));
                             }
