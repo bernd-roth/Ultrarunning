@@ -561,12 +561,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                         for(int i = 0; i<allEntries.size(); i++) {
                             latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
                             //FIXME make speed adjustable
-                            if(allEntries.get(i).getSpeed()>6.5) {
+                            if(allEntries.get(i).getSpeed()>8) { //running is over 8-10 km/h
                                 sourcePoints.add(new ColoredPoint(latLng[0], Color.GREEN));
-                            } else if(allEntries.get(i).getSpeed()>5.5 &&
-                                    allEntries.get(i).getSpeed()<6.5){
+                            } else if(allEntries.get(i).getSpeed()>6 && // jogging is 6-8 km/h
+                                    allEntries.get(i).getSpeed()<8){
                                 sourcePoints.add(new ColoredPoint(latLng[0], Color.YELLOW));
-                            } else {
+                            } else { // walking is around 5.5-6 km/h
                                 sourcePoints.add(new ColoredPoint(latLng[0], Color.RED));
                             }
                             polylinePoints.add(latLng[0]);

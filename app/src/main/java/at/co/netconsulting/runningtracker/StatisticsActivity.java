@@ -84,7 +84,7 @@ public class StatisticsActivity extends Activity {
 
         intLastEntry = db.getLastEntry();
         if(intLastEntry!=0) {
-            listOfRun = db.getSingleEntryOrderedByDateTime(intLastEntry);
+            listOfRun = db.getSingleEntryForStatistics(intLastEntry);
             textViewProgressbar.setText(R.string.graph_plotting);
 
             int sizeOfList = listOfRun.size();
