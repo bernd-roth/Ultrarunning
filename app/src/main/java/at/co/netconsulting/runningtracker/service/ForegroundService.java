@@ -82,6 +82,7 @@ public class ForegroundService extends Service implements LocationListener {
     private int numberOfsatellitesInUse;
     private float lapCounter;
     private String person;
+    int usedCount;
 
     @Override
     public void onCreate() {
@@ -140,21 +141,18 @@ public class ForegroundService extends Service implements LocationListener {
         formattedDateTime = dateObj.format(formatDateTime);
         currentMilliseconds = System.currentTimeMillis();
 
-        //save all entries from polyline to table now
-        for (int i = 0; i < polylinePoints.size(); i++) {
-            run.setDateTime(dateObj.format(formatDateTime));
-            run.setLat(currentLatitude);
-            run.setLng(currentLongitude);
-            run.setNumber_of_run(lastRun);
-            run.setMeters_covered(calc);
-            run.setSpeed(currentSpeed);
-            run.setDateTimeInMs(currentMilliseconds);
-            run.setLaps(laps);
-            run.setAltitude(altitude);
-            run.setPerson(person);
-            db.addRun(run);
-            //saveToFirebase(run);
-        }
+        run.setDateTime(dateObj.format(formatDateTime));
+        run.setLat(currentLatitude);
+        run.setLng(currentLongitude);
+        run.setNumber_of_run(lastRun);
+        run.setMeters_covered(calc);
+        run.setSpeed(currentSpeed);
+        run.setDateTimeInMs(currentMilliseconds);
+        run.setLaps(laps);
+        run.setAltitude(altitude);
+        run.setPerson(person);
+        db.addRun(run);
+        //saveToFirebase(run);
     }
 
     //Save input to database
@@ -165,19 +163,17 @@ public class ForegroundService extends Service implements LocationListener {
         currentMilliseconds = System.currentTimeMillis();
 
         //save all entries from polyline to table now
-        for (int i = 0; i < polylinePoints.size(); i++) {
-            run.setDateTime(dateObj.format(formatDateTime));
-            run.setLat(currentLatitude);
-            run.setLng(currentLongitude);
-            run.setNumber_of_run(lastRun);
-            run.setMeters_covered(calc);
-            run.setSpeed(currentSpeed);
-            run.setDateTimeInMs(currentMilliseconds);
-            run.setComment(commentOnPause);
-            run.setLaps(laps);
-            run.setAltitude(altitude);
-            db.addRun(run);
-        }
+        run.setDateTime(dateObj.format(formatDateTime));
+        run.setLat(currentLatitude);
+        run.setLng(currentLongitude);
+        run.setNumber_of_run(lastRun);
+        run.setMeters_covered(calc);
+        run.setSpeed(currentSpeed);
+        run.setDateTimeInMs(currentMilliseconds);
+        run.setComment(commentOnPause);
+        run.setLaps(laps);
+        run.setAltitude(altitude);
+        db.addRun(run);
     }
 
     @Override
@@ -251,7 +247,7 @@ public class ForegroundService extends Service implements LocationListener {
             @Override
             public void onSatelliteStatusChanged(@NonNull GnssStatus status) {
                 satelliteCount = status.getSatelliteCount();
-                int usedCount = 0;
+                usedCount = 0;
                 for (int i = 0; i < satelliteCount; ++i)
                     if (status.usedInFix(i))
                         ++usedCount;
@@ -392,9 +388,10 @@ public class ForegroundService extends Service implements LocationListener {
         }
     }
 
-    //methods to implement
     @Override
     public void onLocationChanged(@NonNull Location location) {
+        currentMilliseconds = System.currentTimeMillis();
+
         currentLatitude = location.getLatitude();
         currentLongitude = location.getLongitude();
 

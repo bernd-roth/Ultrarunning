@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.location.LocationManager;
@@ -41,6 +43,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Dot;
 import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.JointType;
@@ -86,12 +90,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private boolean gps_enabled;
     private boolean startingPoint, startingPointJulia;
     private BroadcastReceiver receiver;
-    private boolean isPauseRecordingClicked, isSwitchPausedActivated, isSwitchGoToLastLocation;
+    private boolean isPauseRecordingClicked, isSwitchPausedActivated, isSwitchGoToLastLocation, isSwitchReducedLatLng;
     private DatabaseHandler db;
     private Toolbar toolbar;
     private TextView toolbar_title;
     private float coveredDistance;
-
     private PolyUtil polyUtil;
 
     @Override
@@ -166,6 +169,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, Context.MODE_PRIVATE);
         isSwitchGoToLastLocation = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, false);
+
+        sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_REDUCE_LAT_LANG, Context.MODE_PRIVATE);
+        isSwitchReducedLatLng = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_REDUCE_LAT_LANG, false);
     }
 
     private void createPolypoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
@@ -395,6 +401,21 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         goToLastLocation();
     }
 
+    private void createCheckerFlag() {
+        int height = 100;
+        int width = 100;
+
+        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable. checkerflag);
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+        BitmapDescriptor checkerFlag = BitmapDescriptorFactory.fromBitmap(smallMarker);
+
+        if(polylinePoints.size()>0) {
+            mMap.addMarker(new MarkerOptions().position(
+                    new LatLng(polylinePoints.get(polylinePoints.size()-1).latitude,
+                            polylinePoints.get(polylinePoints.size()-1).longitude)).icon(checkerFlag));
+        }
+    }
+
     private void goToLastLocation() {
         if(isSwitchGoToLastLocation) {
             int lastEntry = db.getLastEntry();
@@ -482,6 +503,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 fadingButtons(R.id.fabPauseRecording);
 
                 isPauseRecordingClicked = false;
+
+                createCheckerFlag();
 
                 break;
             case R.id.fabPauseRecording:
@@ -572,15 +595,21 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             polylinePoints.add(latLng[0]);
                         }
 
-                        //if(allEntries.size()>=10000) {
-                        //    polylinePoints = PolyUtil.simplify(polylinePoints, 10); //FIXME: tolerance set to 10 meters, make it adjustable
-                        //}
+                        if(isSwitchReducedLatLng) {
+                            if (allEntries.size() >= 50000) {
+                                polylinePoints = PolyUtil.simplify(polylinePoints, 40);
+                            }
+                        }
+
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
                                 //UI Thread work here
-                                //fillPolyPoints(polylinePoints);
-                                showPolyline(sourcePoints);
+                                if(isSwitchReducedLatLng) {
+                                    fillPolyPoints(polylinePoints);
+                                } else {
+                                    showPolyline(sourcePoints);
+                                }
                             }
                         });
                     }
@@ -600,8 +629,14 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         int currentColor = currentPoint.color;
         List<LatLng> currentSegment = new ArrayList<>();
         currentSegment.add(currentPoint.coords);
-        ix++;
 
+        if(ix==0) {
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(polylinePoints.get(0).latitude, polylinePoints.get(0).longitude))
+                    .title(getString(R.string.starting_position)));
+        }
+
+        ix++;
         while (ix < points.size()) {
             currentPoint = points.get(ix);
 
@@ -621,10 +656,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         }
 
         polyline = mMap.addPolyline(new PolylineOptions().addAll(currentSegment).color(currentColor).jointType(JointType.ROUND).width(15.0f));
-        //polyline.setClickable(true);
-
-        //mMap.addMarker(new MarkerOptions().position(latLng).title(getString(R.string.starting_position)));
-        //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 16));
+        createCheckerFlag();
     }
 
     private void fillPolyPoints(List<LatLng> polylinePoints) {
