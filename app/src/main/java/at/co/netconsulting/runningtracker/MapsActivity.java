@@ -451,6 +451,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             Bundle bundle = new Bundle();
             bundle.putBoolean("StopButtonIsVisible", true);
             this.getIntent().putExtras(bundle);
+            createCheckerFlag();
         }
     }
 

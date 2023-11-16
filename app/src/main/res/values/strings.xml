@@ -81,4 +81,6 @@
     <string name="title_x_axis">Distance</string>
     <string name="title_y_axis">Speed</string>
     <string name="reduceTooManyLatLng">Reduce too many LatLng points</string>
+    <string name="all_entries_deleted">All entries successfully deleted!</string>
+    <string name="single_entry_deleted">Single entry successfully deleted!</string>
 </resources>

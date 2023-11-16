@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
+import android.widget.Toast;
+
 import androidx.preference.PreferenceFragmentCompat;
 import java.io.File;
 import java.util.List;
@@ -427,6 +429,7 @@ public class SettingsActivity extends BaseActivity {
         String buttonText = buttonDelete.getText().toString();
         if(buttonText.equals("Delete")) {
             db.delete();
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.all_entries_deleted), Toast.LENGTH_LONG).show();
         } else {
             showAlertDialogForSelectingWhichEntryToDelete();  
         }
@@ -467,6 +470,7 @@ public class SettingsActivity extends BaseActivity {
                 int intNumberOfRun = Integer.parseInt(splittedString[0]);
 
                 db.deleteSingleEntry(intNumberOfRun);
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.single_entry_deleted), Toast.LENGTH_LONG).show();
             }
         });
         builderSingle.show();
