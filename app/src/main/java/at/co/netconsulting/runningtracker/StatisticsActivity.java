@@ -3,9 +3,7 @@ package at.co.netconsulting.runningtracker;
 import static at.co.netconsulting.runningtracker.general.StaticFields.df;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,9 +11,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.github.mikephil.charting.data.Entry;
-
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
@@ -23,14 +19,12 @@ import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
@@ -59,6 +53,11 @@ public class StatisticsActivity extends Activity {
 //        mCurrentRenderer.setDisplayChartValues(true);
 //        mCurrentRenderer.setChartValuesTextSize(45f);
         mCurrentRenderer.setFillPoints(true);
+        mRenderer.setYLabels(10);
+        mRenderer.setZoomEnabled(false, false);
+        mRenderer.setYAxisMax(20);
+        mRenderer.setPanLimits(new double[]{0.0,30.0,0.0,Double.MAX_VALUE});
+        mRenderer.setShowGrid(false);
         mRenderer.addSeriesRenderer(mCurrentRenderer);
     }
 
@@ -173,7 +172,7 @@ public class StatisticsActivity extends Activity {
             mRenderer.setXTitle(getString(R.string.title_x_axis));
             mRenderer.setMarginsColor(Color.argb(0x00, 0xff, 0x00, 0x00));
             mRenderer.setYTitle(getString(R.string.title_y_axis));
-            mRenderer.setShowGrid(true);
+            //mRenderer.setShowGrid(true);
             mRenderer.setGridColor(Color.GRAY);
             mRenderer.setLabelsTextSize(40f);
             mRenderer.setZoomButtonsVisible(true);

@@ -29,12 +29,10 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -73,7 +71,7 @@ public class ForegroundService extends Service implements LocationListener {
     private final long[] seconds = {0};
     private final long[] minutes = {0};
     private final long[] hours = {0};
-    private Timer t;
+    private Timer timer;
     private int satelliteCount;
     private BroadcastReceiver broadcastReceiver;
     private String bundlePause;
@@ -121,7 +119,7 @@ public class ForegroundService extends Service implements LocationListener {
         result = new float[1];
         dateObj = LocalDateTime.now();
         formatDateTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        t = new Timer();
+        timer = new Timer();
         laps=0;
         lapCounter=0;
         initCallbacks();
@@ -207,7 +205,7 @@ public class ForegroundService extends Service implements LocationListener {
 
         notification = notificationBuilder.build();
 
-        t.scheduleAtFixedRate(new TimerTask() {
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 seconds[0] += 1;
@@ -336,7 +334,7 @@ public class ForegroundService extends Service implements LocationListener {
         latLng = null;
         stopForeground(STOP_FOREGROUND_REMOVE);
         stopSelf();
-        t.cancel();
+        timer.cancel();
         deinitCallbacks();
         unregisterReceiver(broadcastReceiver);
     }

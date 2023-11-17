@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/relLayout"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MapsActivity">
 
@@ -39,6 +40,39 @@
         android:onClick="onClickRecording"
         android:textSize="20sp"/>
 -->
+
+    <TextView
+        android:id="@+id/textViewSlow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|left"
+        android:layout_marginLeft="125dp"
+        android:layout_marginEnd="326dp"
+        android:layout_marginBottom="90dp"
+        android:text="Slow"
+        android:textStyle="bold"
+        android:textFontWeight="950"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewFast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|left"
+        android:layout_marginLeft="125dp"
+        android:layout_marginEnd="326dp"
+        android:layout_marginBottom="350dp"
+        android:text="Fast"
+        android:textStyle="bold"
+        android:textFontWeight="950"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabRecording"
         android:layout_width="wrap_content"
@@ -123,7 +157,7 @@
         android:src="@drawable/icon_notification"
         android:onClick="onClickRecording"/>
 
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabKalmanfilter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -136,6 +170,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/common_google_signin_btn_icon_light_normal"
         android:onClick="onClickShowRecordedPlusKalmanfilter"/>-->
+
+    <at.co.netconsulting.runningtracker.view.DrawView
+        android:id="@+id/rectView"
+        android:layout_width="16dp"
+        android:layout_height="173dp"
+        android:visibility="invisible" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -153,4 +193,6 @@
         android:layout_gravity="left" />
 
     </androidx.appcompat.widget.Toolbar>
+
+
 </RelativeLayout>

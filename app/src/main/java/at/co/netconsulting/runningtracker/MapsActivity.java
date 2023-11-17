@@ -71,6 +71,7 @@ import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.pojo.ColoredPoint;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.service.ForegroundService;
+import at.co.netconsulting.runningtracker.view.DrawView;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
@@ -93,9 +94,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private boolean isPauseRecordingClicked, isSwitchPausedActivated, isSwitchGoToLastLocation, isSwitchReducedLatLng;
     private DatabaseHandler db;
     private Toolbar toolbar;
-    private TextView toolbar_title;
+    private TextView toolbar_title, textViewSlow, textViewFast;
     private float coveredDistance;
     private PolyUtil polyUtil;
+    private DrawView drawView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -300,6 +302,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         toolbar = findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(Color.LTGRAY);
         toolbar_title = findViewById(R.id.toolbar_title);
+        textViewSlow = findViewById(R.id.textViewSlow);
+        //textViewFast = findViewById(R.id.textViewFast);
 
         polylinePoints = new ArrayList<>();
         polylinePointsTemp = new ArrayList<>();
@@ -311,6 +315,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         startingPoint = true;
         startingPointJulia = true;
         db = new DatabaseHandler(this);
+        drawView = new DrawView(this);
+        RelativeLayout myRelativeLayout = (RelativeLayout) findViewById(R.id.relLayout);
+        myRelativeLayout.addView(drawView);
     }
 
     private void checkIfLocationIsEnabled() {
@@ -409,11 +416,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
         BitmapDescriptor checkerFlag = BitmapDescriptorFactory.fromBitmap(smallMarker);
 
-        if(polylinePoints.size()>0) {
-            mMap.addMarker(new MarkerOptions().position(
-                    new LatLng(polylinePoints.get(polylinePoints.size()-1).latitude,
-                            polylinePoints.get(polylinePoints.size()-1).longitude)).icon(checkerFlag));
-        }
+        mMap.addMarker(new MarkerOptions().position(
+                new LatLng(polylinePoints.get(polylinePoints.size()-1).latitude,
+                        polylinePoints.get(polylinePoints.size()-1).longitude)).icon(checkerFlag));
     }
 
     private void goToLastLocation() {
@@ -451,7 +456,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             Bundle bundle = new Bundle();
             bundle.putBoolean("StopButtonIsVisible", true);
             this.getIntent().putExtras(bundle);
-            createCheckerFlag();
         }
     }
 
@@ -505,8 +509,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
                 isPauseRecordingClicked = false;
 
-                createCheckerFlag();
-
                 break;
             case R.id.fabPauseRecording:
                 if(isPauseRecordingClicked==false) {
@@ -541,7 +543,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         }
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(MapsActivity.this);
-        if(allEntries.size()<=0) {
+        if(allEntries.size() == 0) {
             builderSingle.setTitle(getResources().getString(R.string.no_run_available));
         } else {
             builderSingle.setTitle(getResources().getString(R.string.select_one_run));
