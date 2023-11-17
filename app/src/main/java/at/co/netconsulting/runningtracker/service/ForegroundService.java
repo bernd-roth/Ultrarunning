@@ -1,7 +1,6 @@
 package at.co.netconsulting.runningtracker.service;
 
 import static android.location.LocationManager.GPS_PROVIDER;
-
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -29,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import com.google.android.gms.maps.model.LatLng;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -46,41 +44,27 @@ import timber.log.Timber;
 
 public class ForegroundService extends Service implements LocationListener {
     private static final int NOTIFICATION_ID = 1;
-    private String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.parkingticket";
+    private String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.parkingticket",
+            person, bundlePause, formattedDateTime;
     private Notification notification;
     private NotificationCompat.Builder notificationBuilder;
     private NotificationManager manager;
     private DatabaseHandler db;
     private Run run;
-    private double currentLatitude, currentLongitude;
-    private LocationListener locationListener;
+    private double currentLatitude, currentLongitude, altitude;
     private LocationManager locationManager;
-    private float calc;
     private float[] result;
     private ArrayList<LatLng> polylinePoints;
     private DateTimeFormatter formatDateTime;
     private LocalDateTime dateObj;
-    private String formattedDateTime;
-    private int lastRun;
     private LatLng latLng;
-    private int minDistanceMeter;
-    private long minTimeMs;
-    private double altitude;
-    private float accuracy, currentSpeed;
-    private long currentMilliseconds;
-    private final long[] seconds = {0};
-    private final long[] minutes = {0};
-    private final long[] hours = {0};
+    private long currentMilliseconds, minTimeMs;
+    private final long[] seconds = {0}, minutes = {0}, hours = {0};
     private Timer timer;
-    private int satelliteCount;
     private BroadcastReceiver broadcastReceiver;
-    private String bundlePause;
     private boolean isCommentOnPause;
-    private int laps;
-    private int numberOfsatellitesInUse;
-    private float lapCounter;
-    private String person;
-    int usedCount;
+    private int laps, usedCount, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
+    private float lapCounter, calc, accuracy, currentSpeed;
 
     @Override
     public void onCreate() {
@@ -219,7 +203,7 @@ public class ForegroundService extends Service implements LocationListener {
                 }
 
                 manager.notify(NOTIFICATION_ID /* ID of notification */, notificationBuilder
-                        .setContentTitle("Distance covered: " + String.format("%.2f Km", calc/1000))
+                        .setContentTitle("Distance covered: " + String.format("%.2f Km", calc / 1000))
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " Km/h"
                                         + "\nNumber of satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
@@ -227,9 +211,8 @@ public class ForegroundService extends Service implements LocationListener {
                                         + "\nAltitude: " + String.format("%.2f Meter", altitude)
                                         + "\nLaps: " + String.format("%03d", laps)
                                         + "\nTime: " + String.format("%02d:%02d:%02d", hours[0], minutes[0], seconds[0])))
-                        .setLargeIcon(BitmapFactory. decodeResource (getResources() , R.drawable. icon_notification ))
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_notification))
                         .build());
-
             }
         }, 0, 1000);
 
