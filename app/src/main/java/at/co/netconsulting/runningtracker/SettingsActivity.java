@@ -26,7 +26,6 @@ import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class SettingsActivity extends BaseActivity {
-
     private SharedPreferences sharedpreferences;
     private EditText editTextNumberSignedMinimumTimeMs;
     private EditText editTextNumberSignedMinimumDistanceMeter, editTextPerson;
@@ -132,7 +131,7 @@ public class SettingsActivity extends BaseActivity {
 //                    break;
                 } else if(recordingProfil.equals("Individual")) {
                     radioButtonIndividual.setChecked(true);
-                    buttonSave.setEnabled(true);
+//                    buttonSave.setEnabled(true);
                     editTextNumberSignedMinimumDistanceMeter.setEnabled(true);
                     editTextNumberSignedMinimumTimeMs.setEnabled(true);
                     break;
@@ -146,7 +145,7 @@ public class SettingsActivity extends BaseActivity {
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 person = sh.getString(sharedPrefKey, "Anonym");
                 editTextPerson.setText(person);
-                buttonSave.setEnabled(true);
+//                buttonSave.setEnabled(true);
                 break;
             case SharedPref.STATIC_SHARED_PREF_REDUCE_LAT_LANG:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
@@ -163,7 +162,7 @@ public class SettingsActivity extends BaseActivity {
 
         buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setTransformationMethod(null);
-        buttonSave.setEnabled(false);
+        buttonSave.setEnabled(true);
 
         radioButtonNormal = findViewById(R.id.radioButton_map_type_normal);
         radioButtonHybrid = findViewById(R.id.radioButton_map_type_hybrid);
@@ -343,7 +342,7 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Exact");
-                buttonSave.setEnabled(false);
+//                buttonSave.setEnabled(false);
                 editTextNumberSignedMinimumTimeMs.setEnabled(false);
                 editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
@@ -353,7 +352,7 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Normal");
-                buttonSave.setEnabled(false);
+//                buttonSave.setEnabled(false);
                 editTextNumberSignedMinimumTimeMs.setEnabled(false);
                 editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
@@ -363,7 +362,7 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Saving_Battery");
-                buttonSave.setEnabled(false);
+//                buttonSave.setEnabled(false);
                 editTextNumberSignedMinimumTimeMs.setEnabled(false);
                 editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
@@ -373,7 +372,7 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Maximum_Saving_Battery");
-                buttonSave.setEnabled(false);
+//                buttonSave.setEnabled(false);
                 editTextNumberSignedMinimumTimeMs.setEnabled(false);
                 editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
@@ -383,7 +382,7 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Fast");
-                buttonSave.setEnabled(false);
+//                buttonSave.setEnabled(false);
                 editTextNumberSignedMinimumTimeMs.setEnabled(false);
                 editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
@@ -393,7 +392,7 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Individual");
-                buttonSave.setEnabled(true);
+//                buttonSave.setEnabled(true);
                 editTextNumberSignedMinimumTimeMs.setEnabled(true);
                 editTextNumberSignedMinimumDistanceMeter.setEnabled(true);
                 break;
@@ -422,6 +421,7 @@ public class SettingsActivity extends BaseActivity {
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
+        Toast.makeText(getApplicationContext(), R.string.save_settings_map_type_rec_profil_runners_name, Toast.LENGTH_LONG).show();
     }
 
     public void delete(View view) {

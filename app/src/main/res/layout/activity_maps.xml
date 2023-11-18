@@ -193,6 +193,4 @@
         android:layout_gravity="left" />
 
     </androidx.appcompat.widget.Toolbar>
-
-
 </RelativeLayout>

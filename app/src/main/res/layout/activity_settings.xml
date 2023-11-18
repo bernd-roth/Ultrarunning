@@ -184,6 +184,11 @@
                     android:text="@string/saveAndCommentPause"
                     android:onClick="saveAndCommentPause"/>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
+
                 <Switch
                     android:id="@+id/switchReduceTooManyLatLng"
                     android:layout_width="match_parent"
