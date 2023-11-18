@@ -157,20 +157,6 @@
         android:src="@drawable/icon_notification"
         android:onClick="onClickRecording"/>
 
-    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabKalmanfilter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="396dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom|right"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/common_google_signin_btn_icon_light_normal"
-        android:onClick="onClickShowRecordedPlusKalmanfilter"/>-->
-
     <at.co.netconsulting.runningtracker.view.DrawView
         android:id="@+id/rectView"
         android:layout_width="16dp"

@@ -9,18 +9,8 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* ForegroundService.java: Code beautifying">
-      <change afterPath="$PROJECT_DIR$/app/libs/achartengine.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* SettingsActivity: Toast message added; View added&#10;* build.gradle: achartengine library added to project&#10;* strings.xml: Toast message from SettingsActivity added">
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -226,13 +216,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00039" summary="* MapsActivity.java: Live drawing enhanced">
-      <created>1690842874485</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1690842874485</updated>
     </task>
     <task id="LOCAL-00040" summary="* DatabaseHandler.java: useless curCSV removed&#10;* ProgressDialog when working with Kalman-Filter introduced">
       <created>1690878787667</created>
@@ -570,7 +553,14 @@
       <option name="project" value="LOCAL" />
       <updated>1692649024699</updated>
     </task>
-    <option name="localTasksCounter" value="88" />
+    <task id="LOCAL-00088" summary="* SettingsActivity: Toast message added; View added&#10;* build.gradle: achartengine library added to project&#10;* strings.xml: Toast message from SettingsActivity added">
+      <created>1700341100855</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1700341100855</updated>
+    </task>
+    <option name="localTasksCounter" value="89" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -586,7 +576,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* DatabaseHandler.java: Saving number of runs fixed" />
     <MESSAGE value="* Run.java: adding getter/setter" />
     <MESSAGE value="* ForegroundService.java: CountUp-Timer enhanced and moved to notification" />
     <MESSAGE value="* ForegroundService.java: Lap counter fixed; Notification fixed" />
@@ -611,7 +600,8 @@
     <MESSAGE value="* ForegroundService.java: Adding firebase access&#10;* MapsActivity.java: showing another user on maps; enable/disable animateCamera if map is dragged" />
     <MESSAGE value="* MapsActivity+ForegroundService: firebase deactivated&#10;* MapsActivity: ANR caused by remove statement" />
     <MESSAGE value="* ForegroundService.java: Code beautifying" />
-    <option name="LAST_COMMIT_MESSAGE" value="* ForegroundService.java: Code beautifying" />
+    <MESSAGE value="* SettingsActivity: Toast message added; View added&#10;* build.gradle: achartengine library added to project&#10;* strings.xml: Toast message from SettingsActivity added" />
+    <option name="LAST_COMMIT_MESSAGE" value="* SettingsActivity: Toast message added; View added&#10;* build.gradle: achartengine library added to project&#10;* strings.xml: Toast message from SettingsActivity added" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
