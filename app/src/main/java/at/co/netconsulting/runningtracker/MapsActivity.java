@@ -192,7 +192,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location))).showInfoWindow();
                 startingPoint = false;
             } else {
-                polylinePoints = groupPoints(polylinePoints, projection);
+                //polylinePoints = groupPoints(polylinePoints, projection);
 
                 polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
                 toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
@@ -408,7 +408,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         goToLastLocation();
     }
 
-    private void createCheckerFlag() {
+    private void createCheckerFlag(List<LatLng> polylinePoints) {
         int height = 100;
         int width = 100;
 
@@ -416,9 +416,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
         BitmapDescriptor checkerFlag = BitmapDescriptorFactory.fromBitmap(smallMarker);
 
-        mMap.addMarker(new MarkerOptions().position(
-                new LatLng(polylinePoints.get(polylinePoints.size()-1).latitude,
-                        polylinePoints.get(polylinePoints.size()-1).longitude)).icon(checkerFlag));
+        if(polylinePoints.size()==1) {
+            mMap.addMarker(new MarkerOptions().position(
+                    new LatLng(polylinePoints.get(polylinePoints.size()-1).latitude,
+                            polylinePoints.get(polylinePoints.size()-1).longitude)).icon(checkerFlag));
+        } else if(polylinePoints.size()>1){
+            mMap.addMarker(new MarkerOptions().position(
+                    new LatLng(polylinePoints.get(polylinePoints.size()-1).latitude,
+                            polylinePoints.get(polylinePoints.size()-1).longitude)).icon(checkerFlag));
+        }
     }
 
     private void goToLastLocation() {
@@ -508,6 +514,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 fadingButtons(R.id.fabPauseRecording);
 
                 isPauseRecordingClicked = false;
+
+                createCheckerFlag(polylinePointsTemp);
 
                 break;
             case R.id.fabPauseRecording:
@@ -659,7 +667,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         }
 
         polyline = mMap.addPolyline(new PolylineOptions().addAll(currentSegment).color(currentColor).jointType(JointType.ROUND).width(15.0f));
-        createCheckerFlag();
+        createCheckerFlag(polylinePoints);
     }
 
     private void fillPolyPoints(List<LatLng> polylinePoints) {
