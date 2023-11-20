@@ -9,13 +9,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* ForegroundService: renaming variables&#10;* StatisticsActivity: former line graph form android replaced with mpchart">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* activity_statistics.xml: new value added">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -221,34 +219,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00042" summary="* MapsActivity.java: unnecessary comments removed, isPauseRecordingClicked enhanced">
-      <created>1690921262583</created>
-      <option name="number" value="00042" />
-      <option name="presentableId" value="LOCAL-00042" />
-      <option name="project" value="LOCAL" />
-      <updated>1690921262583</updated>
-    </task>
-    <task id="LOCAL-00043" summary="* MapsActivity.java: fixed wrong behaviour when pause button is clicked">
-      <created>1690921637344</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
-      <option name="project" value="LOCAL" />
-      <updated>1690921637344</updated>
-    </task>
-    <task id="LOCAL-00044" summary="* strings.xml: strings from different activities extracted">
-      <created>1690961638961</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1690961638961</updated>
-    </task>
-    <task id="LOCAL-00045" summary="* strings.xml: strings from different activities extracted&#10;* MapsActivity.java: AlertDialog must not be empty anymore, if track is saved">
-      <created>1690973712318</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1690973712318</updated>
     </task>
     <task id="LOCAL-00046" summary="* Uppercase letters for buttons fixed">
       <created>1690982569122</created>
@@ -565,7 +535,35 @@
       <option name="project" value="LOCAL" />
       <updated>1700465911382</updated>
     </task>
-    <option name="localTasksCounter" value="91" />
+    <task id="LOCAL-00091" summary="* StatisticsActivity: hardcoded string outsourced to strings.xml">
+      <created>1700476514338</created>
+      <option name="number" value="00091" />
+      <option name="presentableId" value="LOCAL-00091" />
+      <option name="project" value="LOCAL" />
+      <updated>1700476514338</updated>
+    </task>
+    <task id="LOCAL-00092" summary="* ForegroundService: doubled saved points if 1 sek. recording is chosen fixed">
+      <created>1700476572382</created>
+      <option name="number" value="00092" />
+      <option name="presentableId" value="LOCAL-00092" />
+      <option name="project" value="LOCAL" />
+      <updated>1700476572382</updated>
+    </task>
+    <task id="LOCAL-00093" summary="* MapsActivity: checkeredFlag automatically added if stopButton is clicked during live recording">
+      <created>1700476606288</created>
+      <option name="number" value="00093" />
+      <option name="presentableId" value="LOCAL-00093" />
+      <option name="project" value="LOCAL" />
+      <updated>1700476606288</updated>
+    </task>
+    <task id="LOCAL-00094" summary="* activity_statistics.xml: new value added">
+      <created>1700476631002</created>
+      <option name="number" value="00094" />
+      <option name="presentableId" value="LOCAL-00094" />
+      <option name="project" value="LOCAL" />
+      <updated>1700476631002</updated>
+    </task>
+    <option name="localTasksCounter" value="95" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -581,10 +579,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* ForegroundService.java: Lap counter fixed; Notification fixed" />
-    <MESSAGE value="* ForegroundService.java: Lap counter fixed in Notificaiton, wrong variable used; wrong variable type used for lapCounter" />
-    <MESSAGE value="* ForegroundService.java: Lap counter fixed in Notification again&#10;* StatisticsActivity.java: wrong physical unit when displaying avgSpeed" />
-    <MESSAGE value="* DatabaseHandler.java: cursor null handling implemented when calling getSingleEntry(int lastEntry)" />
     <MESSAGE value="* MapsActivity.java: Bundle implemented in onResume, onStop in order to display FloatingActionButton if necessary." />
     <MESSAGE value="* DatabaseHandler.java: Cursor close fixed, addSampleRun data added&#10;* StatisticsActivity.java: implementation of achartengine because of faster rendering" />
     <MESSAGE value="* DatabaseHandler.java: adapting sample data&#10;* ForegroundService.java: broadcasting speed for displaying it in toolbar&#10;* MapsActivity.java: adding toolbar with overview of lat, lng, and speed" />
@@ -606,20 +600,29 @@
     <MESSAGE value="* SettingsActivity: Toast message added; View added&#10;* build.gradle: achartengine library added to project&#10;* strings.xml: Toast message from SettingsActivity added" />
     <MESSAGE value="* activity_maps.xml: useless code deleted" />
     <MESSAGE value="* ForegroundService: renaming variables&#10;* StatisticsActivity: former line graph form android replaced with mpchart" />
-    <option name="LAST_COMMIT_MESSAGE" value="* ForegroundService: renaming variables&#10;* StatisticsActivity: former line graph form android replaced with mpchart" />
+    <MESSAGE value="* StatisticsActivity: hardcoded string outsourced to strings.xml" />
+    <MESSAGE value="* ForegroundService: doubled saved points if 1 sek. recording is chosen fixed" />
+    <MESSAGE value="* MapsActivity: checkeredFlag automatically added if stopButton is clicked during live recording" />
+    <MESSAGE value="* activity_statistics.xml: new value added" />
+    <option name="LAST_COMMIT_MESSAGE" value="* activity_statistics.xml: new value added" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>513</line>
+          <line>490</line>
           <option name="timeStamp" value="425" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java</url>
           <line>404</line>
           <option name="timeStamp" value="500" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
+          <line>601</line>
+          <option name="timeStamp" value="502" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

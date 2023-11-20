@@ -91,7 +91,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private boolean gps_enabled;
     private boolean startingPoint, startingPointJulia;
     private BroadcastReceiver receiver;
-    private boolean isPauseRecordingClicked, isSwitchPausedActivated, isSwitchGoToLastLocation, isSwitchReducedLatLng;
+    private boolean isPauseRecordingClicked, isSwitchPausedActivated, isSwitchGoToLastLocation;
     private DatabaseHandler db;
     private Toolbar toolbar;
     private TextView toolbar_title, textViewSlow, textViewFast;
@@ -171,9 +171,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, Context.MODE_PRIVATE);
         isSwitchGoToLastLocation = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, false);
-
-        sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_REDUCE_LAT_LANG, Context.MODE_PRIVATE);
-        isSwitchReducedLatLng = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_REDUCE_LAT_LANG, false);
     }
 
     private void createPolypoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
@@ -416,11 +413,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
         BitmapDescriptor checkerFlag = BitmapDescriptorFactory.fromBitmap(smallMarker);
 
-        if(polylinePoints.size()==1) {
-            mMap.addMarker(new MarkerOptions().position(
-                    new LatLng(polylinePoints.get(polylinePoints.size()-1).latitude,
-                            polylinePoints.get(polylinePoints.size()-1).longitude)).icon(checkerFlag));
-        } else if(polylinePoints.size()>1){
+        if(polylinePoints.size()>1){
             mMap.addMarker(new MarkerOptions().position(
                     new LatLng(polylinePoints.get(polylinePoints.size()-1).latitude,
                             polylinePoints.get(polylinePoints.size()-1).longitude)).icon(checkerFlag));
@@ -606,17 +599,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             polylinePoints.add(latLng[0]);
                         }
 
-                        if(isSwitchReducedLatLng) {
-                            if (allEntries.size() >= 50000) {
-                                polylinePoints = PolyUtil.simplify(polylinePoints, 40);
-                            }
+                        if(allEntries.size()>=50000) {
+                            polylinePoints = PolyUtil.simplify(polylinePoints, 40);
                         }
 
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
                                 //UI Thread work here
-                                if(isSwitchReducedLatLng) {
+                                if(allEntries.size()>=50000) {
                                     fillPolyPoints(polylinePoints);
                                 } else {
                                     showPolyline(sourcePoints);

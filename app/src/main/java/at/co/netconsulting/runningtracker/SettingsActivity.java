@@ -46,8 +46,8 @@ public class SettingsActivity extends BaseActivity {
     private int minDistanceMeter;
     private long minTimeMs;
     private DatabaseHandler db;
-    private Switch switchCommentPause, switchGoToLastLocation, switchReduceTooManyLatLng;
-    private boolean isCommentOnPause, isCommentedOnPause, isGoToLastLocation, isReducedLatLng;
+    private Switch switchCommentPause, switchGoToLastLocation;
+    private boolean isCommentOnPause, isCommentedOnPause, isGoToLastLocation;
     private ProgressDialog progressDialog;
     private String person;
 
@@ -147,11 +147,6 @@ public class SettingsActivity extends BaseActivity {
                 editTextPerson.setText(person);
 //                buttonSave.setEnabled(true);
                 break;
-            case SharedPref.STATIC_SHARED_PREF_REDUCE_LAT_LANG:
-                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                isReducedLatLng = sh.getBoolean(sharedPrefKey, false);
-                switchReduceTooManyLatLng.setChecked(isReducedLatLng);
-                break;
         }
     }
 
@@ -191,7 +186,6 @@ public class SettingsActivity extends BaseActivity {
 
         switchCommentPause = findViewById(R.id.switchCommentPause);
         switchGoToLastLocation = findViewById(R.id.switchGoToLastLocation);
-        switchReduceTooManyLatLng = findViewById(R.id.switchReduceTooManyLatLng);
 
         progressDialog = new ProgressDialog(SettingsActivity.this);
         progressDialog.setMessage("Exporting..."); // Setting Message
@@ -304,13 +298,6 @@ public class SettingsActivity extends BaseActivity {
             String person = editTextPerson.getText().toString();
             editor.putString(SharedPref.STATIC_SHARED_PREF_PERSON, person);
             editor.commit();
-        }  else if(sharedPreference.equals("SAVE_REDUCED_LAT_LNG")) {
-            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_REDUCE_LAT_LANG, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-
-            boolean isReduceTooManyLatLng = switchReduceTooManyLatLng.isChecked();
-            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_REDUCE_LAT_LANG, isReduceTooManyLatLng);
-            editor.commit();
         }
     }
 
@@ -321,16 +308,6 @@ public class SettingsActivity extends BaseActivity {
         } else {
             isCommentOnPause=false;
             saveSharedPreferences("SAVE_ON_COMMENT_PAUSE");
-        }
-    }
-
-    public void reduceLatLng(View view) {
-        if(switchReduceTooManyLatLng.isChecked()) {
-            isReducedLatLng=true;
-            saveSharedPreferences("SAVE_REDUCED_LAT_LNG");
-        } else {
-            isReducedLatLng=false;
-            saveSharedPreferences("SAVE_REDUCED_LAT_LNG");
         }
     }
 
