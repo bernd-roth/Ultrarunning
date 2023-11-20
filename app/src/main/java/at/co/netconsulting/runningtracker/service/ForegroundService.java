@@ -63,7 +63,7 @@ public class ForegroundService extends Service implements LocationListener {
     private Timer timer;
     private BroadcastReceiver broadcastReceiver;
     private boolean isCommentOnPause;
-    private int laps, usedCount, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
+    private int laps, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
     private float lapCounter, calc, accuracy, currentSpeed;
 
     @Override
@@ -228,10 +228,10 @@ public class ForegroundService extends Service implements LocationListener {
             @Override
             public void onSatelliteStatusChanged(@NonNull GnssStatus status) {
                 satelliteCount = status.getSatelliteCount();
-                usedCount = 0;
+                int usedSatellites = 0;
                 for (int i = 0; i < satelliteCount; ++i)
                     if (status.usedInFix(i))
-                        ++usedCount;
+                        ++usedSatellites;
                 Timber.d("Total number of satellites: %s", satelliteCount);
             }
         };
