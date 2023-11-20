@@ -57,8 +57,8 @@ public class ForegroundService extends Service implements LocationListener {
     private ArrayList<LatLng> polylinePoints;
     private DateTimeFormatter formatDateTime;
     private LocalDateTime dateObj;
-    private LatLng latLng;
-    private long currentMilliseconds, minTimeMs;
+    private LatLng latLng, oldLatLng;
+    private long currentMilliseconds, oldCurrentMilliseconds = 0, minTimeMs;
     private final long[] seconds = {0}, minutes = {0}, hours = {0};
     private Timer timer;
     private BroadcastReceiver broadcastReceiver;
@@ -106,6 +106,7 @@ public class ForegroundService extends Service implements LocationListener {
         timer = new Timer();
         laps=0;
         lapCounter=0;
+        oldLatLng = new LatLng(0, 0);
         initCallbacks();
     }
 
@@ -394,7 +395,15 @@ public class ForegroundService extends Service implements LocationListener {
 
         //pause button was not pressed yet
         if(bundlePause==null) {
-            saveToDatabase();
+            if(minDistanceMeter==1 && minTimeMs==1) {
+                if (oldLatLng != latLng && (currentMilliseconds != oldCurrentMilliseconds)) {
+                    saveToDatabase();
+                    oldCurrentMilliseconds = currentMilliseconds;
+                    oldLatLng = latLng;
+                }
+            } else {
+                saveToDatabase();
+            }
             //saveToFirebase(run);
         } else {
             if(isCommentOnPause) {
