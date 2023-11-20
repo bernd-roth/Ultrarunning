@@ -5,14 +5,15 @@
     android:orientation="vertical"
     android:padding="30dp">
 
+    <!--
     <TextView
         android:id="@+id/textViewLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="10dp"
         android:layout_gravity="center"
-        android:text="Distance/Km/h"/>
-
+        android:text="@string/distance_per_km_h"/>
+-->
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
         android:layout_width="350dp"

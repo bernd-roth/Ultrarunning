@@ -9,11 +9,13 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* activity_maps.xml: useless code deleted">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* ForegroundService: renaming variables&#10;* StatisticsActivity: former line graph form android replaced with mpchart">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,13 +221,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00041" summary="* MapsActivity.java: sendBroadcast sends &quot;Pause&quot; or null, fading buttons enhanced&#10;* ForegroundService.java: BroadcastReceiver receives either &quot;Pause&quot; or null&#10;* SharedPref.java: new Broadcast_Action introduced">
-      <created>1690920747580</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1690920747580</updated>
     </task>
     <task id="LOCAL-00042" summary="* MapsActivity.java: unnecessary comments removed, isPauseRecordingClicked enhanced">
       <created>1690921262583</created>
@@ -563,7 +558,14 @@
       <option name="project" value="LOCAL" />
       <updated>1700341292315</updated>
     </task>
-    <option name="localTasksCounter" value="90" />
+    <task id="LOCAL-00090" summary="* ForegroundService: renaming variables&#10;* StatisticsActivity: former line graph form android replaced with mpchart">
+      <created>1700465911381</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1700465911382</updated>
+    </task>
+    <option name="localTasksCounter" value="91" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -579,7 +581,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* ForegroundService.java: CountUp-Timer enhanced and moved to notification" />
     <MESSAGE value="* ForegroundService.java: Lap counter fixed; Notification fixed" />
     <MESSAGE value="* ForegroundService.java: Lap counter fixed in Notificaiton, wrong variable used; wrong variable type used for lapCounter" />
     <MESSAGE value="* ForegroundService.java: Lap counter fixed in Notification again&#10;* StatisticsActivity.java: wrong physical unit when displaying avgSpeed" />
@@ -604,7 +605,8 @@
     <MESSAGE value="* ForegroundService.java: Code beautifying" />
     <MESSAGE value="* SettingsActivity: Toast message added; View added&#10;* build.gradle: achartengine library added to project&#10;* strings.xml: Toast message from SettingsActivity added" />
     <MESSAGE value="* activity_maps.xml: useless code deleted" />
-    <option name="LAST_COMMIT_MESSAGE" value="* activity_maps.xml: useless code deleted" />
+    <MESSAGE value="* ForegroundService: renaming variables&#10;* StatisticsActivity: former line graph form android replaced with mpchart" />
+    <option name="LAST_COMMIT_MESSAGE" value="* ForegroundService: renaming variables&#10;* StatisticsActivity: former line graph form android replaced with mpchart" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -615,14 +617,9 @@
           <option name="timeStamp" value="425" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>677</line>
-          <option name="timeStamp" value="440" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>191</line>
-          <option name="timeStamp" value="441" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java</url>
+          <line>404</line>
+          <option name="timeStamp" value="500" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
