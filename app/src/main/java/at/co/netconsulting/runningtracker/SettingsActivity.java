@@ -408,11 +408,31 @@ public class SettingsActivity extends BaseActivity {
         Button buttonDelete = (Button)view;
         String buttonText = buttonDelete.getText().toString();
         if(buttonText.equals("Delete")) {
-            db.delete();
-            Toast.makeText(getApplicationContext(), getResources().getString(R.string.all_entries_deleted), Toast.LENGTH_LONG).show();
+            createAlertDialog();
         } else {
             showAlertDialogForSelectingWhichEntryToDelete();  
         }
+    }
+
+    private void createAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.dialog_message) .setTitle(R.string.dialog_title);
+
+        builder.setMessage(getResources().getString(R.string.do_you_want_to_delete_all_entries))
+                .setCancelable(false)
+                .setPositiveButton(getResources().getString(R.string.answer_yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        db.delete();
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.all_entries_deleted), Toast.LENGTH_LONG).show();
+                    }
+                })
+                .setNegativeButton(getResources().getString(R.string.answer_no), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void showAlertDialogForSelectingWhichEntryToDelete() {
