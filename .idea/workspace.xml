@@ -9,13 +9,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity + ForegroundService: rewrote showing path which was covered; led too low-memory if too many points were shown">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity+DatabaseHandler: Extending AlertDialog if choosing which run to display&#10;* strings.xml: new strings added">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -221,20 +217,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00049" summary="SettingsActivity.java: onTextChanged method refactored">
-      <created>1691043039158</created>
-      <option name="number" value="00049" />
-      <option name="presentableId" value="LOCAL-00049" />
-      <option name="project" value="LOCAL" />
-      <updated>1691043039158</updated>
-    </task>
-    <task id="LOCAL-00050" summary="* strings.xml: current location renamed to starting position">
-      <created>1691052374580</created>
-      <option name="number" value="00050" />
-      <option name="presentableId" value="LOCAL-00050" />
-      <option name="project" value="LOCAL" />
-      <updated>1691052374582</updated>
     </task>
     <task id="LOCAL-00051" summary="* MapsActivity.java: by clicking polyline, polyline transforms to dots">
       <created>1691052452934</created>
@@ -565,7 +547,21 @@
       <option name="project" value="LOCAL" />
       <updated>1700545789576</updated>
     </task>
-    <option name="localTasksCounter" value="98" />
+    <task id="LOCAL-00098" summary="* MapsActivity + ForegroundService: rewrote showing path which was covered; led too low-memory if too many points were shown">
+      <created>1700549137220</created>
+      <option name="number" value="00098" />
+      <option name="presentableId" value="LOCAL-00098" />
+      <option name="project" value="LOCAL" />
+      <updated>1700549137220</updated>
+    </task>
+    <task id="LOCAL-00099" summary="* MapsActivity+DatabaseHandler: Extending AlertDialog if choosing which run to display&#10;* strings.xml: new strings added">
+      <created>1700549230332</created>
+      <option name="number" value="00099" />
+      <option name="presentableId" value="LOCAL-00099" />
+      <option name="project" value="LOCAL" />
+      <updated>1700549230332</updated>
+    </task>
+    <option name="localTasksCounter" value="100" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -581,9 +577,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* ForegroundService.java: broadcasting distance and speed for showing it in toolbar" />
-    <MESSAGE value="* MapsActivity.java: receiving distance and speed in broadcast for displaying it in toolbar" />
-    <MESSAGE value="* StatisticsActivity.java: label textsize, zoomButton visibility, and filling points implemented" />
     <MESSAGE value="* altitude added as a new column" />
     <MESSAGE value="* altitude,and person added as a new column&#10;* person added in SettingsActivity.java for later evaluation" />
     <MESSAGE value="* meter converted to kilometer" />
@@ -605,8 +598,11 @@
     <MESSAGE value="* activity_statistics.xml: new value added" />
     <MESSAGE value="* MapsActivity/SettingsActivity/activity_settings.xml: reducing latitude/longitude switch removed" />
     <MESSAGE value="* Removing Kalmanfilter" />
+    <MESSAGE value="* SettingsActivity: AlertDialog if deleting entire database" />
     <MESSAGE value="* MapsActivity + ForegroundService: rewrote showing path which was covered; led too low-memory if too many points were shown" />
-    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity + ForegroundService: rewrote showing path which was covered; led too low-memory if too many points were shown" />
+    <MESSAGE value="*" />
+    <MESSAGE value="* MapsActivity+DatabaseHandler: Extending AlertDialog if choosing which run to display&#10;* strings.xml: new strings added" />
+    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity+DatabaseHandler: Extending AlertDialog if choosing which run to display&#10;* strings.xml: new strings added" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -615,6 +611,11 @@
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
           <line>513</line>
           <option name="timeStamp" value="425" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
+          <line>442</line>
+          <option name="timeStamp" value="434" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

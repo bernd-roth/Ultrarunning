@@ -436,6 +436,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             mMap.addMarker(new MarkerOptions().position(
                     new LatLng(polylinePoints.get(polylinePoints.size()-1).latitude,
                             polylinePoints.get(polylinePoints.size()-1).longitude)).icon(checkerFlag));
+
+            //move to last location when drawing the route
+            double lat = polylinePoints.get(polylinePoints.size()-1).latitude;
+            double lon = polylinePoints.get(polylinePoints.size()-1).longitude;
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 16f));
         }
     }
 
