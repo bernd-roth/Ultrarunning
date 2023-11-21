@@ -57,4 +57,5 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.2.2')
     implementation 'com.google.firebase:firebase-analytics'
     implementation group: 'com.google.maps.android', name: 'android-maps-utils', version: '3.8.0'
+    implementation 'joda-time:joda-time:2.12.5'
 }

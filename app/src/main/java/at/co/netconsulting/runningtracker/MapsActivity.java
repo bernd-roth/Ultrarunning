@@ -54,7 +54,8 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.maps.android.PolyUtil;
-
+import org.joda.time.Duration;
+import org.joda.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -573,9 +574,21 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         builderSingle.setCancelable(false);
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapsActivity.this, android.R.layout.select_dialog_singlechoice);
+        Duration duration;
+        Period period;
+        int days, hours, minutes, count;
+
         for(int i = 0; i<allEntries.size(); i++) {
-            int count = db.countDataOfRun(allEntries.get(i).getNumber_of_run());
+            duration = new Duration(allEntries.get(i).getDateTimeInMs());
+            period = duration.toPeriod();
+            days = period.getDays();
+            hours = period.getHours();
+            minutes = period.getMinutes();
+            count = db.countDataOfRun(allEntries.get(i).getNumber_of_run());
+
             arrayAdapter.add(allEntries.get(i).getDateTime()
+                    + "\n" + String.format("Meters covered: %.2f", allEntries.get(i).getMeters_covered()/1000) + " Km"
+                    + "\n" + "Duration: " + days + " days " + hours + " hours " + minutes + " minutes"
                     + "\n" + count + " points to load");
         }
 
