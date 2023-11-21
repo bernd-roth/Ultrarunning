@@ -20,7 +20,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Parcelable;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -173,29 +172,48 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         isSwitchGoToLastLocation = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, false);
     }
 
-    private void createPolypoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
+//    private void createPolypoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
+//        boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
+//        //isServiceRunning = true; // FIXME
+//
+//        if(!isServiceRunning) {
+//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
+//            toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0");
+//        } else {
+//            LatLng latLng = new LatLng(lastLat, lastLng);
+//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+//            Projection projection = mMap.getProjection();
+//
+//            if(startingPoint) {
+//                mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location))).showInfoWindow();
+//                startingPoint = false;
+//            } else {
+//                //polylinePoints = groupPoints(polylinePoints, projection);
+//
+//                polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+//                toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
+//
+//                //check if firebase has some values left and draw it
+//                //getFirebaseDatabase(polylinePoints);
+//            }
+//        }
+//    }
+
+    private void createPolypoints(String speed, float coveredDistance, double lastLat, double lastLng) {
         boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
-        //isServiceRunning = true; // FIXME
 
         if(!isServiceRunning) {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
             toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0");
         } else {
-            LatLng latLng = new LatLng(lastLat, lastLng);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
-            Projection projection = mMap.getProjection();
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 16));
 
             if(startingPoint) {
-                mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location))).showInfoWindow();
+                mMap.addMarker(new MarkerOptions().position(new LatLng(lastLat, lastLng)).title(getResources().getString(R.string.current_location))).showInfoWindow();
                 startingPoint = false;
             } else {
-                //polylinePoints = groupPoints(polylinePoints, projection);
-
-                polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 16));
                 toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
-
-                //check if firebase has some values left and draw it
-                //getFirebaseDatabase(polylinePoints);
             }
         }
     }
@@ -827,32 +845,47 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         polylineKalmanFiltered = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
     }
 
+//    private class DataBroadcastReceiver extends BroadcastReceiver {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            String action = intent.getAction();
+//            Timber.d("DataBroadcastReceiver %s", action);
+//            ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
+//            speed = intent.getExtras().getString("SPEED");
+//            coveredDistance = intent.getExtras().getFloat("DISTANCE");
+//
+//            int size = polylinePoints.size();
+//
+//            if (size == 0) {
+//                lastLat = 0;
+//                lastLng = 0;
+//            } else if (size == 1) {
+//                LatLng lastEntry = (LatLng) polylinePoints.get(polylinePoints.size());
+//                lastLat = lastEntry.latitude;
+//                lastLng = lastEntry.longitude;
+//                polylinePointsTemp.add(lastEntry);
+//            } else {
+//                LatLng lastEntry = (LatLng) polylinePoints.get(polylinePoints.size() - 2);
+//                lastLat = lastEntry.latitude;
+//                lastLng = lastEntry.longitude;
+//                polylinePointsTemp.add(lastEntry);
+//            }
+//            createPolypoints(lastLat, lastLng, polylinePointsTemp);
+//        }
+//    }
+
     private class DataBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             Timber.d("DataBroadcastReceiver %s", action);
-            ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
+            //ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
             speed = intent.getExtras().getString("SPEED");
             coveredDistance = intent.getExtras().getFloat("DISTANCE");
+            lastLat = intent.getExtras().getDouble("LAT");
+            lastLng = intent.getExtras().getDouble("LON");
 
-            int size = polylinePoints.size();
-
-            if(size==0) {
-                lastLat = 0;
-                lastLng = 0;
-            } else if(size==1) {
-                LatLng lastEntry = (LatLng) polylinePoints.get(polylinePoints.size());
-                lastLat = lastEntry.latitude;
-                lastLng = lastEntry.longitude;
-                polylinePointsTemp.add(lastEntry);
-            } else {
-                LatLng lastEntry = (LatLng) polylinePoints.get(polylinePoints.size() - 2);
-                lastLat = lastEntry.latitude;
-                lastLng = lastEntry.longitude;
-                polylinePointsTemp.add(lastEntry);
-            }
-            createPolypoints(lastLat, lastLng, polylinePointsTemp);
+            createPolypoints(speed, coveredDistance, lastLat, lastLng);
         }
     }
 }
