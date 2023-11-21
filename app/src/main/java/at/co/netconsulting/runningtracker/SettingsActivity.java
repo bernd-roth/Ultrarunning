@@ -29,7 +29,10 @@ public class SettingsActivity extends BaseActivity {
     private SharedPreferences sharedpreferences;
     private EditText editTextNumberSignedMinimumTimeMs;
     private EditText editTextNumberSignedMinimumDistanceMeter, editTextPerson;
-    private Button buttonSave, buttonNormalizeWithKalmanFilter, buttonExport, buttonDelete,
+    private Button buttonSave,
+//            buttonNormalizeWithKalmanFilter,
+            buttonExport,
+            buttonDelete,
             buttonDeleteSingleEntry;
     private String mapType, recordingProfil;
     private RadioButton radioButtonNormal,
@@ -172,8 +175,8 @@ public class SettingsActivity extends BaseActivity {
         //radioButtonFast = findViewById(R.id.radioButtonFast);
         radioButtonIndividual = findViewById(R.id.radioButtonIndividual);
 
-        buttonNormalizeWithKalmanFilter = findViewById(R.id.buttonNormalizeWithKalmanFilter);
-        buttonNormalizeWithKalmanFilter.setTransformationMethod(null);
+//        buttonNormalizeWithKalmanFilter = findViewById(R.id.buttonNormalizeWithKalmanFilter);
+//        buttonNormalizeWithKalmanFilter.setTransformationMethod(null);
 
         buttonExport = findViewById(R.id.buttonExport);
         buttonExport.setTransformationMethod(null);
@@ -487,19 +490,19 @@ public class SettingsActivity extends BaseActivity {
         saveSharedPreferences("MAP_TYPE_SATELLITE");
     }
 
-    public void startKalmanFilter(View view) {
-        buttonNormalizeWithKalmanFilter.setEnabled(false);
-
-        File file = new File(getApplicationContext().getExternalFilesDir(null), "Kalman_filtered.csv");
-        try {
-            boolean fileExists = file.createNewFile();
-            if (fileExists) {
-                file.delete();
-            }
-        } catch(Exception e) {}
-
-        new KalmanFilter(getApplicationContext());
-        new GPSDataFactory(db);
-        buttonNormalizeWithKalmanFilter.setEnabled(true);
-    }
+//    public void startKalmanFilter(View view) {
+//        buttonNormalizeWithKalmanFilter.setEnabled(false);
+//
+//        File file = new File(getApplicationContext().getExternalFilesDir(null), "Kalman_filtered.csv");
+//        try {
+//            boolean fileExists = file.createNewFile();
+//            if (fileExists) {
+//                file.delete();
+//            }
+//        } catch(Exception e) {}
+//
+//        new KalmanFilter(getApplicationContext());
+//        new GPSDataFactory(db);
+//        buttonNormalizeWithKalmanFilter.setEnabled(true);
+//    }
 }
