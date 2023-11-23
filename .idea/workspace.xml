@@ -9,9 +9,16 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity+DatabaseHandler: Extending AlertDialog if choosing which run to display&#10;* strings.xml: new strings added">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="Merge remote-tracking branch 'origin/master'">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/SharedPref.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/SharedPref.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/StaticFields.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/StaticFields.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -217,13 +224,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00051" summary="* MapsActivity.java: by clicking polyline, polyline transforms to dots">
-      <created>1691052452934</created>
-      <option name="number" value="00051" />
-      <option name="presentableId" value="LOCAL-00051" />
-      <option name="project" value="LOCAL" />
-      <updated>1691052452935</updated>
     </task>
     <task id="LOCAL-00052" summary="* StatisticsActivity.java: statistical overview of last run (max. speed, distance, avg. speed), introducing a graph about path/velocity diagram">
       <created>1691151347831</created>
@@ -561,7 +561,14 @@
       <option name="project" value="LOCAL" />
       <updated>1700549230332</updated>
     </task>
-    <option name="localTasksCounter" value="100" />
+    <task id="LOCAL-00100" summary="Merge remote-tracking branch 'origin/master'">
+      <created>1700555250607</created>
+      <option name="number" value="00100" />
+      <option name="presentableId" value="LOCAL-00100" />
+      <option name="project" value="LOCAL" />
+      <updated>1700555250607</updated>
+    </task>
+    <option name="localTasksCounter" value="101" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -577,8 +584,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* altitude added as a new column" />
-    <MESSAGE value="* altitude,and person added as a new column&#10;* person added in SettingsActivity.java for later evaluation" />
     <MESSAGE value="* meter converted to kilometer" />
     <MESSAGE value="* show location from last run fixed" />
     <MESSAGE value="* covered distance on toolbar format type error fixed" />
@@ -602,20 +607,17 @@
     <MESSAGE value="* MapsActivity + ForegroundService: rewrote showing path which was covered; led too low-memory if too many points were shown" />
     <MESSAGE value="*" />
     <MESSAGE value="* MapsActivity+DatabaseHandler: Extending AlertDialog if choosing which run to display&#10;* strings.xml: new strings added" />
-    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity+DatabaseHandler: Extending AlertDialog if choosing which run to display&#10;* strings.xml: new strings added" />
+    <MESSAGE value="* MapsActivity: moving to last location when drawing the recorded route" />
+    <MESSAGE value="Merge remote-tracking branch 'origin/master'" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge remote-tracking branch 'origin/master'" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java</url>
-          <line>513</line>
+          <line>537</line>
           <option name="timeStamp" value="425" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>442</line>
-          <option name="timeStamp" value="434" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -9,4 +9,5 @@ public class StaticFields {
     public final static String STATIC_SAVE_ON_COMMENT_PAUSE = "COMMENT_AND_PAUSE";
     public final static DecimalFormat df = new DecimalFormat("0.00");
     public final static String STATIC_STRING_PERSON = "Anonym";
+    public final static boolean STATIC_BOOLEAN_DISTANCE_COVERED = false;
 }

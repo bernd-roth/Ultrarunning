@@ -49,8 +49,8 @@ public class SettingsActivity extends BaseActivity {
     private int minDistanceMeter;
     private long minTimeMs;
     private DatabaseHandler db;
-    private Switch switchCommentPause, switchGoToLastLocation;
-    private boolean isCommentOnPause, isCommentedOnPause, isGoToLastLocation;
+    private Switch switchCommentPause, switchGoToLastLocation, switchDistanceCovered;
+    private boolean isCommentOnPause, isCommentedOnPause, isGoToLastLocation, isDistanceCovered;
     private ProgressDialog progressDialog;
     private String person;
 
@@ -69,6 +69,7 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_REDUCE_LAT_LANG);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -150,6 +151,11 @@ public class SettingsActivity extends BaseActivity {
                 editTextPerson.setText(person);
 //                buttonSave.setEnabled(true);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isDistanceCovered = sh.getBoolean(sharedPrefKey, false);
+                switchDistanceCovered.setChecked(isDistanceCovered);
+                break;
         }
     }
 
@@ -189,6 +195,7 @@ public class SettingsActivity extends BaseActivity {
 
         switchCommentPause = findViewById(R.id.switchCommentPause);
         switchGoToLastLocation = findViewById(R.id.switchGoToLastLocation);
+        switchDistanceCovered = findViewById(R.id.switchDistanceCovered);
 
         progressDialog = new ProgressDialog(SettingsActivity.this);
         progressDialog.setMessage("Exporting..."); // Setting Message
@@ -301,6 +308,13 @@ public class SettingsActivity extends BaseActivity {
             String person = editTextPerson.getText().toString();
             editor.putString(SharedPref.STATIC_SHARED_PREF_PERSON, person);
             editor.commit();
+        }  else if(sharedPreference.equals("DISTANCE_COVERED")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            boolean isSwitchDistanceCovered = switchDistanceCovered.isChecked();
+            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED, isSwitchDistanceCovered);
+            editor.commit();
         }
     }
 
@@ -386,6 +400,16 @@ public class SettingsActivity extends BaseActivity {
         } else {
             isGoToLastLocation=false;
             saveSharedPreferences("GO_TO_LAST_LOCATION");
+        }
+    }
+
+    public void saveDistanceCovered(View view) {
+        if(switchDistanceCovered.isChecked()) {
+            isDistanceCovered=true;
+            saveSharedPreferences("DISTANCE_COVERED");
+        } else {
+            isDistanceCovered=false;
+            saveSharedPreferences("DISTANCE_COVERED");
         }
     }
 

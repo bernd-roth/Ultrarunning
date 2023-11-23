@@ -20,6 +20,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -80,7 +81,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private ActivityMapsBinding binding;
     //Polyline
     private Polyline polyline, polylineKalmanFiltered, polylineOtherPerson;
-    private List<LatLng> polylinePoints, polylinePointsTemp, polylinePointsOtherPerson;
+    private List<LatLng> polylinePoints, polylinePointsTemp;
     private boolean isDisableZoomCamera;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabPauseRecording;
     private double lastLat, lastLng;
@@ -89,9 +90,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private String[] permissions;
     private LocationManager locationManager;
     private boolean gps_enabled;
-    private boolean startingPoint, startingPointJulia;
+    private boolean startingPoint;
     private BroadcastReceiver receiver;
-    private boolean isPauseRecordingClicked, isSwitchPausedActivated, isSwitchGoToLastLocation;
+    private boolean isPauseRecordingClicked, isSwitchPausedActivated, isSwitchGoToLastLocation, isDistanceCovered;
     private DatabaseHandler db;
     private Toolbar toolbar;
     private TextView toolbar_title, textViewSlow, textViewFast;
@@ -171,50 +172,35 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, Context.MODE_PRIVATE);
         isSwitchGoToLastLocation = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, false);
+
+        sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED, Context.MODE_PRIVATE);
+        isDistanceCovered = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED, false);
     }
 
-//    private void createPolypoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
-//        boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
-//        //isServiceRunning = true; // FIXME
-//
-//        if(!isServiceRunning) {
-//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
-//            toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0");
-//        } else {
-//            LatLng latLng = new LatLng(lastLat, lastLng);
-//            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
-//            Projection projection = mMap.getProjection();
-//
-//            if(startingPoint) {
-//                mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location))).showInfoWindow();
-//                startingPoint = false;
-//            } else {
-//                //polylinePoints = groupPoints(polylinePoints, projection);
-//
-//                polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-//                toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
-//
-//                //check if firebase has some values left and draw it
-//                //getFirebaseDatabase(polylinePoints);
-//            }
-//        }
-//    }
+    private void createPolypoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
+        if(isDistanceCovered) {
+            boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
+            //isServiceRunning = true; // FIXME
 
-    private void createPolypoints(String speed, float coveredDistance, double lastLat, double lastLng) {
-        boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
-
-        if(!isServiceRunning) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
-            toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0");
-        } else {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 16));
-
-            if(startingPoint) {
-                mMap.addMarker(new MarkerOptions().position(new LatLng(lastLat, lastLng)).title(getResources().getString(R.string.current_location))).showInfoWindow();
-                startingPoint = false;
+            if (!isServiceRunning) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
+                toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0");
             } else {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 16));
-                toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
+                //Projection projection = mMap.getProjection();
+
+                if (startingPoint) {
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(lastLat, lastLng)).title(getResources().getString(R.string.current_location))).showInfoWindow();
+                    startingPoint = false;
+                } else {
+                    //polylinePoints = groupPoints(polylinePoints, projection);
+
+                    polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+                    toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
+
+                    //check if firebase has some values left and draw it
+                    //getFirebaseDatabase(polylinePoints);
+                }
             }
         }
     }
@@ -232,52 +218,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         Timber.d("result %s", result);
         return result;
     }
-
-/*    private void getFirebaseDatabase(List<LatLng> polylinePoints) {
-        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        DatabaseReference user1 = myRef.child("Bernd");
-        DatabaseReference user2 = myRef.child("Julia");
-
-        //get value
-        user1.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DataSnapshot snapshot = task.getResult();
-
-                    Double lat = snapshot.child("lat").getValue(Double.class);
-                    Double lon = snapshot.child("lon").getValue(Double.class);
-
-                    //User Bernd
-                    polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-                } else {
-                    Timber.d("Exception addOnCompleteListener: %s", task.getException().getMessage());
-                }
-            }
-        });
-
-        user2.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DataSnapshot snapshot = task.getResult();
-
-                    Double lat = snapshot.child("lat").getValue(Double.class);
-                    Double lon = snapshot.child("lon").getValue(Double.class);
-
-                    //User Julia
-                    if(startingPointJulia) {
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title("Julia")).showInfoWindow();
-                        startingPointJulia=false;
-                    }
-                    polylinePointsOtherPerson.add(new LatLng(lat, lon));
-                    polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePointsOtherPerson).color(Color.BLACK).jointType(JointType.ROUND).width(15.0f));
-                } else {
-                    Timber.d("Exception addOnCompleteListener: %s", task.getException().getMessage());
-                }
-            }
-        });
-    }*/
 
     private boolean isServiceRunning(String serviceName) {
         boolean serviceRunning = false;
@@ -323,13 +263,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         polylinePoints = new ArrayList<>();
         polylinePointsTemp = new ArrayList<>();
-        polylinePointsOtherPerson = new ArrayList<>();
         configureReceiver();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         isDisableZoomCamera = true;
         startingPoint = true;
-        startingPointJulia = true;
         db = new DatabaseHandler(this);
         drawView = new DrawView(this);
         RelativeLayout myRelativeLayout = (RelativeLayout) findViewById(R.id.relLayout);
@@ -701,7 +639,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         double lat = polylinePoints.get(0).latitude;
         double lng = polylinePoints.get(0).longitude;
 
-        LatLng latLng = new LatLng(lat, lng);
         PatternItem DOT = new Dot();
         PatternItem GAP = new Gap(20);
         List<PatternItem> PATTERN_POLYLINE_DOTTED = Arrays.asList(GAP, DOT);
@@ -710,7 +647,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
         polyline.setClickable(true);
 
-        mMap.addMarker(new MarkerOptions().position(latLng).title(getString(R.string.starting_position)));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(getString(R.string.starting_position)));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 16));
         mMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
             @Override
@@ -863,47 +800,77 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         polylineKalmanFiltered = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
     }
 
+    private class DataBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (isDistanceCovered) {
+                String action = intent.getAction();
+                Timber.d("DataBroadcastReceiver %s", action);
+                ArrayList<Parcelable> polylinePointsParcelable = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
+                speed = intent.getExtras().getString("SPEED");
+                coveredDistance = intent.getExtras().getFloat("DISTANCE");
+
+                if (polylinePointsParcelable != null) {
+                    int size = polylinePointsParcelable.size();
+                    if (size == 0) {
+                        lastLat = 0;
+                        lastLng = 0;
+                    } else if (size == 1) {
+                        LatLng lastEntry = (LatLng) polylinePointsParcelable.get(polylinePointsParcelable.size());
+                        lastLat = lastEntry.latitude;
+                        lastLng = lastEntry.longitude;
+                        polylinePointsTemp.add(lastEntry);
+                    } else {
+                        LatLng lastEntry = (LatLng) polylinePointsParcelable.get(polylinePointsParcelable.size() - 2);
+                        lastLat = lastEntry.latitude;
+                        lastLng = lastEntry.longitude;
+                        polylinePointsTemp.add(lastEntry);
+                    }
+                    createPolypoints(lastLat, lastLng, polylinePointsTemp);
+                }
+            } else {
+                String action = intent.getAction();
+                Timber.d("DataBroadcastReceiver %s", action);
+                //ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
+                speed = intent.getExtras().getString("SPEED");
+                coveredDistance = intent.getExtras().getFloat("DISTANCE");
+                lastLat = intent.getExtras().getDouble("LAT");
+                lastLng = intent.getExtras().getDouble("LON");
+
+                //createPolypoints(speed, coveredDistance, lastLat, lastLng);
+
+                boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
+
+                if(!isServiceRunning) {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
+                    toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0");
+                } else {
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 16));
+
+                    if(startingPoint) {
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(lastLat, lastLng)).title(getResources().getString(R.string.current_location))).showInfoWindow();
+                        startingPoint = false;
+                    } else {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 16));
+                        toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
+                    }
+                }
+            }
+        }
+    }
+
 //    private class DataBroadcastReceiver extends BroadcastReceiver {
 //        @Override
 //        public void onReceive(Context context, Intent intent) {
 //            String action = intent.getAction();
 //            Timber.d("DataBroadcastReceiver %s", action);
-//            ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
+//            //ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
 //            speed = intent.getExtras().getString("SPEED");
 //            coveredDistance = intent.getExtras().getFloat("DISTANCE");
+//            lastLat = intent.getExtras().getDouble("LAT");
+//            lastLng = intent.getExtras().getDouble("LON");
 //
-//            int size = polylinePoints.size();
-//
-//            if (size == 0) {
-//                lastLat = 0;
-//                lastLng = 0;
-//            } else if (size == 1) {
-//                LatLng lastEntry = (LatLng) polylinePoints.get(polylinePoints.size());
-//                lastLat = lastEntry.latitude;
-//                lastLng = lastEntry.longitude;
-//                polylinePointsTemp.add(lastEntry);
-//            } else {
-//                LatLng lastEntry = (LatLng) polylinePoints.get(polylinePoints.size() - 2);
-//                lastLat = lastEntry.latitude;
-//                lastLng = lastEntry.longitude;
-//                polylinePointsTemp.add(lastEntry);
-//            }
-//            createPolypoints(lastLat, lastLng, polylinePointsTemp);
+//            createPolypoints(speed, coveredDistance, lastLat, lastLng);
 //        }
 //    }
-
-    private class DataBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            Timber.d("DataBroadcastReceiver %s", action);
-            //ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
-            speed = intent.getExtras().getString("SPEED");
-            coveredDistance = intent.getExtras().getFloat("DISTANCE");
-            lastLat = intent.getExtras().getDouble("LAT");
-            lastLng = intent.getExtras().getDouble("LON");
-
-            createPolypoints(speed, coveredDistance, lastLat, lastLng);
-        }
-    }
 }

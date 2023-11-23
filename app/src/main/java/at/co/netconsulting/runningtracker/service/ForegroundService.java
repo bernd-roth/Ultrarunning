@@ -51,25 +51,36 @@ public class ForegroundService extends Service implements LocationListener {
     private NotificationManager manager;
     private DatabaseHandler db;
     private Run run;
-    private double currentLatitude, currentLongitude, altitude;
+    private double currentLatitude,
+            currentLongitude,
+            altitude;
     private LocationManager locationManager;
     private float[] result;
     private ArrayList<LatLng> polylinePoints;
     private DateTimeFormatter formatDateTime;
     private LocalDateTime dateObj;
-    private LatLng latLng;
     private long currentMilliseconds, oldCurrentMilliseconds = 0, minTimeMs;
     private final long[] seconds = {0}, minutes = {0}, hours = {0};
     private Timer timer;
     private BroadcastReceiver broadcastReceiver;
-    private boolean isCommentOnPause;
+    private boolean isCommentOnPause, isDistanceCovered;
     private int laps, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
     private float lapCounter, calc, accuracy, currentSpeed;
+    private IntentFilter filter;
+    private Intent intent;
+    private Bundle bundle;
+    private String notificationService;
+    private NotificationManager nMgr;
+    private NotificationChannel serviceChannel;
+    private GnssStatus.Callback gnssCallback;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        db = new DatabaseHandler(this);
+        initObjects();
+        getLastKnownLocation(locationManager);
+        initCallbacks();
+
         lastRun = db.getLastEntry();
         lastRun += 1;
 
@@ -78,9 +89,8 @@ public class ForegroundService extends Service implements LocationListener {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED);
 
-        locationManager = getLocationManager();
-        getLastKnownLocation(locationManager);
         configureBroadcastReceiver();
     }
 
@@ -106,13 +116,16 @@ public class ForegroundService extends Service implements LocationListener {
         timer = new Timer();
         laps=0;
         lapCounter=0;
-        initCallbacks();
+        filter = new IntentFilter();
+        broadcastReceiver = new DataBroadcastReceiver();
+        db = new DatabaseHandler(this);
+        intent=new Intent();
+        bundle = new Bundle();
+        locationManager = getLocationManager();
     }
 
     private void configureBroadcastReceiver() {
-        IntentFilter filter = new IntentFilter();
         filter.addAction(SharedPref.STATIC_BROADCAST_PAUSE_ACTION);
-        broadcastReceiver = new DataBroadcastReceiver();
         registerReceiver(broadcastReceiver, filter);
     }
 
@@ -160,7 +173,6 @@ public class ForegroundService extends Service implements LocationListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        initObjects();
         createNotificationChannel();
         createPendingIntent();
 
@@ -188,7 +200,7 @@ public class ForegroundService extends Service implements LocationListener {
                 .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
 
         notification = notificationBuilder.build();
-
+/*
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -202,7 +214,7 @@ public class ForegroundService extends Service implements LocationListener {
                     }
                 }
 
-                manager.notify(NOTIFICATION_ID /* ID of notification */, notificationBuilder
+                manager.notify(NOTIFICATION_ID, notificationBuilder
                         .setContentTitle("Distance covered: " + String.format("%.2f Km", calc / 1000))
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " Km/h"
@@ -215,13 +227,11 @@ public class ForegroundService extends Service implements LocationListener {
                         .build());
             }
         }, 0, 1000);
-
+*/
         startForeground(NOTIFICATION_ID, notification);
 
         return START_STICKY;
     }
-
-    private GnssStatus.Callback gnssCallback;
 
     public void initCallbacks() {
         gnssCallback = new GnssStatus.Callback() {
@@ -263,22 +273,17 @@ public class ForegroundService extends Service implements LocationListener {
     }
 
     private void calculateDistance() {
-        //one location older than current location
-        LatLng penultimatelastEntry = polylinePoints.get(polylinePoints.size()-2);
-        double oldDoubleLat = penultimatelastEntry.latitude;
-        double oldDoubleLng = penultimatelastEntry.longitude;
-
-        //current location
-        LatLng lastEntry = polylinePoints.get(polylinePoints.size()-1);
-        double newDoubleLat = lastEntry.latitude;
-        double newDoubleLng = lastEntry.longitude;
-
-        Location.distanceBetween(oldDoubleLat, oldDoubleLng, newDoubleLat, newDoubleLng, result);
+        Location.distanceBetween(
+                //older location
+                polylinePoints.get(polylinePoints.size()-2).latitude,
+                polylinePoints.get(polylinePoints.size()-2).longitude,
+                //current location
+                polylinePoints.get(polylinePoints.size()-1).latitude,
+                polylinePoints.get(polylinePoints.size()-1).longitude,
+                result);
         calc += result[0];
         lapCounter += result[0];
         calculateLaps();
-        //sendBroadcastToMapsActivity(polylinePoints);
-        sendBroadcastToMapsActivity(newDoubleLat, newDoubleLng);
     }
 
     private void calculateLaps() {
@@ -289,9 +294,7 @@ public class ForegroundService extends Service implements LocationListener {
     }
 
     private void sendBroadcastToMapsActivity(ArrayList<LatLng> polylinePoints) {
-        Intent intent=new Intent();
         intent.setAction(SharedPref.STATIC_BROADCAST_ACTION);
-        Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION, polylinePoints);
         bundle.putString("SPEED", String.valueOf(currentSpeed));
         bundle.putFloat("DISTANCE", calc);
@@ -300,10 +303,7 @@ public class ForegroundService extends Service implements LocationListener {
     }
 
     private void sendBroadcastToMapsActivity(double newDoubleLat, double newDoubleLng) {
-        Intent intent=new Intent();
         intent.setAction(SharedPref.STATIC_BROADCAST_ACTION);
-        Bundle bundle = new Bundle();
-        //bundle.putParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION, polylinePoints);
         bundle.putString("SPEED", String.valueOf(currentSpeed));
         bundle.putFloat("DISTANCE", calc);
         bundle.putDouble("LAT", newDoubleLat);
@@ -328,7 +328,6 @@ public class ForegroundService extends Service implements LocationListener {
         cancelNotification();
         locationManager.removeUpdates(this);
         polylinePoints.clear();
-        latLng = null;
         stopForeground(STOP_FOREGROUND_REMOVE);
         stopSelf();
         timer.cancel();
@@ -337,8 +336,8 @@ public class ForegroundService extends Service implements LocationListener {
     }
 
     private void cancelNotification() {
-        String notificationService = Context.NOTIFICATION_SERVICE;
-        NotificationManager nMgr = (NotificationManager) getApplicationContext().getSystemService(notificationService);
+        notificationService = Context.NOTIFICATION_SERVICE;
+        nMgr = (NotificationManager) getApplicationContext().getSystemService(notificationService);
         nMgr.cancel(NOTIFICATION_ID);
     }
 
@@ -350,7 +349,7 @@ public class ForegroundService extends Service implements LocationListener {
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(
+            serviceChannel = new NotificationChannel(
                     NOTIFICATION_CHANNEL_ID,
                     "Foreground Service Channel",
                     NotificationManager.IMPORTANCE_DEFAULT
@@ -380,6 +379,10 @@ public class ForegroundService extends Service implements LocationListener {
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 person = sh.getString(sharedPrefKey, StaticFields.STATIC_STRING_PERSON);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isDistanceCovered = sh.getBoolean(sharedPrefKey, StaticFields.STATIC_BOOLEAN_DISTANCE_COVERED);
+                break;
         }
     }
 
@@ -390,17 +393,8 @@ public class ForegroundService extends Service implements LocationListener {
         currentLatitude = location.getLatitude();
         currentLongitude = location.getLongitude();
 
-        //get the location name from latitude and longitude
-        latLng = new LatLng(currentLatitude, currentLongitude);
-
-        polylinePoints.add(latLng);
-
         //number of satellites
         numberOfsatellitesInUse = location.getExtras().getInt("satellites");
-
-        if (polylinePoints.size() > 1) {
-            calculateDistance();
-        }
 
         altitude = location.getAltitude();
         accuracy = location.getAccuracy();
@@ -410,21 +404,43 @@ public class ForegroundService extends Service implements LocationListener {
         if(bundlePause==null) {
             if(minDistanceMeter==1 && minTimeMs==1) {
                 if (currentMilliseconds != oldCurrentMilliseconds) {
-                    saveToDatabase();
-                    oldCurrentMilliseconds = currentMilliseconds;
+                    if(polylinePoints!=null) {
+                        if(polylinePoints.size()!=0) {
+                            if(polylinePoints.get(polylinePoints.size()-1).latitude != currentLatitude ||
+                                    polylinePoints.get(polylinePoints.size()-1).longitude != currentLongitude) {
+                                polylinePoints.add(new LatLng(currentLatitude, currentLongitude));
+                                if(currentSpeed>0) {
+                                    calculateDistance();
+                                    saveToDatabase();
+                                    if (isDistanceCovered) {
+                                        sendBroadcastToMapsActivity(polylinePoints);
+                                    } else {
+                                        sendBroadcastToMapsActivity(polylinePoints.get(polylinePoints.size() - 1).latitude, polylinePoints.get(polylinePoints.size() - 1).longitude);
+                                    }
+                                    oldCurrentMilliseconds = currentMilliseconds;
+                                }
+                            }
+                            polylinePoints.add(new LatLng(currentLatitude, currentLongitude));
+                            if(currentSpeed>0) {
+                                calculateDistance();
+                                saveToDatabase();
+                                if (isDistanceCovered) {
+                                    sendBroadcastToMapsActivity(polylinePoints);
+                                } else {
+                                    sendBroadcastToMapsActivity(polylinePoints.get(polylinePoints.size() - 1).latitude, polylinePoints.get(polylinePoints.size() - 1).longitude);
+                                }
+                                oldCurrentMilliseconds = currentMilliseconds;
+                            }
+                        } else if(polylinePoints.size()==0) {
+                            polylinePoints.add(new LatLng(currentLatitude, currentLongitude));
+                        }
+                    }
                 }
             } else {
                 saveToDatabase();
             }
-            //saveToFirebase(run);
-        } else {
-            if(isCommentOnPause) {
+        } else if(isCommentOnPause) {
                 saveToDatabaseWithComment("Paused");
-            }
-        }
-
-        if(polylinePoints.size()>=3) {
-            polylinePoints.remove(0);
         }
     }
 
@@ -450,11 +466,6 @@ public class ForegroundService extends Service implements LocationListener {
 //    }
 
     @Override
-    public void onLocationChanged(@NonNull List<Location> locations) {
-        LocationListener.super.onLocationChanged(locations);
-    }
-
-    @Override
     public void onFlushComplete(int requestCode) {
         LocationListener.super.onFlushComplete(requestCode);
     }
@@ -477,7 +488,6 @@ public class ForegroundService extends Service implements LocationListener {
     private class DataBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
             bundlePause = intent.getExtras().getString("Pausing");
             Timber.d("Foregrundservice: DataBroadcastReceiver: %s", bundlePause);
         }
