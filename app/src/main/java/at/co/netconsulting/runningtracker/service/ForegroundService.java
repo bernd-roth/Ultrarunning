@@ -27,18 +27,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import com.google.android.gms.maps.model.LatLng;
+
+import org.greenrobot.eventbus.EventBus;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
+
 import at.co.netconsulting.runningtracker.MapsActivity;
 import at.co.netconsulting.runningtracker.R;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
+import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import timber.log.Timber;
 
@@ -58,7 +59,6 @@ public class ForegroundService extends Service implements LocationListener {
             oldLongitude;
     private LocationManager locationManager;
     private float[] result;
-    //private ArrayList<LatLng> polylinePoints;
     private DateTimeFormatter formatDateTime;
     private LocalDateTime dateObj;
     private long currentMilliseconds, oldCurrentMilliseconds = 0, minTimeMs;
@@ -125,7 +125,6 @@ public class ForegroundService extends Service implements LocationListener {
     private void initObjects() {
         isFirstEntry = true;
         run = new Run();
-        //polylinePoints = new ArrayList<>();
         calc = 0;
         result = new float[1];
         dateObj = LocalDateTime.now();
@@ -134,7 +133,7 @@ public class ForegroundService extends Service implements LocationListener {
         laps=0;
         lapCounter=0;
         filter = new IntentFilter();
-        broadcastReceiver = new DataBroadcastReceiver();
+        //broadcastReceiver = new DataBroadcastReceiver();
         db = new DatabaseHandler(this);
         intent=new Intent();
         bundle = new Bundle();
@@ -167,6 +166,19 @@ public class ForegroundService extends Service implements LocationListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         createPendingIntent();
+
+        notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                .setContentTitle("Still trying to gather information!")
+                .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
+                //.setContentIntent(pendingIntent)
+                .setOnlyAlertOnce(true)
+                .setSmallIcon(R.drawable.icon_notification)
+                //show notification on home screen to everyone
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                //without FOREGROUND_SERVICE_IMMEDIATE, notification can take up to 10 secs to be shown
+                .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
+
+        notification = notificationBuilder.build();
 
         startForeground(NOTIFICATION_ID, notification);
         return START_STICKY;
@@ -232,25 +244,6 @@ public class ForegroundService extends Service implements LocationListener {
             lapCounter=0;
         }
     }
-
-    private void sendBroadcastToMapsActivity(double oldLatitude, double oldLongitude, double currentLatitude, double currentLongitude) {
-        intent.setAction(SharedPref.STATIC_BROADCAST_ACTION);
-        bundle.putString("SPEED", String.valueOf(currentSpeed));
-        bundle.putFloat("DISTANCE", calc);
-        //old
-        bundle.putDouble("OLD-LAT", oldLatitude);
-        bundle.putDouble("OLD-LON", oldLongitude);
-        //new
-        bundle.putDouble("CURRENT-LAT", currentLatitude);
-        bundle.putDouble("CURRENT-LON", currentLongitude);
-
-        bundle.putString("SPEED", String.valueOf(currentSpeed));
-        bundle.putFloat("DISTANCE", calc);
-
-        intent.putExtras(bundle);
-        getApplicationContext().sendBroadcast(intent);
-    }
-
     private PendingIntent createPendingIntent() {
         Intent stopIntent = new Intent(this, MapsActivity.class);
         stopIntent.setAction("ACTION.STOPFOREGROUND_ACTION");
@@ -267,12 +260,10 @@ public class ForegroundService extends Service implements LocationListener {
         mWatchdogRunner.stop();
         cancelNotification();
         locationManager.removeUpdates(this);
-//        polylinePoints.clear();
         stopForeground(STOP_FOREGROUND_REMOVE);
         stopSelf();
         timer.cancel();
         deinitCallbacks();
-        unregisterReceiver(broadcastReceiver);
     }
 
     private void cancelNotification() {
@@ -342,21 +333,20 @@ public class ForegroundService extends Service implements LocationListener {
             if(minDistanceMeter==1 && minTimeMs==1) {
                 if (currentMilliseconds != oldCurrentMilliseconds) {
 //                    if(currentSpeed>0) {
-                        if(isFirstEntry) {
-                            //saveToDatabase(oldLatitude, oldLongitude);
+                        if (isFirstEntry) {
                             isFirstEntry = false;
                         } else {
                             calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
-                            //saveToDatabase(currentLatitude, currentLongitude);
                             oldLatitude = currentLatitude;
                             oldLongitude = currentLongitude;
-                            sendBroadcastToMapsActivity(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
+                            //Publish Location
+                            EventBus.getDefault().postSticky(new LocationChangeEvent(new Location(location)));
                         }
                         oldCurrentMilliseconds = currentMilliseconds;
+//                    }
                 }
             } else {
                 calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
-                //saveToDatabase(currentLatitude, currentLongitude);
                 oldLatitude = currentLatitude;
                 oldLongitude = currentLongitude;
             }
@@ -381,15 +371,6 @@ public class ForegroundService extends Service implements LocationListener {
     public void onProviderDisabled(@NonNull String provider) {
         LocationListener.super.onProviderDisabled(provider);
     }
-
-    private class DataBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            bundlePause = intent.getExtras().getString("Pausing");
-            Timber.d("Foregrundservice: DataBroadcastReceiver: %s", bundlePause);
-        }
-    }
-
     private class WatchDogRunner implements Runnable {
             boolean running = true;
             @Override

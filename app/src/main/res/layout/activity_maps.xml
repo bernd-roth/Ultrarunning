@@ -129,20 +129,6 @@
         android:src="@drawable/ic_settings"
         android:onClick="onClickRecording"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabTracks"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="339dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom|right"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/icon_notification"
-        android:onClick="onClickRecording"/>
-
     <at.co.netconsulting.runningtracker.view.DrawView
         android:id="@+id/rectView"
         android:layout_width="16dp"

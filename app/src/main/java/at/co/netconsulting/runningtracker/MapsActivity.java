@@ -5,12 +5,9 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.app.IntentService;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -20,15 +17,12 @@ import android.graphics.Point;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Parcelable;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -57,22 +51,19 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.maps.android.PolyUtil;
-import org.joda.time.Duration;
-import org.joda.time.Period;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
-import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.pojo.ColoredPoint;
-import at.co.netconsulting.runningtracker.pojo.Run;
+import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
 import at.co.netconsulting.runningtracker.service.ForegroundService;
 import at.co.netconsulting.runningtracker.view.DrawView;
 import timber.log.Timber;
@@ -83,18 +74,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private ActivityMapsBinding binding;
     //Polyline
     private Polyline polyline;
-    private List<LatLng> polylinePoints, polylinePointsTemp;
+    private List<LatLng> polylinePoints;
     private boolean isDisableZoomCamera;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics;
-    private double lastLat, lastLng, oldLatitude, oldLongitude, currentLatitude, currentLongitude;
-    private String mapType, speed;
+    private String mapType;
     private SupportMapFragment mapFragment;
     private String[] permissions;
     private LocationManager locationManager;
     private boolean gps_enabled;
     private boolean startingPoint;
-    private BroadcastReceiver receiver;
-    private DatabaseHandler db;
     private Toolbar toolbar;
     private TextView toolbar_title, textViewSlow, textViewFast;
     private float coveredDistance;
@@ -102,7 +90,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private DrawView drawView;
     private View mapView;
     private Marker marker;
-
+    private LatLng latLng;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,7 +158,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         mapType = sh.getString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NORMAL");
     }
 
-    private void createPolypoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
+    private void createPolypoints(List<LatLng> polylinePoints) {
         boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
         //isServiceRunning = true; // FIXME
 
@@ -194,9 +182,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     //mMap.addMarker(new MarkerOptions().position(new LatLng(polylinePoints.get(0).latitude, polylinePoints.get(0).longitude)).title(getResources().getString(R.string.current_location)));
                     //marker.showInfoWindow();
                 }
-
                 polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-                toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
             //}
         }
     }
@@ -234,14 +220,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         }
         return serviceRunning;
     }
-
-    private void configureReceiver() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(SharedPref.STATIC_BROADCAST_ACTION);
-        receiver = new DataBroadcastReceiver();
-        registerReceiver(receiver, filter);
-    }
-
     private void initObjects() {
         fabStartRecording = findViewById(R.id.fabRecording);
         fabStartRecording.setVisibility(View.VISIBLE);
@@ -256,12 +234,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         //textViewFast = findViewById(R.id.textViewFast);
 
         polylinePoints = new ArrayList<>();
-        configureReceiver();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         isDisableZoomCamera = true;
         startingPoint = true;
-        db = new DatabaseHandler(this);
         drawView = new DrawView(this);
         RelativeLayout myRelativeLayout = (RelativeLayout) findViewById(R.id.relLayout);
         myRelativeLayout.addView(drawView);
@@ -408,7 +384,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(this, ForegroundService.class));
-        unregisterReceiver(receiver);
+        //unregisterReceiver(receiver);
     }
 
     public void onClickRecording(View view) {
@@ -441,107 +417,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 Intent intentSettings = new Intent(MapsActivity.this, SettingsActivity.class);
                 this.startActivity(intentSettings);
                 break;
-            case R.id.fabTracks:
-                showAlertDialogWithTracks();
         }
-    }
-
-    private void showAlertDialogWithTracks() {
-        DatabaseHandler db = new DatabaseHandler(this);
-        List<Run> allEntries = db.getAllEntriesGroupedByRun();
-
-        if(polylinePoints.size()>0) {
-            polylinePoints.clear();
-        }
-
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MapsActivity.this);
-        if(allEntries.size() == 0) {
-            builderSingle.setTitle(getResources().getString(R.string.no_run_available));
-        } else {
-            builderSingle.setTitle(getResources().getString(R.string.select_one_run));
-        }
-        builderSingle.setIcon(R.drawable.icon_notification);
-
-        // prevents closing alertdialog when clicking outside of it
-        builderSingle.setCancelable(false);
-
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapsActivity.this, android.R.layout.select_dialog_singlechoice);
-        Duration duration;
-        Period period;
-        int days, hours, minutes, count;
-
-        for(int i = 0; i<allEntries.size(); i++) {
-            duration = new Duration(allEntries.get(i).getDateTimeInMs());
-            period = duration.toPeriod();
-            days = period.getDays();
-            hours = period.getHours();
-            minutes = period.getMinutes();
-            count = db.countDataOfRun(allEntries.get(i).getNumber_of_run());
-
-            arrayAdapter.add(allEntries.get(i).getDateTime()
-                    + "\n" + String.format("Meters covered: %.2f", allEntries.get(i).getMeters_covered()/1000) + " Km"
-                    + "\n" + "Duration: " + days + " days " + hours + " hours " + minutes + " minutes"
-                    + "\n" + count + " points to load");
-        }
-
-        builderSingle.setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                int numberOfRun = allEntries.get(which).getNumber_of_run();
-
-                final LatLng[] latLng = new LatLng[1];
-
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                Handler handler = new Handler(Looper.getMainLooper());
-
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        //Background work here
-                        List<Run> allEntries = db.getSingleEntryOrderedByDateTime(numberOfRun);
-                        List<ColoredPoint> sourcePoints = new ArrayList<>();
-
-                        for(int i = 0; i<allEntries.size(); i++) {
-                            latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
-                            //FIXME make speed adjustable
-                            if(allEntries.get(i).getSpeed()>8) { //running is over 8-10 km/h
-                                sourcePoints.add(new ColoredPoint(latLng[0], Color.GREEN));
-                            } else if(allEntries.get(i).getSpeed()>6 && // jogging is 6-8 km/h
-                                    allEntries.get(i).getSpeed()<8){
-                                sourcePoints.add(new ColoredPoint(latLng[0], Color.YELLOW));
-                            } else { // walking is around 5.5-6 km/h
-                                sourcePoints.add(new ColoredPoint(latLng[0], Color.RED));
-                            }
-                            polylinePoints.add(latLng[0]);
-                        }
-
-                        if(allEntries.size()>=50000) {
-                            polylinePoints = PolyUtil.simplify(polylinePoints, 40);
-                        }
-
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                //UI Thread work here
-                                if(allEntries.size()>=50000) {
-                                    fillPolyPoints(polylinePoints);
-                                } else {
-                                    showPolyline(sourcePoints);
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-        });
-        builderSingle.show();
     }
 
     private void showPolyline(List<ColoredPoint> points) {
@@ -649,90 +525,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             }, 2000);// set time as per your requirement
         }
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(LocationChangeEvent event) {
+        latLng = new LatLng(event.location.getLatitude(), event.location.getLongitude());
 
-    private void createAlertDialog() {
-        final EditText taskEditText = new EditText(this);
+        polylinePoints.add(latLng);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-        builder.setTitle(getResources().getString(R.string.save_exercise));
-        builder.setMessage(getResources().getString(R.string.comment_exercise));
-        builder.setView(taskEditText);
-        // prevents closing alertdialog when clicking outside of it
-        builder.setCancelable(false);
-        builder.setPositiveButton(getResources().getString(R.string.buttonSave), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String task = String.valueOf(taskEditText.getText());
-                        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-                        int lastEntryOfRun = db.getLastEntry();
-                        db.updateComment(task, lastEntryOfRun);
-                    }
-                });
-        builder.setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-//                        TODO: if recording is running but nothing is saved to database because no fix is available,
-//                              last entry will be fetched and deleted. leading to the problem that with every recording and no fix
-//                              one dataset after the other will be deleted
-//                        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-//                        int lastEntryOfRun = db.getLastEntry();
-//                        db.deleteLastRun(lastEntryOfRun);
-                    }
-                })
-                .create();
-
-        AlertDialog alertDialog = builder.create();
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                if(button!=null) {
-                    button.setEnabled(false);
-                }
-            }
-        });
-        alertDialog.show();
-
-        TextWatcher mTextEditorWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(count>0) {
-                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                } else {
-                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        };
-        taskEditText.addTextChangedListener(mTextEditorWatcher);
-    }
-    private class DataBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                Timber.d("DataBroadcastReceiver %s", action);
-                oldLatitude = intent.getExtras().getDouble("OLD-LAT");
-                oldLongitude = intent.getExtras().getDouble("OLD-LON");
-                currentLatitude = intent.getExtras().getDouble("CURRENT-LAT");
-                currentLongitude = intent.getExtras().getDouble("CURRENT-LON");
-
-                if(currentLatitude != 0 && currentLongitude != 0) {
-                    speed = intent.getExtras().getString("SPEED");
-                    coveredDistance = intent.getExtras().getFloat("DISTANCE");
-
-                    oldLatitude = currentLatitude;
-                    oldLongitude = currentLongitude;
-
-                    polylinePoints.add(new LatLng(oldLatitude, oldLongitude));
-
-                    createPolypoints(oldLatitude, oldLongitude, polylinePoints);
-            }
-        }
-    }
+        createPolypoints(polylinePoints);
+    };
 }
