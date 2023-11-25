@@ -5,6 +5,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -49,6 +50,7 @@ import com.google.android.gms.maps.model.Dot;
 import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
@@ -80,11 +82,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     //Polyline
-    private Polyline polyline, polylineKalmanFiltered, polylineOtherPerson;
+    private Polyline polyline;
     private List<LatLng> polylinePoints, polylinePointsTemp;
     private boolean isDisableZoomCamera;
-    private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabPauseRecording;
-    private double lastLat, lastLng;
+    private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics;
+    private double lastLat, lastLng, oldLatitude, oldLongitude, currentLatitude, currentLongitude;
     private String mapType, speed;
     private SupportMapFragment mapFragment;
     private String[] permissions;
@@ -92,13 +94,14 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private boolean gps_enabled;
     private boolean startingPoint;
     private BroadcastReceiver receiver;
-    private boolean isPauseRecordingClicked, isSwitchPausedActivated, isSwitchGoToLastLocation, isDistanceCovered;
     private DatabaseHandler db;
     private Toolbar toolbar;
     private TextView toolbar_title, textViewSlow, textViewFast;
     private float coveredDistance;
     private PolyUtil polyUtil;
     private DrawView drawView;
+    private View mapView;
+    private Marker marker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,7 +155,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             if(isStopButtonVisible) {
                 fabStartRecording.setVisibility(View.INVISIBLE);
                 fabStopRecording.setVisibility(View.VISIBLE);
-                fabPauseRecording.setVisibility(View.VISIBLE);
             }
         }
         //redraw Google Map, calling GoogleMap will fail due to NPE
@@ -166,42 +168,36 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
         mapType = sh.getString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NORMAL");
-
-        sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE, Context.MODE_PRIVATE);
-        isSwitchPausedActivated = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE, false);
-
-        sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, Context.MODE_PRIVATE);
-        isSwitchGoToLastLocation = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, false);
-
-        sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED, Context.MODE_PRIVATE);
-        isDistanceCovered = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED, false);
     }
 
     private void createPolypoints(double lastLat, double lastLng, List<LatLng> polylinePoints) {
-        if(isDistanceCovered) {
-            boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
-            //isServiceRunning = true; // FIXME
+        boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
+        //isServiceRunning = true; // FIXME
 
-            if (!isServiceRunning) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
-                toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0");
-            } else {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 16));
-                //Projection projection = mMap.getProjection();
+        if (!isServiceRunning) {
+            //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
+            toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0");
+        } else {
+            //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 16));
+            //Projection projection = mMap.getProjection();
 
-                if (startingPoint) {
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(lastLat, lastLng)).title(getResources().getString(R.string.current_location))).showInfoWindow();
-                    startingPoint = false;
-                } else {
-                    //polylinePoints = groupPoints(polylinePoints, projection);
+            //if (startingPoint) {
+                //marker = mMap.addMarker(new MarkerOptions().position(new LatLng(lastLat, lastLng)).title(getResources().getString(R.string.current_location)));
+                //marker.showInfoWindow();
+                //startingPoint = false;
+            //} else {
+                //polylinePoints = groupPoints(polylinePoints, projection);
 
-                    polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-                    toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
-
-                    //check if firebase has some values left and draw it
-                    //getFirebaseDatabase(polylinePoints);
+                if(polyline!=null) {
+                    polyline.remove();
+                    mMap.clear();
+                    //mMap.addMarker(new MarkerOptions().position(new LatLng(polylinePoints.get(0).latitude, polylinePoints.get(0).longitude)).title(getResources().getString(R.string.current_location)));
+                    //marker.showInfoWindow();
                 }
-            }
+
+                polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+                toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
+            //}
         }
     }
 
@@ -252,8 +248,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabStopRecording = findViewById(R.id.fabStopRecording);
         fabStopRecording.setVisibility(View.INVISIBLE);
         fabStatistics = findViewById(R.id.fabStatistics);
-        fabPauseRecording = findViewById(R.id.fabPauseRecording);
-        fabPauseRecording.setVisibility(View.INVISIBLE);
         fabStatistics.setVisibility(View.VISIBLE);
         toolbar = findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(Color.LTGRAY);
@@ -262,7 +256,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         //textViewFast = findViewById(R.id.textViewFast);
 
         polylinePoints = new ArrayList<>();
-        polylinePointsTemp = new ArrayList<>();
         configureReceiver();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
@@ -316,7 +309,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         // Get map views
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().
                 findFragmentById(R.id.map);
-        View mapView = mapFragment.getView();
+        mapView = mapFragment.getView();
         View location_button = mapView.findViewWithTag("GoogleMapMyLocationButton");
         View zoom_in_button = mapView.findViewWithTag("GoogleMapZoomInButton");
         View zoom_layout = (View) zoom_in_button.getParent();
@@ -355,11 +348,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 if (mCameraMoveReason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
                     mMap.stopAnimation();
                 } else if(mCameraMoveReason == GoogleMap.OnCameraMoveStartedListener.REASON_API_ANIMATION) {
-                    goToLastLocation();
                 }
             }
         });
-        goToLastLocation();
     }
 
     private void createCheckerFlag(List<LatLng> polylinePoints) {
@@ -381,24 +372,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 16f));
         }
     }
-
-    private void goToLastLocation() {
-        if(isSwitchGoToLastLocation) {
-            int lastEntry = db.getLastEntry();
-            if(lastEntry!=0) {
-                if(db.getLastEntryOrderedById(lastEntry)!=null) {
-                    Run run = db.getLastEntryOrderedById(lastEntry);
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(run.getLat(), run.getLng()), 16.0f));
-                    toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0 Km/h");
-                } else {
-                    toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0 Km/h");
-                }
-            } else {
-                toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0 Km/h");
-            }
-        }
-    }
-
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -451,38 +424,14 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 mMap.clear();
 
                 fadingButtons(R.id.fabRecording);
-
-                if(isSwitchPausedActivated) {
-                    fadingButtons(R.id.fabPauseRecording);
-                }
                 break;
             case R.id.fabStopRecording:
                 stopService(new Intent(this, ForegroundService.class));
 
-                // since paused switch is activated and comment is automatically filled
-                // we do not provide the alertDialog
-                if(!isSwitchPausedActivated) {
-                    createAlertDialog();
-                }
-
                 fadingButtons(R.id.fabStopRecording);
-                fadingButtons(R.id.fabPauseRecording);
 
-                isPauseRecordingClicked = false;
+                createCheckerFlag(polylinePoints);
 
-                createCheckerFlag(polylinePointsTemp);
-
-                break;
-            case R.id.fabPauseRecording:
-                if(isPauseRecordingClicked==false) {
-                    //pause button was pressed
-                    sendBroadcastToForegroundService("Pausing");
-                    isPauseRecordingClicked = true;
-                } else {
-                    //pause button was not pressed
-                    sendBroadcastToForegroundService(null);
-                    isPauseRecordingClicked = false;
-                }
                 break;
             case R.id.fabStatistics:
                 Intent intentStatistics = new Intent(MapsActivity.this, StatisticsActivity.class);
@@ -673,7 +622,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     fadeOutAnimation.setFillAfter(true);
 
                     fabStopRecording.startAnimation(fadeInAnimation);
-                    fabPauseRecording.startAnimation(fadeInAnimation);
                     fabStartRecording.startAnimation(fadeOutAnimation);
 
                     Bundle bundle = new Bundle();
@@ -696,7 +644,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     fadeOutAnimation.setFillAfter(true);
 
                     fabStopRecording.startAnimation(fadeOutAnimation);
-                    fabPauseRecording.startAnimation(fadeOutAnimation);
                     fabStartRecording.startAnimation(fadeInAnimation);
                 }
             }, 2000);// set time as per your requirement
@@ -765,112 +712,27 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         };
         taskEditText.addTextChangedListener(mTextEditorWatcher);
     }
-
-    private void sendBroadcastToForegroundService(String value) {
-        Intent intent=new Intent();
-        intent.setAction(SharedPref.STATIC_BROADCAST_PAUSE_ACTION);
-        Bundle bundle = new Bundle();
-        bundle.putString("Pausing", value);
-        intent.putExtras(bundle);
-        getApplicationContext().sendBroadcast(intent);
-    }
-
-    public void onClickShowRecordedPlusKalmanfilter(View view) {
-        mMap.clear();
-
-        //start with fetching and then filling polyline
-        int lastRun = db.getLastEntry();
-        List<Run> allEntries = db.getSingleEntryOrderedByDateTime(lastRun);
-        LatLng latLng;
-
-        for(int i = 0;i<allEntries.size(); i++) {
-            latLng = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
-            polylinePoints.add(latLng);
-        }
-        polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-
-        //start with fetching kalman filtered values and then filling polyline
-        lastRun = db.getLastEntry();
-        allEntries = db.getSingleEntryOrderedByDateTime(lastRun);
-
-        for(int i = 0;i<allEntries.size(); i++) {
-            latLng = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
-            polylinePoints.add(latLng);
-        }
-        polylineKalmanFiltered = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-    }
-
     private class DataBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (isDistanceCovered) {
                 String action = intent.getAction();
                 Timber.d("DataBroadcastReceiver %s", action);
-                ArrayList<Parcelable> polylinePointsParcelable = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
-                speed = intent.getExtras().getString("SPEED");
-                coveredDistance = intent.getExtras().getFloat("DISTANCE");
+                oldLatitude = intent.getExtras().getDouble("OLD-LAT");
+                oldLongitude = intent.getExtras().getDouble("OLD-LON");
+                currentLatitude = intent.getExtras().getDouble("CURRENT-LAT");
+                currentLongitude = intent.getExtras().getDouble("CURRENT-LON");
 
-                if (polylinePointsParcelable != null) {
-                    int size = polylinePointsParcelable.size();
-                    if (size == 0) {
-                        lastLat = 0;
-                        lastLng = 0;
-                    } else if (size == 1) {
-                        LatLng lastEntry = (LatLng) polylinePointsParcelable.get(polylinePointsParcelable.size());
-                        lastLat = lastEntry.latitude;
-                        lastLng = lastEntry.longitude;
-                        polylinePointsTemp.add(lastEntry);
-                    } else {
-                        LatLng lastEntry = (LatLng) polylinePointsParcelable.get(polylinePointsParcelable.size() - 2);
-                        lastLat = lastEntry.latitude;
-                        lastLng = lastEntry.longitude;
-                        polylinePointsTemp.add(lastEntry);
-                    }
-                    createPolypoints(lastLat, lastLng, polylinePointsTemp);
-                }
-            } else {
-                String action = intent.getAction();
-                Timber.d("DataBroadcastReceiver %s", action);
-                //ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
-                speed = intent.getExtras().getString("SPEED");
-                coveredDistance = intent.getExtras().getFloat("DISTANCE");
-                lastLat = intent.getExtras().getDouble("LAT");
-                lastLng = intent.getExtras().getDouble("LON");
+                if(currentLatitude != 0 && currentLongitude != 0) {
+                    speed = intent.getExtras().getString("SPEED");
+                    coveredDistance = intent.getExtras().getFloat("DISTANCE");
 
-                //createPolypoints(speed, coveredDistance, lastLat, lastLng);
+                    oldLatitude = currentLatitude;
+                    oldLongitude = currentLongitude;
 
-                boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
+                    polylinePoints.add(new LatLng(oldLatitude, oldLongitude));
 
-                if(!isServiceRunning) {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
-                    toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0");
-                } else {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 16));
-
-                    if(startingPoint) {
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(lastLat, lastLng)).title(getResources().getString(R.string.current_location))).showInfoWindow();
-                        startingPoint = false;
-                    } else {
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 16));
-                        toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + "\nSpeed: " + speed);
-                    }
-                }
+                    createPolypoints(oldLatitude, oldLongitude, polylinePoints);
             }
         }
     }
-
-//    private class DataBroadcastReceiver extends BroadcastReceiver {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            String action = intent.getAction();
-//            Timber.d("DataBroadcastReceiver %s", action);
-//            //ArrayList<Parcelable> polylinePoints = intent.getExtras().getParcelableArrayList(SharedPref.STATIC_BROADCAST_ACTION);
-//            speed = intent.getExtras().getString("SPEED");
-//            coveredDistance = intent.getExtras().getFloat("DISTANCE");
-//            lastLat = intent.getExtras().getDouble("LAT");
-//            lastLng = intent.getExtras().getDouble("LON");
-//
-//            createPolypoints(speed, coveredDistance, lastLat, lastLng);
-//        }
-//    }
 }

@@ -30,7 +30,6 @@ public class SettingsActivity extends BaseActivity {
     private EditText editTextNumberSignedMinimumTimeMs;
     private EditText editTextNumberSignedMinimumDistanceMeter, editTextPerson;
     private Button buttonSave,
-//            buttonNormalizeWithKalmanFilter,
             buttonExport,
             buttonDelete,
             buttonDeleteSingleEntry;
@@ -49,8 +48,6 @@ public class SettingsActivity extends BaseActivity {
     private int minDistanceMeter;
     private long minTimeMs;
     private DatabaseHandler db;
-    private Switch switchCommentPause, switchGoToLastLocation, switchDistanceCovered;
-    private boolean isCommentOnPause, isCommentedOnPause, isGoToLastLocation, isDistanceCovered;
     private ProgressDialog progressDialog;
     private String person;
 
@@ -102,11 +99,6 @@ public class SettingsActivity extends BaseActivity {
                 minTimeMs = sh.getLong(sharedPrefKey, StaticFields.STATIC_LONG_MIN_TIME_MS);
                 editTextNumberSignedMinimumTimeMs.setText(String.valueOf(minTimeMs));
                 break;
-            case SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE:
-                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                isCommentedOnPause = sh.getBoolean(sharedPrefKey, Boolean.parseBoolean(StaticFields.STATIC_SAVE_ON_COMMENT_PAUSE));
-                switchCommentPause.setChecked(isCommentedOnPause);
-                break;
             case SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 recordingProfil = sh.getString(sharedPrefKey, "Individual");
@@ -140,21 +132,11 @@ public class SettingsActivity extends BaseActivity {
                     editTextNumberSignedMinimumTimeMs.setEnabled(true);
                     break;
                 }
-            case SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION:
-                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                isGoToLastLocation = sh.getBoolean(sharedPrefKey, false);
-                switchGoToLastLocation.setChecked(isGoToLastLocation);
-                break;
             case SharedPref.STATIC_SHARED_PREF_PERSON:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 person = sh.getString(sharedPrefKey, "Anonym");
                 editTextPerson.setText(person);
 //                buttonSave.setEnabled(true);
-                break;
-            case SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED:
-                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                isDistanceCovered = sh.getBoolean(sharedPrefKey, false);
-                switchDistanceCovered.setChecked(isDistanceCovered);
                 break;
         }
     }
@@ -192,10 +174,6 @@ public class SettingsActivity extends BaseActivity {
 
         buttonDeleteSingleEntry = findViewById(R.id.buttonDeleteSingleEntry);
         buttonDeleteSingleEntry.setTransformationMethod(null);
-
-        switchCommentPause = findViewById(R.id.switchCommentPause);
-        switchGoToLastLocation = findViewById(R.id.switchGoToLastLocation);
-        switchDistanceCovered = findViewById(R.id.switchDistanceCovered);
 
         progressDialog = new ProgressDialog(SettingsActivity.this);
         progressDialog.setMessage("Exporting..."); // Setting Message
@@ -251,13 +229,6 @@ public class SettingsActivity extends BaseActivity {
             minTimeMs = Long.parseLong(editTextNumberSignedMinimumTimeMs.getText().toString());
             editor.putLong(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS, minTimeMs);
             editor.commit();
-        } else if(sharedPreference.equals("SAVE_ON_COMMENT_PAUSE")) {
-            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-
-            boolean isCommentPauseChecked = switchCommentPause.isChecked();
-            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE, isCommentPauseChecked);
-            editor.commit();
         } else if(sharedPreference.equals("Exact")) {
             sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
@@ -294,13 +265,6 @@ public class SettingsActivity extends BaseActivity {
 
             editor.putString(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL, "Individual");
             editor.commit();
-        }  else if(sharedPreference.equals("GO_TO_LAST_LOCATION")) {
-            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-
-            boolean isGoToLastLocation = switchGoToLastLocation.isChecked();
-            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION, isGoToLastLocation);
-            editor.commit();
         }  else if(sharedPreference.equals("PERSON")) {
             sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
@@ -308,26 +272,8 @@ public class SettingsActivity extends BaseActivity {
             String person = editTextPerson.getText().toString();
             editor.putString(SharedPref.STATIC_SHARED_PREF_PERSON, person);
             editor.commit();
-        }  else if(sharedPreference.equals("DISTANCE_COVERED")) {
-            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-
-            boolean isSwitchDistanceCovered = switchDistanceCovered.isChecked();
-            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED, isSwitchDistanceCovered);
-            editor.commit();
         }
     }
-
-    public void saveAndCommentPause(View view) {
-        if(switchCommentPause.isChecked()) {
-            isCommentOnPause=true;
-            saveSharedPreferences("SAVE_ON_COMMENT_PAUSE");
-        } else {
-            isCommentOnPause=false;
-            saveSharedPreferences("SAVE_ON_COMMENT_PAUSE");
-        }
-    }
-
     public void onClickRadioButtonBatteryGroup(View view) {
         switch (view.getResources().getResourceEntryName(view.getId())) {
             case "radioButtonExact":
@@ -392,27 +338,6 @@ public class SettingsActivity extends BaseActivity {
                 break;
         }
     }
-
-    public void goToLastLocation(View view) {
-        if(switchGoToLastLocation.isChecked()) {
-            isGoToLastLocation=true;
-            saveSharedPreferences("GO_TO_LAST_LOCATION");
-        } else {
-            isGoToLastLocation=false;
-            saveSharedPreferences("GO_TO_LAST_LOCATION");
-        }
-    }
-
-    public void saveDistanceCovered(View view) {
-        if(switchDistanceCovered.isChecked()) {
-            isDistanceCovered=true;
-            saveSharedPreferences("DISTANCE_COVERED");
-        } else {
-            isDistanceCovered=false;
-            saveSharedPreferences("DISTANCE_COVERED");
-        }
-    }
-
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

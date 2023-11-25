@@ -102,20 +102,6 @@
         android:onClick="onClickRecording"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabPauseRecording"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="125dp"
-        android:layout_marginBottom="168dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom|right"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@android:drawable/ic_media_pause"
-        android:onClick="onClickRecording"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabStatistics"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

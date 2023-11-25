@@ -165,37 +165,6 @@
                     android:text="@string/save"
                     android:onClick="save"/>
 
-                <Switch
-                    android:id="@+id/switchGoToLastLocation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/goToLastLocation"
-                    android:onClick="goToLastLocation"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#c0c0c0"/>
-
-                <Switch
-                    android:id="@+id/switchCommentPause"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/saveAndCommentPause"
-                    android:onClick="saveAndCommentPause"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#c0c0c0"/>
-
-                <Switch
-                    android:id="@+id/switchDistanceCovered"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/showDistanceCovered"
-                    android:onClick="saveDistanceCovered"/>
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
