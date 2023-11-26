@@ -17,16 +17,19 @@ import android.graphics.Point;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -51,6 +54,8 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.maps.android.PolyUtil;
+
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
@@ -59,11 +64,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
+import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.pojo.ColoredPoint;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
+import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.service.ForegroundService;
 import at.co.netconsulting.runningtracker.view.DrawView;
 import timber.log.Timber;
@@ -85,12 +95,14 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private boolean startingPoint;
     private Toolbar toolbar;
     private TextView toolbar_title, textViewSlow, textViewFast;
-    private float coveredDistance;
     private PolyUtil polyUtil;
     private DrawView drawView;
     private View mapView;
     private Marker marker;
     private LatLng latLng;
+    private float speed, coveredDistance;
+    private Intent intent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,32 +170,25 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         mapType = sh.getString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NORMAL");
     }
 
-    private void createPolypoints(List<LatLng> polylinePoints) {
+    private void createPolypoints(List<LatLng> polylinePoints, float coveredDistance, float speed) {
         boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
-        //isServiceRunning = true; // FIXME
 
         if (!isServiceRunning) {
-            //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 0));
-            toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0");
         } else {
             //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 16));
             //Projection projection = mMap.getProjection();
 
-            //if (startingPoint) {
-                //marker = mMap.addMarker(new MarkerOptions().position(new LatLng(lastLat, lastLng)).title(getResources().getString(R.string.current_location)));
-                //marker.showInfoWindow();
-                //startingPoint = false;
-            //} else {
-                //polylinePoints = groupPoints(polylinePoints, projection);
-
+            if (startingPoint) {
+                marker = mMap.addMarker(new MarkerOptions().position(new LatLng(polylinePoints.get(0).latitude, polylinePoints.get(0).longitude)).title(getResources().getString(R.string.current_location)));
+                marker.showInfoWindow();
+                startingPoint = false;
+            } else {
                 if(polyline!=null) {
                     polyline.remove();
-                    mMap.clear();
-                    //mMap.addMarker(new MarkerOptions().position(new LatLng(polylinePoints.get(0).latitude, polylinePoints.get(0).longitude)).title(getResources().getString(R.string.current_location)));
-                    //marker.showInfoWindow();
                 }
                 polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-            //}
+                toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + " km\nSpeed: " + String.format("%.2f", speed) + " km/h");
+            }
         }
     }
 
@@ -230,6 +235,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         toolbar = findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(Color.LTGRAY);
         toolbar_title = findViewById(R.id.toolbar_title);
+        toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0 km/h");
         textViewSlow = findViewById(R.id.textViewSlow);
         //textViewFast = findViewById(R.id.textViewFast);
 
@@ -358,6 +364,14 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         super.onRestoreInstanceState(savedInstanceState);
     }
 
+    @Subscribe
+    @Override
+    protected void onStart() {
+        EventBus.getDefault().register(this);
+        super.onStart();
+    }
+
+    @Subscribe
     @Override
     protected void onStop() {
         super.onStop();
@@ -367,6 +381,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             bundle.putBoolean("StopButtonIsVisible", true);
             this.getIntent().putExtras(bundle);
         }
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -384,7 +399,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(this, ForegroundService.class));
-        //unregisterReceiver(receiver);
     }
 
     public void onClickRecording(View view) {
@@ -394,9 +408,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 Intent intentForegroundService = new Intent(contextFabRecording, ForegroundService.class);
                 intentForegroundService.setAction("ACTION_START");
                 contextFabRecording.startForegroundService(intentForegroundService);
-
-                //LatLng latLng = new LatLng(lastLat, lastLng);
-                //markerName = mMap.addMarker(new MarkerOptions().position(latLng).title(getResources().getString(R.string.current_location)));
                 mMap.clear();
 
                 fadingButtons(R.id.fabRecording);
@@ -407,7 +418,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 fadingButtons(R.id.fabStopRecording);
 
                 createCheckerFlag(polylinePoints);
-
+                startingPoint=true;
                 break;
             case R.id.fabStatistics:
                 Intent intentStatistics = new Intent(MapsActivity.this, StatisticsActivity.class);
@@ -417,9 +428,86 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 Intent intentSettings = new Intent(MapsActivity.this, SettingsActivity.class);
                 this.startActivity(intentSettings);
                 break;
+            case R.id.fabTracks:
+                showAlertDialogWithTracks();
         }
     }
+    private void showAlertDialogWithTracks() {
+        DatabaseHandler db = new DatabaseHandler(this);
+        List<Run> allEntries = db.getAllEntriesGroupedByRun();
 
+        if(polylinePoints.size()>0) {
+            polylinePoints.clear();
+        }
+
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MapsActivity.this);
+        if(allEntries.size() == 0) {
+            builderSingle.setTitle(getResources().getString(R.string.no_run_available));
+        } else {
+            builderSingle.setTitle(getResources().getString(R.string.select_one_run));
+        }
+        builderSingle.setIcon(R.drawable.icon_notification);
+
+        // prevents closing alertdialog when clicking outside of it
+        builderSingle.setCancelable(false);
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapsActivity.this, android.R.layout.select_dialog_singlechoice);
+        for(int i = 0; i<allEntries.size(); i++) {
+            int count = db.countDataOfRun(allEntries.get(i).getNumber_of_run());
+            arrayAdapter.add(allEntries.get(i).getDateTime()
+                    + "\n" + count + " points to load");
+        }
+
+        builderSingle.setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int numberOfRun = allEntries.get(which).getNumber_of_run();
+
+                final LatLng[] latLng = new LatLng[1];
+
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Handler handler = new Handler(Looper.getMainLooper());
+
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Background work here
+                        List<Run> allEntries = db.getSingleEntryOrderedByDateTime(numberOfRun);
+                        List<ColoredPoint> sourcePoints = new ArrayList<>();
+
+                        for(int i = 0; i<allEntries.size(); i++) {
+                            latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
+                            //FIXME make speed adjustable
+                            if(allEntries.get(i).getSpeed()>8) { //running is over 8-10 km/h
+                                sourcePoints.add(new ColoredPoint(latLng[0], Color.GREEN));
+                            } else if(allEntries.get(i).getSpeed()>6 && // jogging is 6-8 km/h
+                                    allEntries.get(i).getSpeed()<8){
+                                sourcePoints.add(new ColoredPoint(latLng[0], Color.YELLOW));
+                            } else { // walking is around 5.5-6 km/h
+                                sourcePoints.add(new ColoredPoint(latLng[0], Color.RED));
+                            }
+                            polylinePoints.add(latLng[0]);
+                        }
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                //UI Thread work here
+                                showPolyline(sourcePoints);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        builderSingle.show();
+    }
     private void showPolyline(List<ColoredPoint> points) {
         mMap.clear();
         if (points.size() < 2)
@@ -525,12 +613,36 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             }, 2000);// set time as per your requirement
         }
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                intent = new Intent(this, SettingsActivity.class);
+                this.startActivity(intent);
+                return true;
+            case R.id.action_maps:
+                intent = new Intent(this, MapsActivity.class);
+                this.startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(LocationChangeEvent event) {
         latLng = new LatLng(event.location.getLatitude(), event.location.getLongitude());
+        coveredDistance = event.coveredDistance;
+        speed = event.location.getSpeed();
 
         polylinePoints.add(latLng);
 
-        createPolypoints(polylinePoints);
-    };
+        createPolypoints(polylinePoints, coveredDistance, speed);
+    }
 }

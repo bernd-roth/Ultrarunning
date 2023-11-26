@@ -11,18 +11,20 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.preference.PreferenceFragmentCompat;
-import java.io.File;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.List;
-import at.co.netconsulting.runningtracker.calculation.GPSDataFactory;
-import at.co.netconsulting.runningtracker.calculation.KalmanFilter;
+
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
+import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class SettingsActivity extends BaseActivity {
@@ -57,15 +59,12 @@ public class SettingsActivity extends BaseActivity {
         setContentView(R.layout.activity_settings);
 
         initObjects();
-        loadSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL);
-        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_GO_TO_LAST_LOCATION);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
-        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_REDUCE_LAT_LANG);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED);
     }
 
@@ -346,7 +345,6 @@ public class SettingsActivity extends BaseActivity {
     }
 
     public void save(View v) {
-        saveSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
@@ -458,20 +456,4 @@ public class SettingsActivity extends BaseActivity {
     public void onClickRadioButtonSatellite(View view) {
         saveSharedPreferences("MAP_TYPE_SATELLITE");
     }
-
-//    public void startKalmanFilter(View view) {
-//        buttonNormalizeWithKalmanFilter.setEnabled(false);
-//
-//        File file = new File(getApplicationContext().getExternalFilesDir(null), "Kalman_filtered.csv");
-//        try {
-//            boolean fileExists = file.createNewFile();
-//            if (fileExists) {
-//                file.delete();
-//            }
-//        } catch(Exception e) {}
-//
-//        new KalmanFilter(getApplicationContext());
-//        new GPSDataFactory(db);
-//        buttonNormalizeWithKalmanFilter.setEnabled(true);
-//    }
 }

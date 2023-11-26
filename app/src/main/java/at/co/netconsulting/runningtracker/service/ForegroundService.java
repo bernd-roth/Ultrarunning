@@ -41,7 +41,6 @@ import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
 import at.co.netconsulting.runningtracker.pojo.Run;
-import timber.log.Timber;
 
 public class ForegroundService extends Service implements LocationListener {
     private static final int NOTIFICATION_ID = 1;
@@ -67,7 +66,7 @@ public class ForegroundService extends Service implements LocationListener {
     private BroadcastReceiver broadcastReceiver;
     private boolean isFirstEntry;
     private int laps, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
-    private float lapCounter, calc, accuracy, currentSpeed;
+    private float lapCounter, coveredDistance, accuracy, currentSpeed;
     private IntentFilter filter;
     private Intent intent;
     private Bundle bundle;
@@ -90,14 +89,10 @@ public class ForegroundService extends Service implements LocationListener {
         lastRun = db.getLastEntry();
         lastRun += 1;
 
-        loadSharedPreferences(SharedPref.STATIC_STRING_MINIMUM_SPEED_LIMIT);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
-        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SAVE_ON_COMMENT_PAUSE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED);
-
-        configureBroadcastReceiver();
     }
 
     private void initializeWatchdog() {
@@ -125,7 +120,7 @@ public class ForegroundService extends Service implements LocationListener {
     private void initObjects() {
         isFirstEntry = true;
         run = new Run();
-        calc = 0;
+        coveredDistance = 0;
         result = new float[1];
         dateObj = LocalDateTime.now();
         formatDateTime = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
@@ -133,16 +128,10 @@ public class ForegroundService extends Service implements LocationListener {
         laps=0;
         lapCounter=0;
         filter = new IntentFilter();
-        //broadcastReceiver = new DataBroadcastReceiver();
         db = new DatabaseHandler(this);
         intent=new Intent();
         bundle = new Bundle();
         locationManager = getLocationManager();
-    }
-
-    private void configureBroadcastReceiver() {
-        filter.addAction(SharedPref.STATIC_BROADCAST_PAUSE_ACTION);
-        registerReceiver(broadcastReceiver, filter);
     }
     private void saveToDatabase(double latitude, double longitude) {
         //format date and time
@@ -154,14 +143,13 @@ public class ForegroundService extends Service implements LocationListener {
         run.setLat(latitude);
         run.setLng(longitude);
         run.setNumber_of_run(lastRun);
-        run.setMeters_covered(calc);
+        run.setMeters_covered(coveredDistance);
         run.setSpeed(currentSpeed);
         run.setDateTimeInMs(currentMilliseconds);
         run.setLaps(laps);
         run.setAltitude(altitude);
         run.setPerson(person);
         db.addRun(run);
-        //saveToFirebase(run);
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -233,7 +221,7 @@ public class ForegroundService extends Service implements LocationListener {
                 currentLatitude,
                 currentLongitude,
                 result);
-        calc += result[0];
+        coveredDistance += result[0];
         lapCounter += result[0];
         calculateLaps();
     }
@@ -328,11 +316,10 @@ public class ForegroundService extends Service implements LocationListener {
         accuracy = location.getAccuracy();
         currentSpeed = (location.getSpeed() / 1000) * 3600;
 
-        //pause button was not pressed yet
         if(bundlePause==null) {
             if(minDistanceMeter==1 && minTimeMs==1) {
                 if (currentMilliseconds != oldCurrentMilliseconds) {
-//                    if(currentSpeed>0) {
+                    //if(currentSpeed>0) {
                         if (isFirstEntry) {
                             isFirstEntry = false;
                         } else {
@@ -340,10 +327,10 @@ public class ForegroundService extends Service implements LocationListener {
                             oldLatitude = currentLatitude;
                             oldLongitude = currentLongitude;
                             //Publish Location
-                            EventBus.getDefault().postSticky(new LocationChangeEvent(new Location(location)));
+                            EventBus.getDefault().postSticky(new LocationChangeEvent(new Location(location), coveredDistance));
                         }
                         oldCurrentMilliseconds = currentMilliseconds;
-//                    }
+                    //}
                 }
             } else {
                 calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
@@ -373,12 +360,20 @@ public class ForegroundService extends Service implements LocationListener {
     }
     private class WatchDogRunner implements Runnable {
             boolean running = true;
+            double latitude = 0, longitude = 0;
             @Override
             public void run() {
                 running = true;
                 try {
                     while (running) {
                         updateNotification();
+                        if(!isFirstEntry) {
+                            if(oldLatitude!=latitude || oldLongitude!=longitude) {
+                                saveToDatabase(oldLatitude, oldLongitude);
+                                latitude=oldLatitude;
+                                longitude=oldLongitude;
+                            }
+                        }
                         Thread.sleep(1000);
                     }
                 } catch (InterruptedException e) {
@@ -426,7 +421,7 @@ public class ForegroundService extends Service implements LocationListener {
         }
 
         manager.notify(NOTIFICATION_ID, notificationBuilder
-                .setContentTitle("Distance covered: " + String.format("%.2f Km", calc / 1000))
+                .setContentTitle("Distance covered: " + String.format("%.2f Km", coveredDistance / 1000))
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " Km/h"
                                 + "\nNumber of satellites: " + numberOfsatellitesInUse + "/" + satelliteCount

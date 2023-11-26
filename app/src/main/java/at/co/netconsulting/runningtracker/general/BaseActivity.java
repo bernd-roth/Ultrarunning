@@ -7,18 +7,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.fragment.app.FragmentActivity;
-
 import com.google.android.gms.maps.model.LatLng;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
 import at.co.netconsulting.runningtracker.MapsActivity;
 import at.co.netconsulting.runningtracker.R;
 import at.co.netconsulting.runningtracker.SettingsActivity;
-import at.co.netconsulting.runningtracker.service.ForegroundService;
-import timber.log.Timber;
 
 public class BaseActivity extends FragmentActivity {
 
@@ -45,17 +40,5 @@ public class BaseActivity extends FragmentActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
     }
 }
