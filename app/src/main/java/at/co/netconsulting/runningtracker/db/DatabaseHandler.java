@@ -121,6 +121,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return run.getNumber_of_run();
     }
 
+    public void updateComment(String comment) {
+        ContentValues cv = new ContentValues();
+        cv.put(KEY_COMMENT, comment);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE " + TABLE_RUNS + " SET " + KEY_COMMENT
+                + " = \"" + comment + "\" WHERE " + KEY_NUMBER_OF_RUN
+                + " = (" +
+                " SELECT MAX(" + KEY_NUMBER_OF_RUN + ") FROM "
+                + TABLE_RUNS + ")");
+    }
+
     // code to get all entries in a list
     public List<Run> getAllEntries() {
         List<Run> allEntryList = new ArrayList<Run>();
@@ -348,15 +360,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return kalmanFilterList;
     }
-
-    public void updateComment(String comment, int number_of_run) {
-        ContentValues cv = new ContentValues();
-        cv.put(KEY_COMMENT, comment);
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.update(TABLE_RUNS, cv, "number_of_run = ?", new String[]{String.valueOf(number_of_run)});
-    }
-
     public void delete() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_RUNS, null, null);

@@ -14,12 +14,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,10 +27,9 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -43,30 +42,24 @@ import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Dot;
-import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.maps.android.PolyUtil;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
@@ -93,7 +86,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private LocationManager locationManager;
     private boolean gps_enabled;
     private boolean startingPoint;
-    private TextView textViewSlow, textViewFast;
     private PolyUtil polyUtil;
     private DrawView drawView;
     private View mapView;
@@ -101,7 +93,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private LatLng latLng;
     private float speed, coveredDistance;
     private Intent intent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -225,8 +216,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabStopRecording.setVisibility(View.INVISIBLE);
         fabStatistics = findViewById(R.id.fabStatistics);
         fabStatistics.setVisibility(View.VISIBLE);
-        textViewSlow = findViewById(R.id.textViewSlow);
-        //textViewFast = findViewById(R.id.textViewFast);
 
         mPolylinePoints = new ArrayList<>();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
@@ -400,6 +389,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 fadingButtons(R.id.fabStopRecording);
 
                 createCheckerFlag(mPolylinePoints);
+                showAlertDialogWithComment();
                 startingPoint=true;
                 break;
             case R.id.fabStatistics:
@@ -414,6 +404,40 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 showAlertDialogWithTracks();
         }
     }
+
+    private void showAlertDialogWithComment() {
+        if(mPolylinePoints.size()>0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+            final EditText edittext = new EditText(getApplicationContext());
+            builder.setMessage("Please, comment your run!");
+            builder.setCancelable(false);
+            builder.setView(edittext);
+
+            builder.setPositiveButton(
+                    "Save",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            String comment = edittext.getText().toString();
+
+                            DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+                            db.updateComment(comment);
+                            dialog.cancel();
+                        }
+                    });
+
+            builder.setNegativeButton(
+                    "Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
+
     private void showAlertDialogWithTracks() {
         DatabaseHandler db = new DatabaseHandler(this);
         List<Run> allEntries = db.getAllEntriesGroupedByRun();

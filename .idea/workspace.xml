@@ -9,14 +9,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* TODOs removed">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* rewriting most of the modules so that polyline is drawn on main ui thread although mobile phone is in idle/doze mode">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/StaticFields.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/StaticFields.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/pojo/LocationChangeEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/pojo/LocationChangeEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,9 +68,9 @@
       <list>
         <option value="resourceFile" />
         <option value="valueResourceFile" />
-        <option value="layoutResourceFile" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="layoutResourceFile" />
       </list>
     </option>
   </component>
@@ -224,13 +220,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00057" summary="* Go to last location added&#10;* Strings added">
-      <created>1691256899125</created>
-      <option name="number" value="00057" />
-      <option name="presentableId" value="LOCAL-00057" />
-      <option name="project" value="LOCAL" />
-      <updated>1691256899125</updated>
     </task>
     <task id="LOCAL-00058" summary="* Readability  of numbers enhanced (Distance covered, Time, ...)">
       <created>1691313677266</created>
@@ -568,7 +557,14 @@
       <option name="project" value="LOCAL" />
       <updated>1701035536359</updated>
     </task>
-    <option name="localTasksCounter" value="106" />
+    <task id="LOCAL-00106" summary="* rewriting most of the modules so that polyline is drawn on main ui thread although mobile phone is in idle/doze mode">
+      <created>1701169439157</created>
+      <option name="number" value="00106" />
+      <option name="presentableId" value="LOCAL-00106" />
+      <option name="project" value="LOCAL" />
+      <updated>1701169439158</updated>
+    </task>
+    <option name="localTasksCounter" value="107" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -584,7 +580,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* MapsActivity.java: loading data in background for preventing ANR&#10;* Starting with showing the difference from Kalman filtered track and gps track" />
     <MESSAGE value="* MapsActivity.java: beautifying source code" />
     <MESSAGE value="* ForegroundService.java: Adding firebase access&#10;* MapsActivity.java: showing another user on maps; enable/disable animateCamera if map is dragged" />
     <MESSAGE value="* MapsActivity+ForegroundService: firebase deactivated&#10;* MapsActivity: ANR caused by remove statement" />
@@ -609,7 +604,8 @@
     <MESSAGE value="* Implementing Eventbus, Watchdog to publish Notifications&#10;* Removing unnecessary code" />
     <MESSAGE value="* Created marker for current position&#10;* Saving points to database implemented&#10;* App does not crash anymore since Eventbus and Thread were implemented" />
     <MESSAGE value="* TODOs removed" />
-    <option name="LAST_COMMIT_MESSAGE" value="* TODOs removed" />
+    <MESSAGE value="* rewriting most of the modules so that polyline is drawn on main ui thread although mobile phone is in idle/doze mode" />
+    <option name="LAST_COMMIT_MESSAGE" value="* rewriting most of the modules so that polyline is drawn on main ui thread although mobile phone is in idle/doze mode" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
