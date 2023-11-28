@@ -250,7 +250,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setHeart_rate(cursor.getInt(6));
                 run.setComment(cursor.getString(7));
                 run.setNumber_of_run(cursor.getInt(8));
-                run.setDateTimeInMs(cursor.getInt(9));
+                run.setDateTimeInMs(cursor.getLong(9));
                 run.setLaps(cursor.getInt(10));
                 run.setAltitude(cursor.getDouble(11));
                 run.setPerson(cursor.getString(12));

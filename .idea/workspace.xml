@@ -9,10 +9,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* rewriting most of the modules so that polyline is drawn on main ui thread although mobile phone is in idle/doze mode">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: show AlertDialog in order to comment your exercise&#10;* DatabaseHandler.java: introducing updateComment method">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -220,13 +221,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00058" summary="* Readability  of numbers enhanced (Distance covered, Time, ...)">
-      <created>1691313677266</created>
-      <option name="number" value="00058" />
-      <option name="presentableId" value="LOCAL-00058" />
-      <option name="project" value="LOCAL" />
-      <updated>1691313677266</updated>
     </task>
     <task id="LOCAL-00059" summary="* Strings enhanced for readability&#10;* RadioGroupButton recording profil removed">
       <created>1691324106648</created>
@@ -564,7 +558,14 @@
       <option name="project" value="LOCAL" />
       <updated>1701169439158</updated>
     </task>
-    <option name="localTasksCounter" value="107" />
+    <task id="LOCAL-00107" summary="* MapsActivity.java: show AlertDialog in order to comment your exercise&#10;* DatabaseHandler.java: introducing updateComment method">
+      <created>1701202740607</created>
+      <option name="number" value="00107" />
+      <option name="presentableId" value="LOCAL-00107" />
+      <option name="project" value="LOCAL" />
+      <updated>1701202740607</updated>
+    </task>
+    <option name="localTasksCounter" value="108" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -580,7 +581,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* MapsActivity.java: beautifying source code" />
     <MESSAGE value="* ForegroundService.java: Adding firebase access&#10;* MapsActivity.java: showing another user on maps; enable/disable animateCamera if map is dragged" />
     <MESSAGE value="* MapsActivity+ForegroundService: firebase deactivated&#10;* MapsActivity: ANR caused by remove statement" />
     <MESSAGE value="* ForegroundService.java: Code beautifying" />
@@ -605,7 +605,8 @@
     <MESSAGE value="* Created marker for current position&#10;* Saving points to database implemented&#10;* App does not crash anymore since Eventbus and Thread were implemented" />
     <MESSAGE value="* TODOs removed" />
     <MESSAGE value="* rewriting most of the modules so that polyline is drawn on main ui thread although mobile phone is in idle/doze mode" />
-    <option name="LAST_COMMIT_MESSAGE" value="* rewriting most of the modules so that polyline is drawn on main ui thread although mobile phone is in idle/doze mode" />
+    <MESSAGE value="* MapsActivity.java: show AlertDialog in order to comment your exercise&#10;* DatabaseHandler.java: introducing updateComment method" />
+    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: show AlertDialog in order to comment your exercise&#10;* DatabaseHandler.java: introducing updateComment method" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

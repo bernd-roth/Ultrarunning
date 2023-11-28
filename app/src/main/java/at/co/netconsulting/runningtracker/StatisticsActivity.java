@@ -4,12 +4,12 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -18,10 +18,12 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
@@ -32,6 +34,8 @@ public class StatisticsActivity extends AppCompatActivity {
     private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed;
     private float maxSpeed, avgSpeed, totalDistance;
     private List<Float> listSpeed;
+    private TableLayout tableSection;
+    private long HH, MM, SS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,15 +47,60 @@ public class StatisticsActivity extends AppCompatActivity {
         renderData();
         setData();
         setTextView();
+        List<Long> groupedSectionList = calculateSections();
+        showTableLayout(groupedSectionList);
     }
+    private List<Long> calculateSections() {
+        double lap, oldLap = 0;
+        List<Long> groupedList = new ArrayList<>();
 
+        long oldMilliSeconds, currentMilliSeconds = 0, calculatedMilliSeconds;
+        oldMilliSeconds = listOfRun.get(0).getDateTimeInMs();
+
+        for(int i = 0; i<listOfRun.size(); i++) {
+            lap = listOfRun.get(i).getLaps();
+
+            if(lap!=oldLap || i==listOfRun.size()-1) {
+                currentMilliSeconds=listOfRun.get(i).getDateTimeInMs();
+                calculatedMilliSeconds=currentMilliSeconds-oldMilliSeconds;
+
+                groupedList.add(calculatedMilliSeconds);
+                oldMilliSeconds=currentMilliSeconds;
+                oldLap=lap;
+            }
+        }
+        return groupedList;
+    }
+    private void showTableLayout(List<Long> groupedSectionList) {
+        int rows = groupedSectionList.size();
+        int colums  = 1;
+        int counter = 1;
+        tableSection.setStretchAllColumns(true);
+        tableSection.bringToFront();
+
+        for(int i = 0; i < rows; i++){
+            TableRow tr =  new TableRow(this);
+            for(int j = 0; j < colums; j++) {
+                TextView txtGeneric = new TextView(this);
+                txtGeneric.setTextSize(18);
+
+                HH = TimeUnit.MILLISECONDS.toHours(groupedSectionList.get(i));
+                MM = TimeUnit.MILLISECONDS.toMinutes(groupedSectionList.get(i)) % 60;
+                SS = TimeUnit.MILLISECONDS.toSeconds(groupedSectionList.get(i)) % 60;
+
+                txtGeneric.setText("\t\t\t\t" + counter++ + "\t\t\t\t" + HH + " hours " + MM + " minutes " + SS + " seconds");
+                tr.addView(txtGeneric);
+            }
+            tableSection.addView(tr);
+        }
+    }
     private void setTextView() {
         //average speed
-        textViewAvgSpeed.setText("Average speed: " + avgSpeed + " Km/h");
+        textViewAvgSpeed.setText(String.format("Average speed: %.2f", avgSpeed) + " Km/h");
         //max speed
-        textViewMaxSpeed.setText("Max. speed: " + maxSpeed + " Km/h");
+        textViewMaxSpeed.setText(String.format("Max. speed: %.2f", maxSpeed) + " Km/h");
         //distance
-        textViewDistance.setText("Total distance: " + totalDistance + " Km");
+        textViewDistance.setText(String.format("Total distance: %.3f", totalDistance) + " Km");
     }
 
     private void initializeObjects() {
@@ -62,6 +111,8 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewMaxSpeed = findViewById(R.id.textViewMaxSpeed);
         textViewDistance = findViewById(R.id.textViewDistance);
         textViewAvgSpeed = findViewById(R.id.textViewAvgSpeed);
+
+        tableSection = (TableLayout)findViewById(R.id.tableSection);
 
         listOfRun = new ArrayList<>();
         listSpeed = new ArrayList<>();
