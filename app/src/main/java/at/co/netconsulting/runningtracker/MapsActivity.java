@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,7 +35,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -84,7 +84,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private ActivityMapsBinding binding;
     //Polyline
     private Polyline polyline;
-    private List<LatLng> polylinePoints;
+    private List<LatLng> mPolylinePoints;
     private boolean isDisableZoomCamera;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics;
     private String mapType;
@@ -93,8 +93,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private LocationManager locationManager;
     private boolean gps_enabled;
     private boolean startingPoint;
-    private Toolbar toolbar;
-    private TextView toolbar_title, textViewSlow, textViewFast;
+    private TextView textViewSlow, textViewFast;
     private PolyUtil polyUtil;
     private DrawView drawView;
     private View mapView;
@@ -170,25 +169,19 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         mapType = sh.getString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NORMAL");
     }
 
-    private void createPolypoints(List<LatLng> polylinePoints, float coveredDistance, float speed) {
+    private void createPolypoints(List<LatLng> polylinePoints) {
         boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
 
         if (!isServiceRunning) {
+        } else if (startingPoint) {
+            marker = mMap.addMarker(new MarkerOptions().position(new LatLng(polylinePoints.get(0).latitude, polylinePoints.get(0).longitude)).title(getResources().getString(R.string.starting_position)));
+            marker.showInfoWindow();
+            startingPoint = false;
         } else {
-            //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), 16));
-            //Projection projection = mMap.getProjection();
-
-            if (startingPoint) {
-                marker = mMap.addMarker(new MarkerOptions().position(new LatLng(polylinePoints.get(0).latitude, polylinePoints.get(0).longitude)).title(getResources().getString(R.string.current_location)));
-                marker.showInfoWindow();
-                startingPoint = false;
-            } else {
-                if(polyline!=null) {
-                    polyline.remove();
-                }
-                polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-                toolbar_title.setText("Distance: " + String.format("%.2f", coveredDistance) + " km\nSpeed: " + String.format("%.2f", speed) + " km/h");
+            if(polyline!=null) {
+                polyline.remove();
             }
+            polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
         }
     }
 
@@ -232,14 +225,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabStopRecording.setVisibility(View.INVISIBLE);
         fabStatistics = findViewById(R.id.fabStatistics);
         fabStatistics.setVisibility(View.VISIBLE);
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setBackgroundColor(Color.LTGRAY);
-        toolbar_title = findViewById(R.id.toolbar_title);
-        toolbar_title.setText("Distance: 0.0 Km" + "\nSpeed: 0.0 km/h");
         textViewSlow = findViewById(R.id.textViewSlow);
         //textViewFast = findViewById(R.id.textViewFast);
 
-        polylinePoints = new ArrayList<>();
+        mPolylinePoints = new ArrayList<>();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         isDisableZoomCamera = true;
@@ -410,7 +399,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
                 fadingButtons(R.id.fabStopRecording);
 
-                createCheckerFlag(polylinePoints);
+                createCheckerFlag(mPolylinePoints);
                 startingPoint=true;
                 break;
             case R.id.fabStatistics:
@@ -429,8 +418,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         DatabaseHandler db = new DatabaseHandler(this);
         List<Run> allEntries = db.getAllEntriesGroupedByRun();
 
-        if(polylinePoints.size()>0) {
-            polylinePoints.clear();
+        if(mPolylinePoints.size()>0) {
+            mPolylinePoints.clear();
         }
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(MapsActivity.this);
@@ -486,7 +475,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             } else { // walking is around 5.5-6 km/h
                                 sourcePoints.add(new ColoredPoint(latLng[0], Color.RED));
                             }
-                            polylinePoints.add(latLng[0]);
+                            mPolylinePoints.add(latLng[0]);
                         }
                         handler.post(new Runnable() {
                             @Override
@@ -514,7 +503,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         if(ix==0) {
             mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(polylinePoints.get(0).latitude, polylinePoints.get(0).longitude))
+                    .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude))
                     .title(getString(R.string.starting_position)));
         }
 
@@ -538,29 +527,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         }
 
         polyline = mMap.addPolyline(new PolylineOptions().addAll(currentSegment).color(currentColor).jointType(JointType.ROUND).width(15.0f));
-        createCheckerFlag(polylinePoints);
-    }
-
-    private void fillPolyPoints(List<LatLng> polylinePoints) {
-        double lat = polylinePoints.get(0).latitude;
-        double lng = polylinePoints.get(0).longitude;
-
-        PatternItem DOT = new Dot();
-        PatternItem GAP = new Gap(20);
-        List<PatternItem> PATTERN_POLYLINE_DOTTED = Arrays.asList(GAP, DOT);
-
-        mMap.clear();
-        polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-        polyline.setClickable(true);
-
-        mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(getString(R.string.starting_position)));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 16));
-        mMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
-            @Override
-            public void onPolylineClick(@NonNull Polyline polyline) {
-                polyline.setPattern(PATTERN_POLYLINE_DOTTED);
-            }
-        });
+        createCheckerFlag(mPolylinePoints);
     }
 
     private void fadingButtons(int fabButton) {
@@ -630,12 +597,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(LocationChangeEvent event) {
-        latLng = new LatLng(event.location.getLatitude(), event.location.getLongitude());
-        coveredDistance = event.coveredDistance;
-        speed = event.location.getSpeed();
-
-        polylinePoints.add(latLng);
-
-        createPolypoints(polylinePoints, coveredDistance, speed);
+        List<LatLng> mPolylinePoints = event.latLngs;
+        createPolypoints(mPolylinePoints);
     }
 }

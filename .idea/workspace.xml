@@ -9,22 +9,21 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* Implementing Eventbus, Watchdog to publish Notifications&#10;* Removing unnecessary code">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* TODOs removed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/BaseActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/BaseActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/SharedPref.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/SharedPref.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/StaticFields.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/StaticFields.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/pojo/LocationChangeEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/pojo/LocationChangeEvent.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[11181JEC202031]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -225,20 +224,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00055" summary="* Recording Profil added&#10;* Strings added">
-      <created>1691247284601</created>
-      <option name="number" value="00055" />
-      <option name="presentableId" value="LOCAL-00055" />
-      <option name="project" value="LOCAL" />
-      <updated>1691247284602</updated>
-    </task>
-    <task id="LOCAL-00056" summary="* Save button is automatically activated/deactivated depending on recording profil">
-      <created>1691254650194</created>
-      <option name="number" value="00056" />
-      <option name="presentableId" value="LOCAL-00056" />
-      <option name="project" value="LOCAL" />
-      <updated>1691254650204</updated>
     </task>
     <task id="LOCAL-00057" summary="* Go to last location added&#10;* Strings added">
       <created>1691256899125</created>
@@ -569,7 +554,21 @@
       <option name="project" value="LOCAL" />
       <updated>1700954567831</updated>
     </task>
-    <option name="localTasksCounter" value="104" />
+    <task id="LOCAL-00104" summary="* Created marker for current position&#10;* Saving points to database implemented&#10;* App does not crash anymore since Eventbus and Thread were implemented">
+      <created>1701035458364</created>
+      <option name="number" value="00104" />
+      <option name="presentableId" value="LOCAL-00104" />
+      <option name="project" value="LOCAL" />
+      <updated>1701035458364</updated>
+    </task>
+    <task id="LOCAL-00105" summary="* TODOs removed">
+      <created>1701035536359</created>
+      <option name="number" value="00105" />
+      <option name="presentableId" value="LOCAL-00105" />
+      <option name="project" value="LOCAL" />
+      <updated>1701035536359</updated>
+    </task>
+    <option name="localTasksCounter" value="106" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -585,8 +584,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* Added progressbar and preventing of ANR, if mass of data needs to be loaded" />
-    <MESSAGE value="* adding names for strings.xml" />
     <MESSAGE value="* MapsActivity.java: loading data in background for preventing ANR&#10;* Starting with showing the difference from Kalman filtered track and gps track" />
     <MESSAGE value="* MapsActivity.java: beautifying source code" />
     <MESSAGE value="* ForegroundService.java: Adding firebase access&#10;* MapsActivity.java: showing another user on maps; enable/disable animateCamera if map is dragged" />
@@ -610,7 +607,9 @@
     <MESSAGE value="* ForegroundService: Notification.Builder uses too much memory, deactivated&#10;* SharedPref: do not show live path covered&#10;* DatabaseHandler: lat/lng precision fixed" />
     <MESSAGE value="* MapsActivity: removed unnecessary code because of memory leaks&#10;* ForegroundService: Implemented a thread for notifications" />
     <MESSAGE value="* Implementing Eventbus, Watchdog to publish Notifications&#10;* Removing unnecessary code" />
-    <option name="LAST_COMMIT_MESSAGE" value="* Implementing Eventbus, Watchdog to publish Notifications&#10;* Removing unnecessary code" />
+    <MESSAGE value="* Created marker for current position&#10;* Saving points to database implemented&#10;* App does not crash anymore since Eventbus and Thread were implemented" />
+    <MESSAGE value="* TODOs removed" />
+    <option name="LAST_COMMIT_MESSAGE" value="* TODOs removed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

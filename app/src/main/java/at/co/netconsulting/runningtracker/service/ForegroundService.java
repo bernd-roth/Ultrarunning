@@ -10,7 +10,6 @@ import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -28,11 +27,16 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 import at.co.netconsulting.runningtracker.MapsActivity;
 import at.co.netconsulting.runningtracker.R;
@@ -60,14 +64,12 @@ public class ForegroundService extends Service implements LocationListener {
     private float[] result;
     private DateTimeFormatter formatDateTime;
     private LocalDateTime dateObj;
-    private long currentMilliseconds, oldCurrentMilliseconds = 0, minTimeMs;
-    private final long[] seconds = {0}, minutes = {0}, hours = {0};
+    private long currentMilliseconds, oldCurrentMilliseconds = 0, currentSeconds, minTimeMs;
     private Timer timer;
     private BroadcastReceiver broadcastReceiver;
-    private boolean isFirstEntry;
+    private boolean isFirstEntry, hasEnoughTimePassed;
     private int laps, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
     private float lapCounter, coveredDistance, accuracy, currentSpeed;
-    private IntentFilter filter;
     private Intent intent;
     private Bundle bundle;
     private String notificationService;
@@ -76,6 +78,7 @@ public class ForegroundService extends Service implements LocationListener {
     private GnssStatus.Callback gnssCallback;
     protected WatchDogRunner mWatchdogRunner;
     protected Thread mWatchdogThread = null;
+    private Location mLocation;
 
     @Override
     public void onCreate() {
@@ -127,7 +130,6 @@ public class ForegroundService extends Service implements LocationListener {
         timer = new Timer();
         laps=0;
         lapCounter=0;
-        filter = new IntentFilter();
         db = new DatabaseHandler(this);
         intent=new Intent();
         bundle = new Bundle();
@@ -198,7 +200,7 @@ public class ForegroundService extends Service implements LocationListener {
         locationManager.unregisterGnssStatusCallback(gnssCallback);
     }
 
-    private void calculateDistance(double oldLatitude, double oldLongitude, double currentLatitude, double currentLongitude) {
+    private float calculateDistance(double oldLatitude, double oldLongitude, double currentLatitude, double currentLongitude) {
         Location.distanceBetween(
                 //older location
                 oldLatitude,
@@ -208,11 +210,11 @@ public class ForegroundService extends Service implements LocationListener {
                 currentLongitude,
                 result);
         coveredDistance += result[0];
-        lapCounter += result[0];
-        calculateLaps();
+        return result[0];
     }
 
-    private void calculateLaps() {
+    private void calculateLaps(float pResult) {
+        lapCounter += pResult;
         if(lapCounter>=1000) {
             laps+=1;
             lapCounter=0;
@@ -285,45 +287,7 @@ public class ForegroundService extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        currentMilliseconds = System.currentTimeMillis();
-
-        if(isFirstEntry) {
-            oldLatitude = location.getLatitude();
-            oldLongitude = location.getLongitude();
-        } else {
-            currentLatitude = location.getLatitude();
-            currentLongitude = location.getLongitude();
-        }
-
-        //number of satellites
-        numberOfsatellitesInUse = location.getExtras().getInt("satellites");
-
-        altitude = location.getAltitude();
-        accuracy = location.getAccuracy();
-        currentSpeed = (location.getSpeed() / 1000) * 3600;
-
-        if(bundlePause==null) {
-            if(minDistanceMeter==1 && minTimeMs==1) {
-                if (currentMilliseconds != oldCurrentMilliseconds) {
-                    //if(currentSpeed>0) {
-                        if (isFirstEntry) {
-                            isFirstEntry = false;
-                        } else {
-                            calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
-                            oldLatitude = currentLatitude;
-                            oldLongitude = currentLongitude;
-                            //Publish Location
-                            EventBus.getDefault().postSticky(new LocationChangeEvent(new Location(location), coveredDistance));
-                        }
-                        oldCurrentMilliseconds = currentMilliseconds;
-                    //}
-                }
-            } else {
-                calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
-                oldLatitude = currentLatitude;
-                oldLongitude = currentLongitude;
-            }
-        }
+        mLocation = location;
     }
     @Override
     public void onFlushComplete(int requestCode) {
@@ -345,36 +309,90 @@ public class ForegroundService extends Service implements LocationListener {
         LocationListener.super.onProviderDisabled(provider);
     }
     private class WatchDogRunner implements Runnable {
-            boolean running = true;
-            double latitude = 0, longitude = 0;
-            @Override
-            public void run() {
-                running = true;
-                try {
-                    while (running) {
-                        updateNotification();
-                        if(!isFirstEntry) {
-                            if(oldLatitude!=latitude || oldLongitude!=longitude) {
-                                saveToDatabase(oldLatitude, oldLongitude);
-                                latitude=oldLatitude;
-                                longitude=oldLongitude;
-                            }
+        boolean running = true;
+        int hours, minutes, seconds = 0;
+        List<LatLng> latLngs = new ArrayList<>();
+        @Override
+        public void run() {
+            running = true;
+            try {
+                while (running) {
+                    seconds += 1;
+                    if (seconds == 60) {
+                        minutes += 1;
+                        seconds = 0;
+                        if (minutes == 60) {
+                            hours += 1;
+                            minutes = 0;
                         }
-                        Thread.sleep(1000);
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    updateNotification(hours, minutes, seconds);
+                    if(mLocation!=null) {
+                        hasEnoughTimePassed = hasEnoughTimePassed();
+                        if(hasEnoughTimePassed) {
+                            latLngs.add(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
+                            saveToDatabase(mLocation.getLatitude(), mLocation.getLongitude());
+                            EventBus.getDefault().post(new LocationChangeEvent(latLngs));
+                            hasEnoughTimePassed = false;
+                        }
+                    }
+                    Thread.sleep(1000);
                 }
-            }
-            public void stop() {
-                running = false;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
-    private void updateNotification() {
-        long hour = hours[0];
-        long minute = minutes[0];
-        long second = seconds[0];
+        public void stop() {
+            running = false;
+        }
+    }
+    public boolean hasEnoughTimePassed() {
+        currentMilliseconds = System.currentTimeMillis();
+        currentSeconds = TimeUnit.MILLISECONDS.toSeconds(currentMilliseconds);
 
+        if(isFirstEntry) {
+            oldLatitude = mLocation.getLatitude();
+            oldLongitude = mLocation.getLongitude();
+        } else {
+            currentLatitude = mLocation.getLatitude();
+            currentLongitude = mLocation.getLongitude();
+        }
+
+        //number of satellites
+        numberOfsatellitesInUse = mLocation.getExtras().getInt("satellites");
+
+        altitude = mLocation.getAltitude();
+        accuracy = mLocation.getAccuracy();
+        currentSpeed = (mLocation.getSpeed() / 1000) * 3600;
+
+        if(bundlePause==null) {
+            if(minDistanceMeter==1 && minTimeMs==1) {
+                //currentSeconds must be checked because requestLocationUpdates is not always exactly 1 second
+                //so it might lead to almost doubled entries in database
+                if ((currentMilliseconds != oldCurrentMilliseconds) && (currentSeconds>=StaticFields.TIME_INTERVAL)) {
+//                    if(currentSpeed>0) {
+                        if (isFirstEntry) {
+                            isFirstEntry = false;
+                        } else {
+                            result[0] = calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
+                            calculateLaps(result[0]);
+                            oldLatitude = currentLatitude;
+                            oldLongitude = currentLongitude;
+                            return hasEnoughTimePassed = true;
+                        }
+                        oldCurrentMilliseconds = currentMilliseconds;
+                    }
+//                }
+            } else {
+                calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
+                oldLatitude = currentLatitude;
+                oldLongitude = currentLongitude;
+                return hasEnoughTimePassed = true;
+            }
+        }
+        return false;
+    }
+    private void updateNotification(int hours, int minutes, int seconds) {
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle("Still trying to gather information!")
                 .setStyle(new NotificationCompat.BigTextStyle()
@@ -384,7 +402,7 @@ public class ForegroundService extends Service implements LocationListener {
                                 + "\nLocation accuracy: 0 Meter"
                                 + "\nAltitude: 0 Meter"
                                 + "\nLaps: " + String.format("%03d", laps)
-                                + "\nTime: " + String.format("%02d:%02d:%02d", hour, minute, second)))
+                                + "\nTime: " + String.format("%02d:%02d:%02d", hours, minutes, seconds)))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
@@ -396,25 +414,15 @@ public class ForegroundService extends Service implements LocationListener {
 
         notification = notificationBuilder.build();
 
-        seconds[0] += 1;
-        if (seconds[0] == 60) {
-            minutes[0] += 1;
-            seconds[0] = 0;
-            if (minutes[0] == 60) {
-                hours[0] += 1;
-                minutes[0] = 0;
-            }
-        }
-
         manager.notify(NOTIFICATION_ID, notificationBuilder
                 .setContentTitle("Distance covered: " + String.format("%.2f Km", coveredDistance / 1000))
                 .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText("Current speed: " + String.format("%.2f", currentSpeed) + " Km/h"
+                        .bigText("Current speed: " + String.format("%.2f Km/h", currentSpeed)
                                 + "\nNumber of satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
                                 + "\nLocation accuracy: " + String.format("%.2f Meter", accuracy)
                                 + "\nAltitude: " + String.format("%.2f Meter", altitude)
                                 + "\nLaps: " + String.format("%03d", laps)
-                                + "\nTime: " + String.format("%02d:%02d:%02d", hours[0], minutes[0], seconds[0])))
+                                + "\nTime: " + String.format("%02d:%02d:%02d", hours, minutes, seconds)))
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_notification))
                 .build());
     }

@@ -30,7 +30,6 @@
     <string name="buttonOk">Okay</string>
     <string name="save_exercise">Save exercise and comment it?</string>
     <string name="comment_exercise">Comment on your last exercise</string>
-    <string name="current_location">Current location</string>
     <string name="location_service">Please, turn location service on!</string>
     <string name="open_location_settings">Open location settings</string>
     <string name="buttonSave">Save</string>
@@ -60,7 +59,7 @@
 
     <!-- MapsActivity -->
     <string name="serviceName">at.co.netconsulting.runningtracker.service.ForegroundService</string>
-    <string name="starting_position">Starting position</string>
+    <string name="starting_position">Start</string>
 
     <!-- SettingsActivity -->
     <string name="saveAndCommentPause">Save and comment, if pausing in database</string>

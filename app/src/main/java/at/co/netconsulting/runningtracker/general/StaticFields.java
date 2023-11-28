@@ -10,4 +10,5 @@ public class StaticFields {
     public final static DecimalFormat df = new DecimalFormat("0.00");
     public final static String STATIC_STRING_PERSON = "Anonym";
     public final static boolean STATIC_BOOLEAN_DISTANCE_COVERED = false;
+    public final static double TIME_INTERVAL = 1.0;
 }
