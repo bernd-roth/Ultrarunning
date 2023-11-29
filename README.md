@@ -15,11 +15,11 @@ Start the app and that`s it.
 ![](app/pics/earth.png)
 ![](app/pics/austria.png)
 ![](app/pics/notification.png)
-![](app/pics/notification_no_information_received.png)
-![](app/pics/settings.png)
-![](app/pics/comment_dialog.png)
+![](app/pics/settings_part_1.png)
+![](app/pics/settings_part_2.png)
 ![](app/pics/screen_lock.png)
 ![](app/pics/select_run.png)
+![](app/pics/selected_colored_path.png)
 ![](app/pics/statistics.png)
 
 ## Contributing
