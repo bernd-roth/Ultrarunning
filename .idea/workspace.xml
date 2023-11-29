@@ -9,8 +9,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* README.md: updated + new pic added">
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/SharedPref.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/SharedPref.java" afterDir="false" />
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* SharedPref.java: unused shared preference removed">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -218,13 +219,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00065" summary="* SettingsActivity.java: ProgressDialog for exporting data; Deleting all data not working - fixed.">
-      <created>1691679413309</created>
-      <option name="number" value="00065" />
-      <option name="presentableId" value="LOCAL-00065" />
-      <option name="project" value="LOCAL" />
-      <updated>1691679413309</updated>
     </task>
     <task id="LOCAL-00066" summary="* DatabaseHandler.java: Saving number of runs fixed">
       <created>1691679512984</created>
@@ -562,7 +556,14 @@
       <option name="project" value="LOCAL" />
       <updated>1701246079437</updated>
     </task>
-    <option name="localTasksCounter" value="114" />
+    <task id="LOCAL-00114" summary="* SharedPref.java: unused shared preference removed">
+      <created>1701246159362</created>
+      <option name="number" value="00114" />
+      <option name="presentableId" value="LOCAL-00114" />
+      <option name="project" value="LOCAL" />
+      <updated>1701246159362</updated>
+    </task>
+    <option name="localTasksCounter" value="115" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -578,7 +579,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* StatisticsActivity: hardcoded string outsourced to strings.xml" />
     <MESSAGE value="* ForegroundService: doubled saved points if 1 sek. recording is chosen fixed" />
     <MESSAGE value="* MapsActivity: checkeredFlag automatically added if stopButton is clicked during live recording" />
     <MESSAGE value="* activity_statistics.xml: new value added" />
@@ -603,7 +603,8 @@
     <MESSAGE value="* SettingsActivity.java: always call battery optimization settings, if switch is activated/deactivated" />
     <MESSAGE value="* README.md: updated + new pics added" />
     <MESSAGE value="* README.md: updated + new pic added" />
-    <option name="LAST_COMMIT_MESSAGE" value="* README.md: updated + new pic added" />
+    <MESSAGE value="* SharedPref.java: unused shared preference removed" />
+    <option name="LAST_COMMIT_MESSAGE" value="* SharedPref.java: unused shared preference removed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

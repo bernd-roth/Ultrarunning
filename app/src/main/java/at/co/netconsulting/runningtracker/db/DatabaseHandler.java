@@ -23,7 +23,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_LNG = "lng";
     private static final String KEY_METERS_COVERED = "km";
 	private static final String KEY_SPEED = "speed";
-	private static final String KEY_HEART_RATE = "heart_rate";
     private static final String KEY_COMMENT = "comment";
     private static final String KEY_NUMBER_OF_RUN = "number_of_run";
     private static final String KEY_DATETIME_IN_MS = "date_time_ms";
@@ -61,7 +60,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_LNG, run.getLng());
         values.put(KEY_METERS_COVERED, run.getMeters_covered());
         values.put(KEY_SPEED, run.getSpeed());
-        values.put(KEY_HEART_RATE, run.getHeart_rate());
         values.put(KEY_COMMENT, run.getComment());
         values.put(KEY_NUMBER_OF_RUN, run.getNumber_of_run());
         values.put(KEY_DATETIME_IN_MS, run.getDateTimeInMs());
@@ -115,7 +113,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_LNG + ", MAX("
                 + KEY_METERS_COVERED + "), "
                 + KEY_SPEED + ", "
-                + KEY_HEART_RATE + ", "
                 + KEY_COMMENT + ", "
                 + KEY_NUMBER_OF_RUN + ", MAX("
                 + KEY_DATETIME_IN_MS + ") - MIN("
@@ -138,13 +135,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setLng(cursor.getDouble(3));
                 run.setMeters_covered(cursor.getDouble(4));
                 run.setSpeed((float) cursor.getDouble(5));
-                run.setHeart_rate(cursor.getInt(6));
-                run.setComment(cursor.getString(7));
-                run.setNumber_of_run(cursor.getInt(8));
-                run.setDateTimeInMs(cursor.getInt(9));
-                run.setLaps(cursor.getInt(10));
-                run.setAltitude(cursor.getDouble(11));
-                run.setPerson(cursor.getString(12));
+                run.setComment(cursor.getString(6));
+                run.setNumber_of_run(cursor.getInt(7));
+                run.setDateTimeInMs(cursor.getInt(8));
+                run.setLaps(cursor.getInt(9));
+                run.setAltitude(cursor.getDouble(10));
+                run.setPerson(cursor.getString(11));
                 // Adding contact to list
                 allEntryList.add(run);
             } while (cursor.moveToNext());
@@ -162,7 +158,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_LNG + ", "
                 + KEY_METERS_COVERED + ", "
                 + KEY_SPEED + ", "
-                + KEY_HEART_RATE + ", "
                 + KEY_COMMENT + ", "
                 + KEY_NUMBER_OF_RUN + ", "
                 + KEY_DATETIME_IN_MS + ", "
@@ -184,13 +179,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setLng(cursor.getDouble(3));
                 run.setMeters_covered(cursor.getDouble(4));
                 run.setSpeed((float) cursor.getDouble(5));
-                run.setHeart_rate(cursor.getInt(6));
-                run.setComment(cursor.getString(7));
-                run.setNumber_of_run(cursor.getInt(8));
-                run.setDateTimeInMs(cursor.getLong(9));
-                run.setLaps(cursor.getInt(10));
-                run.setAltitude(cursor.getDouble(11));
-                run.setPerson(cursor.getString(12));
+                run.setComment(cursor.getString(6));
+                run.setNumber_of_run(cursor.getInt(7));
+                run.setDateTimeInMs(cursor.getLong(8));
+                run.setLaps(cursor.getInt(9));
+                run.setAltitude(cursor.getDouble(10));
+                run.setPerson(cursor.getString(11));
                 // Adding contact to list
                 allEntryList.add(run);
             } while (cursor.moveToNext());
@@ -302,7 +296,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         curCSV.getString(9),
                         curCSV.getString(10),
                         curCSV.getString(11),
-                        curCSV.getString(12)
                 };
                 csvWrite.writeNext(arrStr);
             }
@@ -338,7 +331,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_LNG + " TEXT,"
                 + KEY_METERS_COVERED + " DOUBLE,"
                 + KEY_SPEED + " DOUBLE,"
-                + KEY_HEART_RATE + " INTEGER,"
                 + KEY_COMMENT + " STRING,"
                 + KEY_NUMBER_OF_RUN + " INTEGER,"
                 + KEY_DATETIME_IN_MS + " LONG,"
