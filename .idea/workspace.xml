@@ -9,18 +9,8 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* SettingsActivity.java: always call battery optimization settings, if switch is activated/deactivated">
-      <change afterPath="$PROJECT_DIR$/app/pics/selected_colored_path.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/pics/settings_part_1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/pics/settings_part_2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pics/comment_dialog.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pics/earth.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/pics/earth.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pics/notification_no_information_received.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pics/select_run.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/pics/select_run.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pics/settings.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pics/statistics.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/pics/statistics.png" afterDir="false" />
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* README.md: updated + new pic added">
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/SharedPref.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/general/SharedPref.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -228,20 +218,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00063" summary="* Adding lap counting &gt; 1000 meter&#10;* removing description label from graph">
-      <created>1691390188589</created>
-      <option name="number" value="00063" />
-      <option name="presentableId" value="LOCAL-00063" />
-      <option name="project" value="LOCAL" />
-      <updated>1691390188590</updated>
-    </task>
-    <task id="LOCAL-00064" summary="* DatabaseHandler.java: CREATE UNIQUE INDEX changed to CREATE INDEX">
-      <created>1691600462210</created>
-      <option name="number" value="00064" />
-      <option name="presentableId" value="LOCAL-00064" />
-      <option name="project" value="LOCAL" />
-      <updated>1691600462211</updated>
     </task>
     <task id="LOCAL-00065" summary="* SettingsActivity.java: ProgressDialog for exporting data; Deleting all data not working - fixed.">
       <created>1691679413309</created>
@@ -572,7 +548,21 @@
       <option name="project" value="LOCAL" />
       <updated>1701244809276</updated>
     </task>
-    <option name="localTasksCounter" value="112" />
+    <task id="LOCAL-00112" summary="* README.md: updated + new pics added">
+      <created>1701245815376</created>
+      <option name="number" value="00112" />
+      <option name="presentableId" value="LOCAL-00112" />
+      <option name="project" value="LOCAL" />
+      <updated>1701245815376</updated>
+    </task>
+    <task id="LOCAL-00113" summary="* README.md: updated + new pic added">
+      <created>1701246079437</created>
+      <option name="number" value="00113" />
+      <option name="presentableId" value="LOCAL-00113" />
+      <option name="project" value="LOCAL" />
+      <updated>1701246079437</updated>
+    </task>
+    <option name="localTasksCounter" value="114" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -588,8 +578,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* activity_maps.xml: useless code deleted" />
-    <MESSAGE value="* ForegroundService: renaming variables&#10;* StatisticsActivity: former line graph form android replaced with mpchart" />
     <MESSAGE value="* StatisticsActivity: hardcoded string outsourced to strings.xml" />
     <MESSAGE value="* ForegroundService: doubled saved points if 1 sek. recording is chosen fixed" />
     <MESSAGE value="* MapsActivity: checkeredFlag automatically added if stopButton is clicked during live recording" />
@@ -613,7 +601,9 @@
     <MESSAGE value="* MapsActivity.java: removing unused variables&#10;* StatisticsActivity.java: adding a table header&#10;* DatabaseHandler.java: removing unused variables and code&#10;* strings.xml: adding new strings" />
     <MESSAGE value="* SettingsActivity.java: battery optimization implemented" />
     <MESSAGE value="* SettingsActivity.java: always call battery optimization settings, if switch is activated/deactivated" />
-    <option name="LAST_COMMIT_MESSAGE" value="* SettingsActivity.java: always call battery optimization settings, if switch is activated/deactivated" />
+    <MESSAGE value="* README.md: updated + new pics added" />
+    <MESSAGE value="* README.md: updated + new pic added" />
+    <option name="LAST_COMMIT_MESSAGE" value="* README.md: updated + new pic added" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
