@@ -406,12 +406,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         if(mPolylinePoints.size()>0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
             final EditText edittext = new EditText(getApplicationContext());
-            builder.setMessage("Please, comment your run!");
+            builder.setMessage(getResources().getString(R.string.please_comment_your_run));
             builder.setCancelable(false);
             builder.setView(edittext);
 
             builder.setPositiveButton(
-                    "Save",
+                    getResources().getString(R.string.buttonSave),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             String comment = edittext.getText().toString();
@@ -423,7 +423,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     });
 
             builder.setNegativeButton(
-                    "Cancel",
+                    getResources().getString(R.string.buttonCancel),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();

@@ -9,9 +9,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* SharedPref.java: unused shared preference removed">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* DatabaseHandler.java: heart rate column removed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,13 +220,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00066" summary="* DatabaseHandler.java: Saving number of runs fixed">
-      <created>1691679512984</created>
-      <option name="number" value="00066" />
-      <option name="presentableId" value="LOCAL-00066" />
-      <option name="project" value="LOCAL" />
-      <updated>1691679512984</updated>
     </task>
     <task id="LOCAL-00067" summary="* Run.java: adding getter/setter">
       <created>1691679561938</created>
@@ -563,7 +557,14 @@
       <option name="project" value="LOCAL" />
       <updated>1701246159362</updated>
     </task>
-    <option name="localTasksCounter" value="115" />
+    <task id="LOCAL-00115" summary="* DatabaseHandler.java: heart rate column removed">
+      <created>1701250165225</created>
+      <option name="number" value="00115" />
+      <option name="presentableId" value="LOCAL-00115" />
+      <option name="project" value="LOCAL" />
+      <updated>1701250165225</updated>
+    </task>
+    <option name="localTasksCounter" value="116" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -579,7 +580,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* ForegroundService: doubled saved points if 1 sek. recording is chosen fixed" />
     <MESSAGE value="* MapsActivity: checkeredFlag automatically added if stopButton is clicked during live recording" />
     <MESSAGE value="* activity_statistics.xml: new value added" />
     <MESSAGE value="* MapsActivity/SettingsActivity/activity_settings.xml: reducing latitude/longitude switch removed" />
@@ -604,7 +604,8 @@
     <MESSAGE value="* README.md: updated + new pics added" />
     <MESSAGE value="* README.md: updated + new pic added" />
     <MESSAGE value="* SharedPref.java: unused shared preference removed" />
-    <option name="LAST_COMMIT_MESSAGE" value="* SharedPref.java: unused shared preference removed" />
+    <MESSAGE value="* DatabaseHandler.java: heart rate column removed" />
+    <option name="LAST_COMMIT_MESSAGE" value="* DatabaseHandler.java: heart rate column removed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
