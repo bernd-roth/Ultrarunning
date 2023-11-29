@@ -9,4 +9,5 @@ public class SharedPref {
     public static final String STATIC_SHARED_PREF_RECORDING_PROFIL = "RECORDING_PROFIL";
     public static final String STATIC_SHARED_PREF_PERSON = "PERSON";
     public static final String STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED = "DISTANCE_COVERED";
+    public static final String STATIC_SHARED_PREF_BATTERY_OPTIMIZATION = "BATTERY_OPTIMIZATION";
 }

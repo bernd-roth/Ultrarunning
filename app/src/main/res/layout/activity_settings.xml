@@ -116,6 +116,23 @@
                         android:onClick="onClickRadioButtonBatteryGroup"/>
                 </RadioGroup>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
+
+                <Switch
+                    android:id="@+id/switchBatteryOptimization"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/battery_optimization"
+                    android:onClick="switchEvent"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
+
                 <TextView
                     android:id="@+id/textViewMinDistanceMeter"
                     android:layout_width="match_parent"

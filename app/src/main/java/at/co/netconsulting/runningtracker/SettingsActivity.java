@@ -1,16 +1,22 @@
 package at.co.netconsulting.runningtracker;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.preference.PreferenceFragmentCompat;
@@ -52,6 +58,8 @@ public class SettingsActivity extends BaseActivity {
     private DatabaseHandler db;
     private ProgressDialog progressDialog;
     private String person;
+    private boolean isBatteryOptimization;
+    private Switch switchBatteryOptimization;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +74,7 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_BATTERY_OPTIMIZATION);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -121,12 +130,8 @@ public class SettingsActivity extends BaseActivity {
                     editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                     editTextNumberSignedMinimumTimeMs.setEnabled(false);
                     break;
-//                }else if(recordingProfil.equals("Fast")) {
-//                    radioButtonFast.setChecked(true);
-//                    break;
                 } else if(recordingProfil.equals("Individual")) {
                     radioButtonIndividual.setChecked(true);
-//                    buttonSave.setEnabled(true);
                     editTextNumberSignedMinimumDistanceMeter.setEnabled(true);
                     editTextNumberSignedMinimumTimeMs.setEnabled(true);
                     break;
@@ -135,9 +140,19 @@ public class SettingsActivity extends BaseActivity {
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 person = sh.getString(sharedPrefKey, "Anonym");
                 editTextPerson.setText(person);
-//                buttonSave.setEnabled(true);
+                break;
+            case SharedPref.STATIC_SHARED_PREF_BATTERY_OPTIMIZATION:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isBatteryOptimization = sh.getBoolean(sharedPrefKey, false);
+                switchBatteryOptimization.setChecked(isBatteryOptimization);
                 break;
         }
+    }
+
+    private void openBatterySettings() {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+        this.startActivity(intent);
     }
 
     private void initObjects() {
@@ -162,9 +177,6 @@ public class SettingsActivity extends BaseActivity {
         //radioButtonFast = findViewById(R.id.radioButtonFast);
         radioButtonIndividual = findViewById(R.id.radioButtonIndividual);
 
-//        buttonNormalizeWithKalmanFilter = findViewById(R.id.buttonNormalizeWithKalmanFilter);
-//        buttonNormalizeWithKalmanFilter.setTransformationMethod(null);
-
         buttonExport = findViewById(R.id.buttonExport);
         buttonExport.setTransformationMethod(null);
 
@@ -179,6 +191,8 @@ public class SettingsActivity extends BaseActivity {
         progressDialog.setTitle("Exporting recorded runs"); // Setting Title
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
         progressDialog.setCancelable(false);
+
+        switchBatteryOptimization = findViewById(R.id.switchBatteryOptimization);
 
         db = new DatabaseHandler(this);
     }
@@ -271,6 +285,13 @@ public class SettingsActivity extends BaseActivity {
             String person = editTextPerson.getText().toString();
             editor.putString(SharedPref.STATIC_SHARED_PREF_PERSON, person);
             editor.commit();
+        }  else if(sharedPreference.equals("BATTERY_OPTIMIZATION")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_BATTERY_OPTIMIZATION, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            boolean isBatteryOptimization = switchBatteryOptimization.isChecked();
+            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_BATTERY_OPTIMIZATION, isBatteryOptimization);
+            editor.commit();
         }
     }
     public void onClickRadioButtonBatteryGroup(View view) {
@@ -337,20 +358,30 @@ public class SettingsActivity extends BaseActivity {
                 break;
         }
     }
+
+    public void switchEvent(View view) {
+        saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_BATTERY_OPTIMIZATION);
+
+        if(switchBatteryOptimization.isChecked()) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                ActivityManager am = (ActivityManager)getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+                openBatterySettings();
+            }
+        }
+    }
+
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
         }
     }
-
     public void save(View v) {
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
         Toast.makeText(getApplicationContext(), R.string.save_settings_map_type_rec_profil_runners_name, Toast.LENGTH_LONG).show();
     }
-
     public void delete(View view) {
         Button buttonDelete = (Button)view;
         String buttonText = buttonDelete.getText().toString();
@@ -360,7 +391,6 @@ public class SettingsActivity extends BaseActivity {
             showAlertDialogForSelectingWhichEntryToDelete();  
         }
     }
-
     private void createAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.dialog_message) .setTitle(R.string.dialog_title);
