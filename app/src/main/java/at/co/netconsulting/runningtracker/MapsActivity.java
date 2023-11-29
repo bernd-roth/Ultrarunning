@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,11 +28,12 @@ import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.Toolbar;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.ActivityCompat;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -49,7 +49,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.maps.android.PolyUtil;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -79,7 +78,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Polyline polyline;
     private List<LatLng> mPolylinePoints;
     private boolean isDisableZoomCamera;
-    private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics;
+    private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks;
     private String mapType;
     private SupportMapFragment mapFragment;
     private String[] permissions;
@@ -90,6 +89,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private View mapView;
     private Marker marker;
     private Intent intent;
+//    private DatabaseHandler db;
+//    private PopupMenu menu;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -213,6 +215,37 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabStopRecording.setVisibility(View.INVISIBLE);
         fabStatistics = findViewById(R.id.fabStatistics);
         fabStatistics.setVisibility(View.VISIBLE);
+        fabSettings = findViewById(R.id.fabSettings);
+        fabSettings.setVisibility(View.VISIBLE);
+        fabTracks = findViewById(R.id.fabTracks);
+        fabTracks.setVisibility(View.VISIBLE);
+
+//        Toolbar toolbar = findViewById(R.id.toolbar);
+//        setActionBar(toolbar);
+//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//             @Override
+//             public void onClick(View view) {
+//                 menu = new PopupMenu(MapsActivity.this, view);
+//                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//                     @Override
+//                     public boolean onMenuItemClick(MenuItem item) {
+//                         String menuItem = item.getTitle().toString();
+//                         String[] sId = menuItem.split(" ");
+//
+//                         int id = Integer.parseInt(sId[0]);
+//                         List<Run> singleRun = db.getLatLngForSingleRun(id);
+//
+//                         return false;
+//                     }
+//                 });
+//                 List<Run> listOfRun = db.getAllEntriesGroupedByRun();
+//
+//                 for (Run run : listOfRun) { // "limits" its an arraylist
+//                     menu.getMenu().add(run.getNumber_of_run() + " " + run.getDateTime());
+//                 }
+//                 menu.show();
+//             }
+//         });
 
         mPolylinePoints = new ArrayList<>();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
@@ -222,6 +255,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         drawView = new DrawView(this);
         RelativeLayout myRelativeLayout = (RelativeLayout) findViewById(R.id.relLayout);
         myRelativeLayout.addView(drawView);
+//        db = new DatabaseHandler(this);
     }
 
     private void checkIfLocationIsEnabled() {
@@ -560,20 +594,23 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     Animation fadeInAnimation = new AlphaAnimation(0.0f, 1.0f);
                     Animation fadeOutAnimation = new AlphaAnimation(1.0f, 0.0f);
                     // Duration of animation
-                    fadeInAnimation.setDuration(1500);
-                    fadeOutAnimation.setDuration(1500);
+                    fadeInAnimation.setDuration(500);
+                    fadeOutAnimation.setDuration(500);
                     // Keep stop button visible, start button invisible
                     fadeInAnimation.setFillAfter(true);
                     fadeOutAnimation.setFillAfter(true);
 
                     fabStopRecording.startAnimation(fadeInAnimation);
                     fabStartRecording.startAnimation(fadeOutAnimation);
+                    fabStatistics.startAnimation(fadeOutAnimation);
+                    fabSettings.startAnimation(fadeOutAnimation);
+                    fabTracks.startAnimation(fadeOutAnimation);
 
                     Bundle bundle = new Bundle();
                     bundle.putBoolean("StopButtonIsVisible", true);
                     getIntent().putExtras(bundle);
                 }
-            }, 2000);// set time as per your requirement
+            }, 500);// set time as per your requirement
         } else if(fabButton==R.id.fabStopRecording) {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -582,16 +619,19 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     Animation fadeInAnimation = new AlphaAnimation(0.0f, 1.0f);
                     Animation fadeOutAnimation = new AlphaAnimation(1.0f, 0.0f);
                     // Duration of animation
-                    fadeInAnimation.setDuration(1500);
-                    fadeOutAnimation.setDuration(1500);
+                    fadeInAnimation.setDuration(500);
+                    fadeOutAnimation.setDuration(500);
                     // Keep stop button visible, start button invisible
                     fadeInAnimation.setFillAfter(true);
                     fadeOutAnimation.setFillAfter(true);
 
                     fabStopRecording.startAnimation(fadeOutAnimation);
                     fabStartRecording.startAnimation(fadeInAnimation);
+                    fabStatistics.startAnimation(fadeInAnimation);
+                    fabSettings.startAnimation(fadeInAnimation);
+                    fabTracks.startAnimation(fadeInAnimation);
                 }
-            }, 2000);// set time as per your requirement
+            }, 500);// set time as per your requirement
         }
     }
     @Override

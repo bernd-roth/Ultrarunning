@@ -192,7 +192,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return allEntryList;
     }
-
+//    public List<Run> getLatLngForSingleRun(int numberOfRun) {
+//        List<Run> allEntryList = new ArrayList<Run>();
+//
+//        // Select All Query
+//        String selectQuery = "SELECT "
+//                + KEY_LAT + ", "
+//                + KEY_LNG
+//                + " FROM " + TABLE_RUNS + " WHERE " + KEY_NUMBER_OF_RUN + " = " + numberOfRun;
+//
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        Cursor cursor = db.rawQuery(selectQuery, null);
+//
+//        // looping through all rows and adding to list
+//        if (cursor.moveToFirst()) {
+//            do {
+//                Run run = new Run();
+//                run.setLat(cursor.getDouble(0));
+//                run.setLng(cursor.getDouble(1));
+//                // Adding contact to list
+//                allEntryList.add(run);
+//            } while (cursor.moveToNext());
+//        }
+//        cursor.close();
+//        return allEntryList;
+//    }
     public List<Run> getSingleEntryOrderedByDateTime(int numberOfRun) {
         List<Run> allEntryList = new ArrayList<Run>();
 
