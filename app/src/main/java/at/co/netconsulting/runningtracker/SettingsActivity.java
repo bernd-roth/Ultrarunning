@@ -362,11 +362,8 @@ public class SettingsActivity extends BaseActivity {
     public void switchEvent(View view) {
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_BATTERY_OPTIMIZATION);
 
-        if(switchBatteryOptimization.isChecked()) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                ActivityManager am = (ActivityManager)getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-                openBatterySettings();
-            }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+            openBatterySettings();
         }
     }
 
