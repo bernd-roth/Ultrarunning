@@ -66,7 +66,6 @@ public class ForegroundService extends Service implements LocationListener {
     private LocalDateTime dateObj;
     private long currentMilliseconds, oldCurrentMilliseconds = 0, currentSeconds, minTimeMs;
     private Timer timer;
-    private BroadcastReceiver broadcastReceiver;
     private boolean isFirstEntry, hasEnoughTimePassed;
     private int laps, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
     private float lapCounter, coveredDistance, accuracy, currentSpeed;
@@ -158,7 +157,7 @@ public class ForegroundService extends Service implements LocationListener {
         createPendingIntent();
 
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle("Still trying to gather information!")
+                .setContentTitle(getResources().getString(R.string.gather_information))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)

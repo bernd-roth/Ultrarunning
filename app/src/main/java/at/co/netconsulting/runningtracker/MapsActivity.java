@@ -86,12 +86,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private LocationManager locationManager;
     private boolean gps_enabled;
     private boolean startingPoint;
-    private PolyUtil polyUtil;
     private DrawView drawView;
     private View mapView;
     private Marker marker;
-    private LatLng latLng;
-    private float speed, coveredDistance;
     private Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

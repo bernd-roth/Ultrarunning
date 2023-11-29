@@ -18,12 +18,10 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
@@ -34,7 +32,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed;
     private float maxSpeed, avgSpeed, totalDistance;
     private List<Float> listSpeed;
-    private TableLayout tableSection;
+    private TableLayout tableSection, tableHeader;
     private long HH, MM, SS;
 
     @Override
@@ -75,9 +73,27 @@ public class StatisticsActivity extends AppCompatActivity {
         int rows = groupedSectionList.size();
         int colums  = 1;
         int counter = 1;
+        tableHeader.setStretchAllColumns(true);
+        tableHeader.bringToFront();
+
         tableSection.setStretchAllColumns(true);
         tableSection.bringToFront();
 
+        //Header
+        for(int i = 0; i < 1; i++) {
+            TableRow tr = new TableRow(this);
+            for (int j = 0; j < colums; j++) {
+                TextView txtGeneric = new TextView(this);
+                txtGeneric.setTextSize(18);
+
+                txtGeneric.setText("\t\t\t\t" + getResources().getString(R.string.lap) + "\t\t\t\t\t\t\t\t\t" + getResources().getString(R.string.time));
+                txtGeneric.setBackgroundColor(Color.LTGRAY);
+                tr.addView(txtGeneric);
+            }
+            tableHeader.addView(tr);
+        }
+
+        //Content of rows
         for(int i = 0; i < rows; i++){
             TableRow tr =  new TableRow(this);
             for(int j = 0; j < colums; j++) {
@@ -88,7 +104,10 @@ public class StatisticsActivity extends AppCompatActivity {
                 MM = TimeUnit.MILLISECONDS.toMinutes(groupedSectionList.get(i)) % 60;
                 SS = TimeUnit.MILLISECONDS.toSeconds(groupedSectionList.get(i)) % 60;
 
-                txtGeneric.setText("\t\t\t\t" + counter++ + "\t\t\t\t" + HH + " hours " + MM + " minutes " + SS + " seconds");
+                txtGeneric.setText("\t\t\t\t" + counter++ + "\t\t\t\t"
+                        + HH + " " + getResources().getString(R.string.hours) + " "
+                        + MM + " " + getResources().getString(R.string.minutes) + " "
+                        + SS + " " + getResources().getString(R.string.seconds));
                 tr.addView(txtGeneric);
             }
             tableSection.addView(tr);
@@ -112,6 +131,7 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewDistance = findViewById(R.id.textViewDistance);
         textViewAvgSpeed = findViewById(R.id.textViewAvgSpeed);
 
+        tableHeader = (TableLayout)findViewById(R.id.tableHeader);
         tableSection = (TableLayout)findViewById(R.id.tableSection);
 
         listOfRun = new ArrayList<>();

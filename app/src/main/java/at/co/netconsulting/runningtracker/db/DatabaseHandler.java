@@ -35,7 +35,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private CSVWriter csvWrite;
     private SQLiteDatabase db;
     private Cursor curCSV;
-    private Run run;
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -75,33 +74,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //2nd argument is String containing nullColumnHack
         db.close(); // Closing database connection
     }
-
-    //code to get single entry
-    public Run getSingleEntry(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(TABLE_RUNS, new String[] { KEY_ID,
-                        KEY_DATE_TIME, KEY_LAT, KEY_LNG, KEY_METERS_COVERED, KEY_SPEED, KEY_HEART_RATE, KEY_COMMENT, KEY_NUMBER_OF_RUN, KEY_DATETIME_IN_MS, KEY_LAPS, KEY_ALTITUDE, KEY_PERSON }, KEY_ID + "=?",
-                new String[] { String.valueOf(id) }, null, null, null, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            run = new Run(Integer.parseInt(cursor.getString(0)),
-                    cursor.getString(1),
-                    cursor.getDouble(2),
-                    cursor.getDouble(3),
-                    cursor.getDouble(4),
-                    cursor.getInt(5),
-                    cursor.getInt(6),
-                    cursor.getString(7),
-                    cursor.getInt(8),
-                    cursor.getLong(9),
-                    cursor.getInt(10),
-                    cursor.getDouble(11),
-                    cursor.getString(12)
-            );
-        }
-        return run;
-    }
-
     public int getLastEntry() {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -132,40 +104,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " SELECT MAX(" + KEY_NUMBER_OF_RUN + ") FROM "
                 + TABLE_RUNS + ")");
     }
-
-    // code to get all entries in a list
-    public List<Run> getAllEntries() {
-        List<Run> allEntryList = new ArrayList<Run>();
-        // Select All Query
-        String selectQuery = "SELECT * FROM " + TABLE_RUNS;
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                Run run = new Run();
-                run.setId(Integer.parseInt(cursor.getString(0)));
-                run.setDateTime(cursor.getString(1));
-                run.setLat(cursor.getDouble(2));
-                run.setLng(cursor.getDouble(3));
-                run.setMeters_covered(cursor.getDouble(4));
-                run.setSpeed((float) cursor.getDouble(5));
-                run.setHeart_rate(cursor.getInt(6));
-                run.setComment(cursor.getString(7));
-                run.setNumber_of_run(cursor.getInt(8));
-                run.setDateTimeInMs(cursor.getInt(9));
-                run.setLaps(cursor.getInt(10));
-                run.setAltitude(cursor.getDouble(11));
-                run.setPerson(cursor.getString(12));
-                // Adding contact to list
-                allEntryList.add(run);
-            } while (cursor.moveToNext());
-        }
-        return allEntryList;
-    }
-
     public List<Run> getAllEntriesGroupedByRun() {
         List<Run> allEntryList = new ArrayList<Run>();
 
@@ -213,7 +151,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return allEntryList;
     }
-
     public List<Run> getSingleEntryForStatistics(int numberOfRun) {
         List<Run> allEntryList = new ArrayList<Run>();
 
@@ -289,7 +226,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return allEntryList;
     }
-
     public int countDataOfRun(int numberOfRun) {
         // Select All Query
         String selectQuery = "SELECT COUNT("
@@ -306,30 +242,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return count;
     }
-
-    public void addSampleRun(int meters) {
-        db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(KEY_DATE_TIME, "01/01/2023");
-        values.put(KEY_LAT, "16."+meters);
-        values.put(KEY_LNG, "14."+meters);
-        values.put(KEY_METERS_COVERED, meters);
-        values.put(KEY_SPEED, "1."+meters);
-        values.put(KEY_HEART_RATE, "0");
-        values.put(KEY_COMMENT, "");
-        values.put(KEY_NUMBER_OF_RUN, "1");
-        values.put(KEY_DATETIME_IN_MS, "12345678"+meters);
-        values.put(KEY_LAPS, 1);
-        values.put(KEY_ALTITUDE, 283);
-        values.put(KEY_PERSON, "Anonym");
-
-        // Inserting Row
-        db.insert(TABLE_RUNS, null, values);
-        //2nd argument is String containing nullColumnHack
-        db.close(); // Closing database connection
-    }
-
     public List<Run> getEntriesForKalmanFilter() {
         List<Run> kalmanFilterList = new ArrayList<Run>();
         // Select All Query
@@ -369,12 +281,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_RUNS, "number_of_run = ?", new String[]{String.valueOf(number_of_run)});
     }
-
-    public void deleteLastRun(int number_of_run) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_RUNS, "number_of_run = ?", new String[]{String.valueOf(number_of_run)});
-    }
-
     public void exportTableContent() {
         try {
             file = new File(context.getExternalFilesDir(null), "run.csv");
@@ -406,7 +312,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             Log.e("DatabaseHandler", sqlEx.getMessage(), sqlEx);
         }
     }
-
     public void exportTableContent(String line) {
         try {
             String[] lineSplitted = line.split(" ");
@@ -424,7 +329,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             Log.e("DatabaseHandler", sqlEx.getMessage(), sqlEx);
         }
     }
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_RUNS_TABLE = "CREATE TABLE " + TABLE_RUNS + "("
@@ -447,49 +351,5 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_INDEX_TABLE =
                 "CREATE INDEX idx_number_of_run ON " + TABLE_RUNS + "(" + KEY_NUMBER_OF_RUN +");";
         db.execSQL(CREATE_INDEX_TABLE);
-    }
-
-    public Run getLastEntryOrderedById(int numberOfRun) {
-        String selectQuery = "SELECT "
-                + KEY_ID + ", "
-                + KEY_DATE_TIME + ", "
-                + KEY_LAT + ", "
-                + KEY_LNG + ", "
-                + KEY_METERS_COVERED + ", "
-                + KEY_SPEED + ", "
-                + KEY_HEART_RATE + ", "
-                + KEY_COMMENT + ", "
-                + KEY_NUMBER_OF_RUN + ", "
-                + KEY_DATETIME_IN_MS + ", "
-                + KEY_LAPS + ", "
-                + KEY_ALTITUDE + ", "
-                + KEY_PERSON
-                + " FROM " + TABLE_RUNS + " WHERE " + KEY_NUMBER_OF_RUN + " = " + numberOfRun
-                + " ORDER BY " + KEY_DATE_TIME + " DESC LIMIT 1";
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        Run run = new Run();
-
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                run.setId(Integer.parseInt(cursor.getString(0)));
-                run.setDateTime(cursor.getString(1));
-                run.setLat(cursor.getDouble(2));
-                run.setLng(cursor.getDouble(3));
-                run.setMeters_covered(cursor.getDouble(4));
-                run.setSpeed((float) cursor.getDouble(5));
-                run.setHeart_rate(cursor.getInt(6));
-                run.setComment(cursor.getString(7));
-                run.setNumber_of_run(cursor.getInt(8));
-                run.setDateTimeInMs(cursor.getInt(9));
-                run.setLaps(cursor.getInt(10));
-                run.setAltitude(cursor.getDouble(11));
-                run.setPerson(cursor.getString(12));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return run;
     }
 }
