@@ -39,6 +39,7 @@
         android:text="Slow"
         android:textStyle="bold"
         android:textFontWeight="950"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -55,6 +56,7 @@
         android:text="Fast"
         android:textStyle="bold"
         android:textFontWeight="950"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

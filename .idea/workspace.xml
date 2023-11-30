@@ -9,9 +9,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: prepared possible popupmenu for displaying tracks&#10;* DatabaseHandler.java: retrieving chosen track from popupmenu">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* strings.xml: app_name accidentally deleted">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_maps.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,13 +220,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00068" summary="* ForegroundService.java: CountUp-Timer enhanced and moved to notification">
-      <created>1691679681361</created>
-      <option name="number" value="00068" />
-      <option name="presentableId" value="LOCAL-00068" />
-      <option name="project" value="LOCAL" />
-      <updated>1691679681361</updated>
     </task>
     <task id="LOCAL-00069" summary="* ForegroundService.java: Lap counter fixed; Notification fixed">
       <created>1691700504984</created>
@@ -563,7 +557,14 @@
       <option name="project" value="LOCAL" />
       <updated>1701300565306</updated>
     </task>
-    <option name="localTasksCounter" value="117" />
+    <task id="LOCAL-00117" summary="* strings.xml: app_name accidentally deleted">
+      <created>1701300791934</created>
+      <option name="number" value="00117" />
+      <option name="presentableId" value="LOCAL-00117" />
+      <option name="project" value="LOCAL" />
+      <updated>1701300791934</updated>
+    </task>
+    <option name="localTasksCounter" value="118" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -579,7 +580,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* activity_statistics.xml: new value added" />
     <MESSAGE value="* MapsActivity/SettingsActivity/activity_settings.xml: reducing latitude/longitude switch removed" />
     <MESSAGE value="* Removing Kalmanfilter" />
     <MESSAGE value="* SettingsActivity: AlertDialog if deleting entire database" />
@@ -604,7 +604,8 @@
     <MESSAGE value="* SharedPref.java: unused shared preference removed" />
     <MESSAGE value="* DatabaseHandler.java: heart rate column removed" />
     <MESSAGE value="* MapsActivity.java: prepared possible popupmenu for displaying tracks&#10;* DatabaseHandler.java: retrieving chosen track from popupmenu" />
-    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: prepared possible popupmenu for displaying tracks&#10;* DatabaseHandler.java: retrieving chosen track from popupmenu" />
+    <MESSAGE value="* strings.xml: app_name accidentally deleted" />
+    <option name="LAST_COMMIT_MESSAGE" value="* strings.xml: app_name accidentally deleted" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -618,6 +619,11 @@
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/pojo/LocationUpdateEvent.java</url>
           <line>14</line>
           <option name="timeStamp" value="621" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
+          <line>166</line>
+          <option name="timeStamp" value="623" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

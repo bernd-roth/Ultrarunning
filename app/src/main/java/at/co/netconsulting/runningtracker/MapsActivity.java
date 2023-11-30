@@ -28,6 +28,7 @@ import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toolbar;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -89,6 +90,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private View mapView;
     private Marker marker;
     private Intent intent;
+    private TextView textViewFast, textViewSlow;
 //    private DatabaseHandler db;
 //    private PopupMenu menu;
 
@@ -219,7 +221,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabSettings.setVisibility(View.VISIBLE);
         fabTracks = findViewById(R.id.fabTracks);
         fabTracks.setVisibility(View.VISIBLE);
-
+        textViewFast = findViewById(R.id.textViewFast);
+        textViewFast.setVisibility(View.INVISIBLE);
+        textViewSlow = findViewById(R.id.textViewSlow);
+        textViewSlow.setVisibility(View.INVISIBLE);
 //        Toolbar toolbar = findViewById(R.id.toolbar);
 //        setActionBar(toolbar);
 //        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -252,9 +257,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         isDisableZoomCamera = true;
         startingPoint = true;
+        //draw speed scale and set visibility
         drawView = new DrawView(this);
         RelativeLayout myRelativeLayout = (RelativeLayout) findViewById(R.id.relLayout);
         myRelativeLayout.addView(drawView);
+        drawView.setVisibility(View.INVISIBLE);
 //        db = new DatabaseHandler(this);
     }
 
@@ -580,7 +587,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             }
             ix++;
         }
-
+        drawView.setVisibility(View.VISIBLE);
+        textViewSlow.setVisibility(View.VISIBLE);
+        textViewFast.setVisibility(View.VISIBLE);
         polyline = mMap.addPolyline(new PolylineOptions().addAll(currentSegment).color(currentColor).jointType(JointType.ROUND).width(15.0f));
         createCheckerFlag(mPolylinePoints);
     }
@@ -609,6 +618,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     Bundle bundle = new Bundle();
                     bundle.putBoolean("StopButtonIsVisible", true);
                     getIntent().putExtras(bundle);
+
+                    textViewFast.setVisibility(View.INVISIBLE);
+                    textViewSlow.setVisibility(View.INVISIBLE);
+                    drawView.setVisibility(View.INVISIBLE);
                 }
             }, 500);// set time as per your requirement
         } else if(fabButton==R.id.fabStopRecording) {
