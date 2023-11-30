@@ -39,8 +39,7 @@ public class SettingsActivity extends BaseActivity {
     private EditText editTextNumberSignedMinimumDistanceMeter, editTextPerson;
     private Button buttonSave,
             buttonExport,
-            buttonDelete,
-            buttonDeleteSingleEntry;
+            buttonDelete;
     private String mapType, recordingProfil;
     private RadioButton radioButtonNormal,
             radioButtonHybrid,
@@ -182,9 +181,6 @@ public class SettingsActivity extends BaseActivity {
 
         buttonDelete = findViewById(R.id.buttonDelete);
         buttonDelete.setTransformationMethod(null);
-
-        buttonDeleteSingleEntry = findViewById(R.id.buttonDeleteSingleEntry);
-        buttonDeleteSingleEntry.setTransformationMethod(null);
 
         progressDialog = new ProgressDialog(SettingsActivity.this);
         progressDialog.setMessage("Exporting..."); // Setting Message
@@ -384,13 +380,11 @@ public class SettingsActivity extends BaseActivity {
         String buttonText = buttonDelete.getText().toString();
         if(buttonText.equals("Delete")) {
             createAlertDialog();
-        } else {
-            showAlertDialogForSelectingWhichEntryToDelete();  
         }
     }
     private void createAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.dialog_message) .setTitle(R.string.dialog_title);
+        builder.setMessage(R.string.dialog_message).setTitle(R.string.dialog_title);
 
         builder.setMessage(getResources().getString(R.string.do_you_want_to_delete_all_entries))
                 .setCancelable(false)

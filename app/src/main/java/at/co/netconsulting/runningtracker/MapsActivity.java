@@ -29,6 +29,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -479,6 +480,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private void showAlertDialogWithTracks() {
         DatabaseHandler db = new DatabaseHandler(this);
         List<Run> allEntries = db.getAllEntriesGroupedByRun();
+        int checkedItem = 0;
+        final int[] whichItemChecked = new int[1];
 
         if(mPolylinePoints.size()>0) {
             mPolylinePoints.clear();
@@ -498,10 +501,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapsActivity.this, android.R.layout.select_dialog_singlechoice);
         for(int i = 0; i<allEntries.size(); i++) {
             int count = db.countDataOfRun(allEntries.get(i).getNumber_of_run());
-            arrayAdapter.add(allEntries.get(i).getDateTime()
-                    + "\n" + count + " points to load");
+            arrayAdapter.add(allEntries.get(i).getNumber_of_run() + ": " + allEntries.get(i).getDateTime() + "\n"
+            + count + " points to load");
         }
-
         builderSingle.setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -509,10 +511,17 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             }
         });
 
-        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+        builderSingle.setSingleChoiceItems(arrayAdapter, checkedItem, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                int numberOfRun = allEntries.get(which).getNumber_of_run();
+                // user checked an item
+                whichItemChecked[0] = which;
+            }
+        });
+        builderSingle.setNeutralButton("Show", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                int numberOfRun = allEntries.get(whichItemChecked[0]).getNumber_of_run();
 
                 final LatLng[] latLng = new LatLng[1];
 
@@ -548,6 +557,17 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                         });
                     }
                 });
+            }
+        });
+        builderSingle.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String numberOfRun = arrayAdapter.getItem(whichItemChecked[0]);
+                String[] splittedString = numberOfRun.split(":");
+                int intNumberOfRun = Integer.parseInt(splittedString[0]);
+
+                db.deleteSingleEntry(intNumberOfRun);
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.single_entry_deleted), Toast.LENGTH_LONG).show();
             }
         });
         builderSingle.show();
