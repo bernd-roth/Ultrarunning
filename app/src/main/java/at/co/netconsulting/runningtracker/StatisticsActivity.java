@@ -55,8 +55,6 @@ public class StatisticsActivity extends AppCompatActivity {
         renderData();
         setData();
         setTextView();
-        //List<Long> groupedSectionList = calculateSections();
-        //showTableLayout(groupedSectionList);
     }
 
     private void callDatabaseForSpinner() {

@@ -9,8 +9,8 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* ForegroundService.java: useless code removed&#10;StatisticsActivity.java: data was not rendered correctly">
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: useless code removed">
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +110,10 @@
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;com.android.tools.idea.devicemanager.tab&quot;: &quot;Physical&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/projects/android/Ultrarunning/app/src/main/res/drawable&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;
+    &quot;project.structure.last.edited&quot;: &quot;Dependencies&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -219,27 +222,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00073" summary="* MapsActivity.java: Bundle implemented in onResume, onStop in order to display FloatingActionButton if necessary.">
-      <created>1691937011599</created>
-      <option name="number" value="00073" />
-      <option name="presentableId" value="LOCAL-00073" />
-      <option name="project" value="LOCAL" />
-      <updated>1691937011600</updated>
-    </task>
-    <task id="LOCAL-00074" summary="* DatabaseHandler.java: Cursor close fixed, addSampleRun data added&#10;* StatisticsActivity.java: implementation of achartengine because of faster rendering">
-      <created>1691960891713</created>
-      <option name="number" value="00074" />
-      <option name="presentableId" value="LOCAL-00074" />
-      <option name="project" value="LOCAL" />
-      <updated>1691960891713</updated>
-    </task>
-    <task id="LOCAL-00075" summary="* DatabaseHandler.java: adapting sample data&#10;* ForegroundService.java: broadcasting speed for displaying it in toolbar&#10;* MapsActivity.java: adding toolbar with overview of lat, lng, and speed">
-      <created>1692008628192</created>
-      <option name="number" value="00075" />
-      <option name="presentableId" value="LOCAL-00075" />
-      <option name="project" value="LOCAL" />
-      <updated>1692008628193</updated>
     </task>
     <task id="LOCAL-00076" summary="* ForegroundService.java: broadcasting distance and speed for showing it in toolbar">
       <created>1692026496366</created>
@@ -563,7 +545,28 @@
       <option name="project" value="LOCAL" />
       <updated>1701716815823</updated>
     </task>
-    <option name="localTasksCounter" value="122" />
+    <task id="LOCAL-00122" summary="* MapsActivity.java: useless code removed">
+      <created>1701716901543</created>
+      <option name="number" value="00122" />
+      <option name="presentableId" value="LOCAL-00122" />
+      <option name="project" value="LOCAL" />
+      <updated>1701716901543</updated>
+    </task>
+    <task id="LOCAL-00123" summary="* MapsActivity.java: useless code removed">
+      <created>1701716908127</created>
+      <option name="number" value="00123" />
+      <option name="presentableId" value="LOCAL-00123" />
+      <option name="project" value="LOCAL" />
+      <updated>1701716908127</updated>
+    </task>
+    <task id="LOCAL-00124" summary="* MapsActivity.java: useless code removed">
+      <created>1701717225737</created>
+      <option name="number" value="00124" />
+      <option name="presentableId" value="LOCAL-00124" />
+      <option name="project" value="LOCAL" />
+      <updated>1701717225737</updated>
+    </task>
+    <option name="localTasksCounter" value="125" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -579,8 +582,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="*" />
-    <MESSAGE value="* MapsActivity+DatabaseHandler: Extending AlertDialog if choosing which run to display&#10;* strings.xml: new strings added" />
     <MESSAGE value="* MapsActivity: moving to last location when drawing the recorded route" />
     <MESSAGE value="Merge remote-tracking branch 'origin/master'" />
     <MESSAGE value="* ForegroundService: Notification.Builder uses too much memory, deactivated&#10;* SharedPref: do not show live path covered&#10;* DatabaseHandler: lat/lng precision fixed" />
@@ -604,7 +605,9 @@
     <MESSAGE value="* MapsActivity.java: show and delete entries from alertdialog&#10;* SettingsActivity.java: choose single entry to delete removed and put into alertdialog of MapsActivity.java" />
     <MESSAGE value="* Removing Kalman-Filter&#10;* StatisticsActivity.java: Choose which run to display&#10;* DatabaseHandler.java: adding new method for retrieving data for StatisticsActivity.java&#10;* ForegroundService.java: Comment out whether seconds &gt;= 1" />
     <MESSAGE value="* ForegroundService.java: useless code removed&#10;StatisticsActivity.java: data was not rendered correctly" />
-    <option name="LAST_COMMIT_MESSAGE" value="* ForegroundService.java: useless code removed&#10;StatisticsActivity.java: data was not rendered correctly" />
+    <MESSAGE value="* achartengine.jar removed" />
+    <MESSAGE value="* MapsActivity.java: useless code removed" />
+    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: useless code removed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -618,11 +621,6 @@
           <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/pojo/LocationUpdateEvent.java</url>
           <line>14</line>
           <option name="timeStamp" value="621" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java</url>
-          <line>235</line>
-          <option name="timeStamp" value="650" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
