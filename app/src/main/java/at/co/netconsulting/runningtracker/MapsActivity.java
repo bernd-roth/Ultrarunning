@@ -76,7 +76,6 @@ import timber.log.Timber.DebugTree;
 public class MapsActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener {
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
-    //Polyline
     private Polyline polyline;
     private List<LatLng> mPolylinePoints;
     private boolean isDisableZoomCamera;
@@ -92,9 +91,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Marker marker;
     private Intent intent;
     private TextView textViewFast, textViewSlow;
-//    private DatabaseHandler db;
-//    private PopupMenu menu;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +107,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         loadSharedPreferences();
 
-        //initialize objects
         initObjects();
         permissionLauncherMultiple.launch(permissions);
         checkIfLocationIsEnabled();
