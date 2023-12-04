@@ -3,6 +3,7 @@ package at.co.netconsulting.runningtracker;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.POST_NOTIFICATIONS;
+
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -30,12 +31,10 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.ActivityCompat;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -319,7 +318,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         location_layout.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
         location_layout.addRule(RelativeLayout.ABOVE, zoom_layout.getId());
 
-        //Cross-hair is shown here, right upper corner
+        //Cross-hair is shown here, right lower corner
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -356,7 +355,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             //move to last location when drawing the route
             double lat = polylinePoints.get(polylinePoints.size()-1).latitude;
             double lon = polylinePoints.get(polylinePoints.size()-1).longitude;
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 16f));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 15f));
         }
     }
     @Override

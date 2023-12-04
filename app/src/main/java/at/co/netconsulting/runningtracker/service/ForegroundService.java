@@ -1,6 +1,7 @@
 package at.co.netconsulting.runningtracker.service;
 
 import static android.location.LocationManager.GPS_PROVIDER;
+
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -27,6 +28,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import com.google.android.gms.maps.model.LatLng;
 import org.greenrobot.eventbus.EventBus;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -71,6 +74,7 @@ public class ForegroundService extends Service implements LocationListener {
     protected WatchDogRunner mWatchdogRunner;
     protected Thread mWatchdogThread = null;
     private Location mLocation;
+    Instant starts, ends;
 
     @Override
     public void onCreate() {
@@ -304,18 +308,10 @@ public class ForegroundService extends Service implements LocationListener {
         @Override
         public void run() {
             running = true;
+            starts = Instant.now();
+
             try {
                 while (running) {
-                    seconds += 1;
-                    if (seconds == 60) {
-                        minutes += 1;
-                        seconds = 0;
-                        if (minutes == 60) {
-                            hours += 1;
-                            minutes = 0;
-                        }
-                    }
-                    updateNotification(hours, minutes, seconds);
                     if(mLocation!=null) {
                         hasEnoughTimePassed = hasEnoughTimePassed();
                         if(hasEnoughTimePassed) {
@@ -325,12 +321,37 @@ public class ForegroundService extends Service implements LocationListener {
                             hasEnoughTimePassed = false;
                         }
                     }
-                    Thread.sleep(1000);
+
+                    ends = Instant.now();
+                    Duration diffBetweenStartEnd = Duration.between(starts, ends);
+
+                    long secl = diffBetweenStartEnd.getSeconds();
+                    seconds = Math.toIntExact(Long.valueOf(secl));
+
+                    if (seconds == 60) {
+                        minutes += 1;
+                        seconds = 0;
+                        if (minutes == 60) {
+                            hours += 1;
+                            minutes = 0;
+                            seconds = 0;
+                        }
+                        starts = Instant.now();
+                    }
+
+                    updateNotification(hours, minutes, seconds);
+                    Thread.sleep(100);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+
+        private int getExactStopWatch(Instant starts) {
+
+            return seconds;
+        }
+
         public void stop() {
             running = false;
         }
