@@ -7,7 +7,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,18 +25,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-
 import com.google.android.gms.maps.model.LatLng;
-
 import org.greenrobot.eventbus.EventBus;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
-
 import at.co.netconsulting.runningtracker.MapsActivity;
 import at.co.netconsulting.runningtracker.R;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
@@ -49,7 +44,7 @@ import at.co.netconsulting.runningtracker.pojo.Run;
 public class ForegroundService extends Service implements LocationListener {
     private static final int NOTIFICATION_ID = 1;
     private String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.parkingticket",
-            person, bundlePause, formattedDateTime;
+            person;
     private Notification notification;
     private NotificationCompat.Builder notificationBuilder;
     private NotificationManager manager;
@@ -69,8 +64,6 @@ public class ForegroundService extends Service implements LocationListener {
     private boolean isFirstEntry, hasEnoughTimePassed;
     private int laps, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
     private float lapCounter, coveredDistance, accuracy, currentSpeed;
-    private Intent intent;
-    private Bundle bundle;
     private String notificationService;
     private NotificationManager nMgr;
     private NotificationChannel serviceChannel;
@@ -130,14 +123,11 @@ public class ForegroundService extends Service implements LocationListener {
         laps=0;
         lapCounter=0;
         db = new DatabaseHandler(this);
-        intent=new Intent();
-        bundle = new Bundle();
         locationManager = getLocationManager();
     }
     private void saveToDatabase(double latitude, double longitude) {
         //format date and time
         dateObj = LocalDateTime.now();
-        formattedDateTime = dateObj.format(formatDateTime);
         currentMilliseconds = System.currentTimeMillis();
 
         run.setDateTime(dateObj.format(formatDateTime));
@@ -364,30 +354,28 @@ public class ForegroundService extends Service implements LocationListener {
         accuracy = mLocation.getAccuracy();
         currentSpeed = (mLocation.getSpeed() / 1000) * 3600;
 
-        if(bundlePause==null) {
-            if(minDistanceMeter==1 && minTimeMs==1) {
-                //currentSeconds must be checked because requestLocationUpdates is not always exactly 1 second
-                //so it might lead to almost doubled entries in database
-//                if ((currentMilliseconds != oldCurrentMilliseconds) && (currentSeconds>=StaticFields.TIME_INTERVAL)) {
+        if(minDistanceMeter==1 && minTimeMs==1) {
+            //currentSeconds must be checked because requestLocationUpdates is not always exactly 1 second
+            //so it might lead to almost doubled entries in database
+            if ((currentMilliseconds != oldCurrentMilliseconds) && (currentSeconds>=StaticFields.TIME_INTERVAL)) {
 //                    if(currentSpeed>0) {
-                        if (isFirstEntry) {
-                            isFirstEntry = false;
-                        } else {
-                            result[0] = calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
-                            calculateLaps(result[0]);
-                            oldLatitude = currentLatitude;
-                            oldLongitude = currentLongitude;
-                            return hasEnoughTimePassed = true;
-                        }
-                        oldCurrentMilliseconds = currentMilliseconds;
-//                    }
-//                }
-            } else {
-                calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
-                oldLatitude = currentLatitude;
-                oldLongitude = currentLongitude;
-                return hasEnoughTimePassed = true;
+                    if (isFirstEntry) {
+                        isFirstEntry = false;
+                    } else {
+                        result[0] = calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
+                        calculateLaps(result[0]);
+                        oldLatitude = currentLatitude;
+                        oldLongitude = currentLongitude;
+                        return hasEnoughTimePassed = true;
+                    }
+                    oldCurrentMilliseconds = currentMilliseconds;
+//                   }
             }
+        } else {
+            calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
+            oldLatitude = currentLatitude;
+            oldLongitude = currentLongitude;
+            return hasEnoughTimePassed = true;
         }
         return false;
     }

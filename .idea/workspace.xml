@@ -9,18 +9,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: show and delete entries from alertdialog&#10;* SettingsActivity.java: choose single entry to delete removed and put into alertdialog of MapsActivity.java">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* Removing Kalman-Filter&#10;* StatisticsActivity.java: Choose which run to display&#10;* DatabaseHandler.java: adding new method for retrieving data for StatisticsActivity.java&#10;* ForegroundService.java: Comment out whether seconds &gt;= 1">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/calculation/BusProvider.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/calculation/Exporter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/calculation/GPSDataFactory.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/calculation/GPSSingleData.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/calculation/Importer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/calculation/KalmanFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -228,13 +220,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00071" summary="* ForegroundService.java: Lap counter fixed in Notification again&#10;* StatisticsActivity.java: wrong physical unit when displaying avgSpeed">
-      <created>1691768962773</created>
-      <option name="number" value="00071" />
-      <option name="presentableId" value="LOCAL-00071" />
-      <option name="project" value="LOCAL" />
-      <updated>1691768962781</updated>
     </task>
     <task id="LOCAL-00072" summary="* DatabaseHandler.java: cursor null handling implemented when calling getSingleEntry(int lastEntry)">
       <created>1691780777829</created>
@@ -572,7 +557,14 @@
       <option name="project" value="LOCAL" />
       <updated>1701346300108</updated>
     </task>
-    <option name="localTasksCounter" value="120" />
+    <task id="LOCAL-00120" summary="* Removing Kalman-Filter&#10;* StatisticsActivity.java: Choose which run to display&#10;* DatabaseHandler.java: adding new method for retrieving data for StatisticsActivity.java&#10;* ForegroundService.java: Comment out whether seconds &gt;= 1">
+      <created>1701693314764</created>
+      <option name="number" value="00120" />
+      <option name="presentableId" value="LOCAL-00120" />
+      <option name="project" value="LOCAL" />
+      <updated>1701693314764</updated>
+    </task>
+    <option name="localTasksCounter" value="121" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -588,7 +580,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* SettingsActivity: AlertDialog if deleting entire database" />
     <MESSAGE value="* MapsActivity + ForegroundService: rewrote showing path which was covered; led too low-memory if too many points were shown" />
     <MESSAGE value="*" />
     <MESSAGE value="* MapsActivity+DatabaseHandler: Extending AlertDialog if choosing which run to display&#10;* strings.xml: new strings added" />
@@ -613,7 +604,8 @@
     <MESSAGE value="* strings.xml: app_name accidentally deleted" />
     <MESSAGE value="* MapsActivity.java: scale for fast and slow is displayed only if recorded track is selected" />
     <MESSAGE value="* MapsActivity.java: show and delete entries from alertdialog&#10;* SettingsActivity.java: choose single entry to delete removed and put into alertdialog of MapsActivity.java" />
-    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: show and delete entries from alertdialog&#10;* SettingsActivity.java: choose single entry to delete removed and put into alertdialog of MapsActivity.java" />
+    <MESSAGE value="* Removing Kalman-Filter&#10;* StatisticsActivity.java: Choose which run to display&#10;* DatabaseHandler.java: adding new method for retrieving data for StatisticsActivity.java&#10;* ForegroundService.java: Comment out whether seconds &gt;= 1" />
+    <option name="LAST_COMMIT_MESSAGE" value="* Removing Kalman-Filter&#10;* StatisticsActivity.java: Choose which run to display&#10;* DatabaseHandler.java: adding new method for retrieving data for StatisticsActivity.java&#10;* ForegroundService.java: Comment out whether seconds &gt;= 1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -629,14 +621,9 @@
           <option name="timeStamp" value="621" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>566</line>
-          <option name="timeStamp" value="630" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java</url>
-          <line>568</line>
-          <option name="timeStamp" value="631" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java</url>
+          <line>235</line>
+          <option name="timeStamp" value="650" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

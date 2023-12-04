@@ -177,6 +177,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 listOfRun = db.getSingleEntryForStatistics(intNumberOfRun);
 
                 calcAvgSpeedMaxSpeedTotalDistance();
+                renderData();
                 setData();
                 setTextView();
                 List<Long> groupedSectionList = calculateSections();
