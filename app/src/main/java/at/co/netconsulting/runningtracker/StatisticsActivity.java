@@ -4,6 +4,11 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -33,21 +38,38 @@ public class StatisticsActivity extends AppCompatActivity {
     private float maxSpeed, avgSpeed, totalDistance;
     private List<Float> listSpeed;
     private TableLayout tableSection, tableHeader;
+    private TextView txtGeneric;
+    private TableRow tr;
     private long HH, MM, SS;
+    private Spinner spinnerRunChoose;
+    private LinearLayout linearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
         initializeObjects();
+        callDatabaseForSpinner();
         callDatabase();
         calcAvgSpeedMaxSpeedTotalDistance();
         renderData();
         setData();
         setTextView();
-        List<Long> groupedSectionList = calculateSections();
-        showTableLayout(groupedSectionList);
+        //List<Long> groupedSectionList = calculateSections();
+        //showTableLayout(groupedSectionList);
     }
+
+    private void callDatabaseForSpinner() {
+        ArrayList parsedToStringRun = new ArrayList<String>();
+
+        for(Run run : db.getAllEntriesOrderedByDate()) {
+            parsedToStringRun.add(run.getNumber_of_run() + ":" + run.getDateTime());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, parsedToStringRun);
+        spinnerRunChoose.setAdapter(adapter);
+    }
+
     private List<Long> calculateSections() {
         double lap, oldLap = 0;
         List<Long> groupedList = new ArrayList<>();
@@ -81,23 +103,30 @@ public class StatisticsActivity extends AppCompatActivity {
 
         //Header
         for(int i = 0; i < 1; i++) {
-            TableRow tr = new TableRow(this);
+            tr = new TableRow(this);
             for (int j = 0; j < colums; j++) {
-                TextView txtGeneric = new TextView(this);
-                txtGeneric.setTextSize(18);
+                if(txtGeneric==null) {
+                    txtGeneric = new TextView(this);
+                    txtGeneric.setTextSize(18);
 
-                txtGeneric.setText("\t\t\t\t" + getResources().getString(R.string.lap) + "\t\t\t\t\t\t\t\t\t" + getResources().getString(R.string.time));
-                txtGeneric.setBackgroundColor(Color.LTGRAY);
-                tr.addView(txtGeneric);
+                    txtGeneric.setText("\t\t\t\t" + getResources().getString(R.string.lap) + "\t\t\t\t\t\t\t\t\t" + getResources().getString(R.string.time));
+                    txtGeneric.setBackgroundColor(Color.LTGRAY);
+                    tr.addView(txtGeneric);
+                }
             }
             tableHeader.addView(tr);
         }
 
+        // remove previous tablelayout if necessary
+        if(tableSection.getChildCount()>0) {
+            tableSection.removeViews(0, Math.max(0, tableSection.getChildCount()));
+        }
+
         //Content of rows
         for(int i = 0; i < rows; i++){
-            TableRow tr =  new TableRow(this);
+            tr =  new TableRow(this);
             for(int j = 0; j < colums; j++) {
-                TextView txtGeneric = new TextView(this);
+                txtGeneric = new TextView(this);
                 txtGeneric.setTextSize(18);
 
                 HH = TimeUnit.MILLISECONDS.toHours(groupedSectionList.get(i));
@@ -136,6 +165,33 @@ public class StatisticsActivity extends AppCompatActivity {
 
         listOfRun = new ArrayList<>();
         listSpeed = new ArrayList<>();
+
+        spinnerRunChoose = findViewById(R.id.spinner);
+        spinnerRunChoose.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String numberOfRun = spinnerRunChoose.getSelectedItem().toString();
+                String[] splittedString = numberOfRun.split(":");
+                int intNumberOfRun = Integer.parseInt(splittedString[0]);
+
+                listOfRun.clear();
+                listOfRun = db.getSingleEntryForStatistics(intNumberOfRun);
+
+                calcAvgSpeedMaxSpeedTotalDistance();
+                setData();
+                setTextView();
+                List<Long> groupedSectionList = calculateSections();
+                showTableLayout(groupedSectionList);
+                mChart.notifyDataSetChanged();
+                mChart.invalidate();
+            }
+
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
+
+        linearLayout = findViewById(R.id.ll);
+
         db = new DatabaseHandler(this);
     }
 

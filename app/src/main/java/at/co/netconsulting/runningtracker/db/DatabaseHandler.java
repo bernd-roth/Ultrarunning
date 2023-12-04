@@ -217,6 +217,36 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //        cursor.close();
 //        return allEntryList;
 //    }
+    public List<Run> getAllEntriesOrderedByDate() {
+        List<Run> allEntryList = new ArrayList<Run>();
+
+        // Select All Query
+        String selectQuery = "SELECT "
+                + KEY_NUMBER_OF_RUN + ", "
+                + KEY_DATE_TIME
+                + " FROM " + TABLE_RUNS + " GROUP BY "
+                + KEY_NUMBER_OF_RUN + " ORDER BY "
+                + KEY_DATE_TIME + " DESC";
+
+        List<Run> runs = new ArrayList<Run>();
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Run run = new Run();
+
+                run.setNumber_of_run(cursor.getInt(0));
+                run.setDateTime(cursor.getString(1));
+
+                runs.add(run);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return runs;
+    }
     public List<Run> getSingleEntryOrderedByDateTime(int numberOfRun) {
         List<Run> allEntryList = new ArrayList<Run>();
 
@@ -237,7 +267,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setLat(cursor.getDouble(0));
                 run.setLng(cursor.getDouble(1));
                 run.setSpeed(cursor.getFloat(2));
-                // Adding contact to list
                 allEntryList.add(run);
             } while (cursor.moveToNext());
         }
@@ -259,36 +288,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
 
         return count;
-    }
-    public List<Run> getEntriesForKalmanFilter() {
-        List<Run> kalmanFilterList = new ArrayList<Run>();
-        // Select All Query
-        String selectQuery = "SELECT"
-                + " id,"
-                + " lat,"
-                + " lng,"
-                + " speed,"
-                + " date_time_ms"
-                + " FROM " + TABLE_RUNS
-                + " WHERE number_of_run = (SELECT MAX(number_of_run) FROM " + TABLE_RUNS + ")";
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                Run run = new Run();
-                run.setId(Integer.parseInt(cursor.getString(0)));
-                run.setLat(cursor.getDouble(1));
-                run.setLng(cursor.getDouble(2));
-                run.setSpeed(cursor.getFloat(3));
-                run.setDateTimeInMs(cursor.getInt(4));
-                // Adding contact to list
-                kalmanFilterList.add(run);
-            } while (cursor.moveToNext());
-        }
-        return kalmanFilterList;
     }
     public void delete() {
         SQLiteDatabase db = this.getWritableDatabase();

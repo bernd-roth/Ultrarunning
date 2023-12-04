@@ -9,11 +9,18 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: scale for fast and slow is displayed only if recorded track is selected">
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: show and delete entries from alertdialog&#10;* SettingsActivity.java: choose single entry to delete removed and put into alertdialog of MapsActivity.java">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/SettingsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/calculation/BusProvider.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/calculation/Exporter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/calculation/GPSDataFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/calculation/GPSSingleData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/calculation/Importer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/calculation/KalmanFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/db/DatabaseHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_statistics.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -221,13 +228,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00070" summary="* ForegroundService.java: Lap counter fixed in Notificaiton, wrong variable used; wrong variable type used for lapCounter">
-      <created>1691730359576</created>
-      <option name="number" value="00070" />
-      <option name="presentableId" value="LOCAL-00070" />
-      <option name="project" value="LOCAL" />
-      <updated>1691730359577</updated>
     </task>
     <task id="LOCAL-00071" summary="* ForegroundService.java: Lap counter fixed in Notification again&#10;* StatisticsActivity.java: wrong physical unit when displaying avgSpeed">
       <created>1691768962773</created>
@@ -565,7 +565,14 @@
       <option name="project" value="LOCAL" />
       <updated>1701343490587</updated>
     </task>
-    <option name="localTasksCounter" value="119" />
+    <task id="LOCAL-00119" summary="* MapsActivity.java: show and delete entries from alertdialog&#10;* SettingsActivity.java: choose single entry to delete removed and put into alertdialog of MapsActivity.java">
+      <created>1701346300108</created>
+      <option name="number" value="00119" />
+      <option name="presentableId" value="LOCAL-00119" />
+      <option name="project" value="LOCAL" />
+      <updated>1701346300108</updated>
+    </task>
+    <option name="localTasksCounter" value="120" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -581,7 +588,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="* Removing Kalmanfilter" />
     <MESSAGE value="* SettingsActivity: AlertDialog if deleting entire database" />
     <MESSAGE value="* MapsActivity + ForegroundService: rewrote showing path which was covered; led too low-memory if too many points were shown" />
     <MESSAGE value="*" />
@@ -606,7 +612,8 @@
     <MESSAGE value="* MapsActivity.java: prepared possible popupmenu for displaying tracks&#10;* DatabaseHandler.java: retrieving chosen track from popupmenu" />
     <MESSAGE value="* strings.xml: app_name accidentally deleted" />
     <MESSAGE value="* MapsActivity.java: scale for fast and slow is displayed only if recorded track is selected" />
-    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: scale for fast and slow is displayed only if recorded track is selected" />
+    <MESSAGE value="* MapsActivity.java: show and delete entries from alertdialog&#10;* SettingsActivity.java: choose single entry to delete removed and put into alertdialog of MapsActivity.java" />
+    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: show and delete entries from alertdialog&#10;* SettingsActivity.java: choose single entry to delete removed and put into alertdialog of MapsActivity.java" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

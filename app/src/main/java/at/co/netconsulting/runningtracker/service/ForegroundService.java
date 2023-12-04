@@ -368,7 +368,7 @@ public class ForegroundService extends Service implements LocationListener {
             if(minDistanceMeter==1 && minTimeMs==1) {
                 //currentSeconds must be checked because requestLocationUpdates is not always exactly 1 second
                 //so it might lead to almost doubled entries in database
-                if ((currentMilliseconds != oldCurrentMilliseconds) && (currentSeconds>=StaticFields.TIME_INTERVAL)) {
+//                if ((currentMilliseconds != oldCurrentMilliseconds) && (currentSeconds>=StaticFields.TIME_INTERVAL)) {
 //                    if(currentSpeed>0) {
                         if (isFirstEntry) {
                             isFirstEntry = false;
@@ -380,7 +380,7 @@ public class ForegroundService extends Service implements LocationListener {
                             return hasEnoughTimePassed = true;
                         }
                         oldCurrentMilliseconds = currentMilliseconds;
-                    }
+//                    }
 //                }
             } else {
                 calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);
