@@ -9,10 +9,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: useless code removed">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/MapsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/service/ForegroundService.java" afterDir="false" />
+    <list default="true" id="ccf8aca0-7ef2-47e5-b72a-c47758abba67" name="Changes" comment="* MapsActivity.java: minor change to zoom&#10;* ForegroundService.java: stopwatch changed to Instant class for a more exact stopwatch">
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/at/co/netconsulting/runningtracker/StatisticsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,7 +75,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitSEFilterConfiguration">
     <file-type-list>
@@ -224,13 +222,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676955582282</updated>
-    </task>
-    <task id="LOCAL-00077" summary="* MapsActivity.java: receiving distance and speed in broadcast for displaying it in toolbar">
-      <created>1692026551245</created>
-      <option name="number" value="00077" />
-      <option name="presentableId" value="LOCAL-00077" />
-      <option name="project" value="LOCAL" />
-      <updated>1692026551246</updated>
     </task>
     <task id="LOCAL-00078" summary="* StatisticsActivity.java: label textsize, zoomButton visibility, and filling points implemented">
       <created>1692026623930</created>
@@ -568,7 +559,14 @@
       <option name="project" value="LOCAL" />
       <updated>1701717369393</updated>
     </task>
-    <option name="localTasksCounter" value="126" />
+    <task id="LOCAL-00126" summary="* MapsActivity.java: minor change to zoom&#10;* ForegroundService.java: stopwatch changed to Instant class for a more exact stopwatch">
+      <created>1701858015094</created>
+      <option name="number" value="00126" />
+      <option name="presentableId" value="LOCAL-00126" />
+      <option name="project" value="LOCAL" />
+      <updated>1701858015095</updated>
+    </task>
+    <option name="localTasksCounter" value="127" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -584,7 +582,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Merge remote-tracking branch 'origin/master'" />
     <MESSAGE value="* ForegroundService: Notification.Builder uses too much memory, deactivated&#10;* SharedPref: do not show live path covered&#10;* DatabaseHandler: lat/lng precision fixed" />
     <MESSAGE value="* MapsActivity: removed unnecessary code because of memory leaks&#10;* ForegroundService: Implemented a thread for notifications" />
     <MESSAGE value="* Implementing Eventbus, Watchdog to publish Notifications&#10;* Removing unnecessary code" />
@@ -609,7 +606,8 @@
     <MESSAGE value="* achartengine.jar removed" />
     <MESSAGE value="* StatisticsActivity.java: useless code removed" />
     <MESSAGE value="* MapsActivity.java: useless code removed" />
-    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: useless code removed" />
+    <MESSAGE value="* MapsActivity.java: minor change to zoom&#10;* ForegroundService.java: stopwatch changed to Instant class for a more exact stopwatch" />
+    <option name="LAST_COMMIT_MESSAGE" value="* MapsActivity.java: minor change to zoom&#10;* ForegroundService.java: stopwatch changed to Instant class for a more exact stopwatch" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

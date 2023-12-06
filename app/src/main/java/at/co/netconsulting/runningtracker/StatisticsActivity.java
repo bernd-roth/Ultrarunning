@@ -264,7 +264,7 @@ public class StatisticsActivity extends AppCompatActivity {
             mChart.getData().notifyDataChanged();
             mChart.notifyDataSetChanged();
         } else {
-            set1 = new LineDataSet(values, getString(R.string.time_velocity));
+            set1 = new LineDataSet(values, getString(R.string.distance_velocity));
             set1.setDrawIcons(false);
             set1.enableDashedLine(10f, 5f, 0f);
             set1.enableDashedHighlightLine(10f, 5f, 0f);
