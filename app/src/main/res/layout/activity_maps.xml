@@ -15,16 +15,21 @@
         android:layout_gravity="center"
         android:layout_height="match_parent" />
 
-<!--    <android.widget.Toolbar-->
-<!--        android:id="@+id/toolbar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:background="@drawable/toolbar_bg"-->
-<!--        android:navigationIcon="@drawable/ic_menu"-->
-<!--        android:gravity="left"-->
-<!--        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"-->
-<!--        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">-->
-<!--    </android.widget.Toolbar>-->
+    <com.github.pengrad.mapscaleview.MapScaleView
+        android:id="@+id/scaleView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginEnd="181dp"
+        android:layout_marginBottom="90dp"
+        app:scale_color="#009"
+        app:scale_expandRtl="true"
+        app:scale_maxWidth="100dp"
+        app:scale_outline="true"
+        app:scale_strokeWidth="3dp"
+        app:scale_textSize="20sp" />
 
     <TextView
         android:id="@+id/textViewSlow"

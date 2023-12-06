@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.fonts.Font;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,6 +37,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+
+import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -43,6 +46,7 @@ import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -72,7 +76,7 @@ import at.co.netconsulting.runningtracker.view.DrawView;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
-public class MapsActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener {
+public class MapsActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraIdleListener {
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     private Polyline polyline;
@@ -90,6 +94,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Marker marker;
     private Intent intent;
     private TextView textViewFast, textViewSlow;
+    private MapScaleView scaleView;
+    private CameraPosition camPos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,6 +226,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         textViewFast.setVisibility(View.INVISIBLE);
         textViewSlow = findViewById(R.id.textViewSlow);
         textViewSlow.setVisibility(View.INVISIBLE);
+        scaleView = findViewById(R.id.scaleView);
+        scaleView.metersOnly();
 //        Toolbar toolbar = findViewById(R.id.toolbar);
 //        setActionBar(toolbar);
 //        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -297,8 +305,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         else
             mMap.setMapType(mMap.MAP_TYPE_NORMAL);
 
-        //createListenerAndfillPolyPoints(0, 0);
-
         // Get map views
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().
                 findFragmentById(R.id.map);
@@ -327,14 +333,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         mMap.setPadding(0,0,0,90);
         mMap.getUiSettings().setMapToolbarEnabled(true);
         mMap.setTrafficEnabled(true);
+        camPos = mMap.getCameraPosition();
+        scaleView.update(camPos.zoom, camPos.target.latitude);
         mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
             @Override
             public void onCameraMoveStarted(int reason) {
                 int mCameraMoveReason = reason;
-                if (mCameraMoveReason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
-                    mMap.stopAnimation();
-                } else if(mCameraMoveReason == GoogleMap.OnCameraMoveStartedListener.REASON_API_ANIMATION) {
-                }
+                scaleView.update(camPos.zoom, camPos.target.latitude);
             }
         });
     }
@@ -397,6 +402,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     @Override
     public void onCameraMove() {
         isDisableZoomCamera=false;
+        camPos = mMap.getCameraPosition();
+        scaleView.update(camPos.zoom, camPos.target.latitude);
     }
 
     @Override
@@ -687,5 +694,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     public void onMessageEvent(LocationChangeEvent event) {
         List<LatLng> mPolylinePoints = event.latLngs;
         createPolypoints(mPolylinePoints);
+    }
+
+    @Override
+    public void onCameraIdle() {
+        camPos = mMap.getCameraPosition();
+        scaleView.update(camPos.zoom, camPos.target.latitude);
     }
 }
