@@ -225,32 +225,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         textViewSlow.setVisibility(View.INVISIBLE);
         scaleView = findViewById(R.id.scaleView);
         scaleView.metersOnly();
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setActionBar(toolbar);
-//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-//             @Override
-//             public void onClick(View view) {
-//                 menu = new PopupMenu(MapsActivity.this, view);
-//                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//                     @Override
-//                     public boolean onMenuItemClick(MenuItem item) {
-//                         String menuItem = item.getTitle().toString();
-//                         String[] sId = menuItem.split(" ");
-//
-//                         int id = Integer.parseInt(sId[0]);
-//                         List<Run> singleRun = db.getLatLngForSingleRun(id);
-//
-//                         return false;
-//                     }
-//                 });
-//                 List<Run> listOfRun = db.getAllEntriesGroupedByRun();
-//
-//                 for (Run run : listOfRun) { // "limits" its an arraylist
-//                     menu.getMenu().add(run.getNumber_of_run() + " " + run.getDateTime());
-//                 }
-//                 menu.show();
-//             }
-//         });
 
         mPolylinePoints = new ArrayList<>();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
