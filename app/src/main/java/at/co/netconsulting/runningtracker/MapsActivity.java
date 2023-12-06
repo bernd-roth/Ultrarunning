@@ -77,7 +77,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     private Polyline polyline;
-    private List<LatLng> mPolylinePoints;
+    private List<LatLng> mPolylinePoints, mPolylinePointsTemp;
     private boolean isDisableZoomCamera;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks;
     private String mapType;
@@ -227,6 +227,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         scaleView.metersOnly();
 
         mPolylinePoints = new ArrayList<>();
+        mPolylinePointsTemp= new ArrayList<>();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         isDisableZoomCamera = true;
@@ -399,7 +400,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
                 fadingButtons(R.id.fabStopRecording);
 
-                createCheckerFlag(mPolylinePoints);
+                createCheckerFlag(mPolylinePointsTemp);
                 showAlertDialogWithComment();
                 startingPoint=true;
                 break;
@@ -417,7 +418,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     }
 
     private void showAlertDialogWithComment() {
-        if(mPolylinePoints.size()>0) {
+        if(mPolylinePointsTemp.size()>0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
             final EditText edittext = new EditText(getApplicationContext());
             builder.setMessage(getResources().getString(R.string.please_comment_your_run));
@@ -664,6 +665,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(LocationChangeEvent event) {
         List<LatLng> mPolylinePoints = event.latLngs;
+        mPolylinePointsTemp = mPolylinePoints;
         createPolypoints(mPolylinePoints);
     }
 
