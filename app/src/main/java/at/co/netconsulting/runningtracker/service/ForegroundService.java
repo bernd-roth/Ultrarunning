@@ -1,7 +1,6 @@
 package at.co.netconsulting.runningtracker.service;
 
 import static android.location.LocationManager.GPS_PROVIDER;
-
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
