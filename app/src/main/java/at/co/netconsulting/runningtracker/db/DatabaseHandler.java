@@ -141,7 +141,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setLaps(cursor.getInt(9));
                 run.setAltitude(cursor.getDouble(10));
                 run.setPerson(cursor.getString(11));
-                // Adding contact to list
                 allEntryList.add(run);
             } while (cursor.moveToNext());
         }
@@ -185,7 +184,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setLaps(cursor.getInt(9));
                 run.setAltitude(cursor.getDouble(10));
                 run.setPerson(cursor.getString(11));
-                // Adding contact to list
                 allEntryList.add(run);
             } while (cursor.moveToNext());
         }
@@ -210,7 +208,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //                Run run = new Run();
 //                run.setLat(cursor.getDouble(0));
 //                run.setLng(cursor.getDouble(1));
-//                // Adding contact to list
 //                allEntryList.add(run);
 //            } while (cursor.moveToNext());
 //        }
