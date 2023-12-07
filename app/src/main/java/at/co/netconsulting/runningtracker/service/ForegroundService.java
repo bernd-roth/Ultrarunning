@@ -45,7 +45,7 @@ import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class ForegroundService extends Service implements LocationListener {
     private static final int NOTIFICATION_ID = 1;
-    private String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.parkingticket",
+    private String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.runningtracker",
             person;
     private Notification notification;
     private NotificationCompat.Builder notificationBuilder;
@@ -401,15 +401,11 @@ public class ForegroundService extends Service implements LocationListener {
     }
     private void updateNotification(int hours, int minutes, int seconds) {
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle("Still trying to gather information!")
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText("Distance covered: 0.00 Km"
-                                + "\nCurrent speed: 0 Km/h"
-                                + "\nNumber of satellites: 0/" + satelliteCount
-                                + "\nLocation accuracy: 0 Meter"
-                                + "\nAltitude: 0 Meter"
-                                + "\nLaps: " + String.format("%03d", laps)
-                                + "\nTime: " + String.format("%02d:%02d:%02d", hours, minutes, seconds)))
+                .setContentTitle(String.format("%02d:%02d:%02d", hours, minutes, seconds))
+                .setContentText("D: " + String.format("%.2f Km", coveredDistance / 1000)
+                        + " P: " + String.format("%.2f Km/h", currentSpeed)
+                        + " S: " + numberOfsatellitesInUse + "/" + satelliteCount
+                        + " Alt: " + String.format("%.2f Meter", altitude))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
@@ -422,14 +418,11 @@ public class ForegroundService extends Service implements LocationListener {
         notification = notificationBuilder.build();
 
         manager.notify(NOTIFICATION_ID, notificationBuilder
-                .setContentTitle("Distance covered: " + String.format("%.2f Km", coveredDistance / 1000))
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText("Current speed: " + String.format("%.2f Km/h", currentSpeed)
-                                + "\nNumber of satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
-                                + "\nLocation accuracy: " + String.format("%.2f Meter", accuracy)
-                                + "\nAltitude: " + String.format("%.2f Meter", altitude)
-                                + "\nLaps: " + String.format("%03d", laps)
-                                + "\nTime: " + String.format("%02d:%02d:%02d", hours, minutes, seconds)))
+                .setContentTitle(String.format("%02d:%02d:%02d", hours, minutes, seconds))
+                .setContentText("D: " + String.format("%.2f Km", coveredDistance / 1000)
+                                + " P: " + String.format("%.2f Km/h", currentSpeed)
+                                + " S: " + numberOfsatellitesInUse + "/" + satelliteCount
+                                + " Alt: " + String.format("%.2f Meter", altitude))
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_notification))
                 .build());
     }
