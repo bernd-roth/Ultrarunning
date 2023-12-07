@@ -60,7 +60,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private void callDatabaseForSpinner() {
         ArrayList parsedToStringRun = new ArrayList<String>();
 
-        for(Run run : db.getAllEntriesOrderedByDate()) {
+        for(Run run : db.getAllEntriesOrderedByRunNumber()) {
             parsedToStringRun.add(run.getNumber_of_run() + ":" + run.getDateTime());
         }
 

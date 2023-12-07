@@ -217,7 +217,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //        cursor.close();
 //        return allEntryList;
 //    }
-    public List<Run> getAllEntriesOrderedByDate() {
+    public List<Run> getAllEntriesOrderedByRunNumber() {
         List<Run> allEntryList = new ArrayList<Run>();
 
         // Select All Query
@@ -226,7 +226,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_DATE_TIME
                 + " FROM " + TABLE_RUNS + " GROUP BY "
                 + KEY_NUMBER_OF_RUN + " ORDER BY "
-                + KEY_DATE_TIME + " DESC";
+                + KEY_NUMBER_OF_RUN + " DESC";
 
         List<Run> runs = new ArrayList<Run>();
 
