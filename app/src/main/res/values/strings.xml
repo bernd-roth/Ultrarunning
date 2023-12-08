@@ -100,4 +100,5 @@
     <string name="gather_information">Still trying to gather information!</string>
     <string name="battery_optimization">Turn off battery optimization</string>
     <string name="please_comment_your_run">Please, comment your run!</string>
+    <string name="buttonWithoutColoring">Without coloring</string>
 </resources>

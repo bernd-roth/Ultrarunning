@@ -26,7 +26,7 @@
         android:layout_marginBottom="90dp"
         app:scale_color="#009"
         app:scale_expandRtl="true"
-        app:scale_maxWidth="100dp"
+        app:scale_maxWidth="150dp"
         app:scale_outline="true"
         app:scale_strokeWidth="3dp"
         app:scale_textSize="20sp" />

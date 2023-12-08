@@ -469,7 +469,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         builderSingle.setIcon(R.drawable.icon_notification);
 
         // prevents closing alertdialog when clicking outside of it
-        builderSingle.setCancelable(false);
+        builderSingle.setCancelable(true);
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapsActivity.this, android.R.layout.select_dialog_singlechoice);
         for(int i = 0; i<allEntries.size(); i++) {
@@ -477,10 +477,42 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             arrayAdapter.add(allEntries.get(i).getNumber_of_run() + ": " + allEntries.get(i).getDateTime() + "\n"
             + count + " points to load");
         }
-        builderSingle.setNegativeButton(getResources().getString(R.string.buttonCancel), new DialogInterface.OnClickListener() {
+        builderSingle.setNegativeButton(getResources().getString(R.string.buttonWithoutColoring), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+                int numberOfRun = allEntries.get(whichItemChecked[0]).getNumber_of_run();
+
+                final LatLng[] latLng = new LatLng[1];
+
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Handler handler = new Handler(Looper.getMainLooper());
+
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Background work here
+                        List<Run> allEntries = db.getSingleEntryOrderedByDateTime(numberOfRun);
+                        for(int i = 0; i < allEntries.size(); i++) {
+                            latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
+                            mPolylinePoints.add(latLng[0]);
+                        }
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                //UI Thread work here
+                                mMap.clear();
+                                drawView.setVisibility(View.INVISIBLE);
+                                textViewSlow.setVisibility(View.INVISIBLE);
+                                textViewFast.setVisibility(View.INVISIBLE);
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude))
+                                        .title(getString(R.string.starting_position)));
+                                polyline = mMap.addPolyline(new PolylineOptions().addAll(mPolylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+                                createCheckerFlag(mPolylinePoints);
+                            }
+                        });
+                    }
+                });
             }
         });
 
@@ -543,6 +575,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.single_entry_deleted), Toast.LENGTH_LONG).show();
             }
         });
+        builderSingle.setCancelable(true);
         builderSingle.show();
     }
     private void showPolyline(List<ColoredPoint> points) {
