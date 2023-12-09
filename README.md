@@ -10,17 +10,9 @@ Download the project and build it in Android Studio.
 
 Start the app and that`s it.
 
-## Pics
+## Vid
 
-![](app/pics/earth.png)
-![](app/pics/austria.png)
-![](app/pics/notification.png)
-![](app/pics/settings_part_1.png)
-![](app/pics/settings_part_2.png)
-![](app/pics/screen_lock.png)
-![](app/pics/select_run.png)
-![](app/pics/selected_colored_path.png)
-![](app/pics/statistics.png)
+[screen_recording.mp4](app%2Fpics%2Fscreen_recording.mp4)
 
 ## Contributing
 
