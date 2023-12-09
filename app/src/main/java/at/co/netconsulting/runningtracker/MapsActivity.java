@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
@@ -461,6 +462,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         }
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(MapsActivity.this);
+
         if(allEntries.size() == 0) {
             builderSingle.setTitle(getResources().getString(R.string.no_run_available));
         } else {
@@ -575,9 +577,24 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.single_entry_deleted), Toast.LENGTH_LONG).show();
             }
         });
-        builderSingle.setCancelable(true);
-        builderSingle.show();
+        setAlertDialogWithSpecificHeight(builderSingle);
     }
+
+    private void setAlertDialogWithSpecificHeight(AlertDialog.Builder builderSingle) {
+        //set height to 50%
+        int height = 2;
+
+        AlertDialog alertDialog = builderSingle.create();
+        alertDialog.show();
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(alertDialog.getWindow().getAttributes());
+        lp.width = this.getWindow().getDecorView().getWidth();
+        lp.height = this.getWindow().getDecorView().getHeight()/height;
+
+        alertDialog.getWindow().setAttributes(lp);
+    }
+
     private void showPolyline(List<ColoredPoint> points) {
         mMap.clear();
         if (points.size() < 2)
