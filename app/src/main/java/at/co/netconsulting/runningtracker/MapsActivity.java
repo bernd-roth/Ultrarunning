@@ -331,12 +331,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         boolean isBetween = isCurrentTimeBBetweenSunriseSunset(location);
 
         if (isBetween) {
-            Timber.d("isAfter");
+            Timber.d(getResources().getString(R.string.isInBetween));
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             this, R.raw.style_json));
             if (!success) {
-                Timber.d("Style parsing failed.");
+                Timber.d(getResources().getString(R.string.style_failed));
             }
         }
     }

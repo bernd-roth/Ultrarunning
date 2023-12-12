@@ -101,4 +101,6 @@
     <string name="battery_optimization">Turn off battery optimization</string>
     <string name="please_comment_your_run">Please, comment your run!</string>
     <string name="buttonWithoutColoring">Without coloring</string>
+    <string name="style_failed">Style parsing failed.</string>
+    <string name="isInBetween">isInBetweenSunriseSunset</string>
 </resources>
