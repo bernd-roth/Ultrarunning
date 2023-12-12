@@ -4,6 +4,16 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+android.applicationVariants.all { variant ->
+    variant.outputs.all {
+        outputFileName = "RunningTracker.apk";
+        copy {
+            from file("${project.buildDir}/outputs/apk/debug/" + outputFileName)
+            into file("/src/main/java/at/co/netconsulting/runningtracker/apk/./")
+        }
+    }
+}
+
 android {
     namespace 'at.co.netconsulting.runningtracker'
     compileSdk 33
