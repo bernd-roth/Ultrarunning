@@ -103,4 +103,5 @@
     <string name="buttonWithoutColoring">Without coloring</string>
     <string name="style_failed">Style parsing failed.</string>
     <string name="isInBetween">isInBetweenSunriseSunset</string>
+    <string name="day_night_modus">Automatic day/night modus</string>
 </resources>

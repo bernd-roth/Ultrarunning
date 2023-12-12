@@ -57,8 +57,8 @@ public class SettingsActivity extends BaseActivity {
     private DatabaseHandler db;
     private ProgressDialog progressDialog;
     private String person;
-    private boolean isBatteryOptimization;
-    private Switch switchBatteryOptimization;
+    private boolean isBatteryOptimization, isDayNightModus;
+    private Switch switchBatteryOptimization, switchDayNightModus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +74,7 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_BATTERY_OPTIMIZATION);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -145,6 +146,11 @@ public class SettingsActivity extends BaseActivity {
                 isBatteryOptimization = sh.getBoolean(sharedPrefKey, false);
                 switchBatteryOptimization.setChecked(isBatteryOptimization);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isDayNightModus = sh.getBoolean(sharedPrefKey, false);
+                switchDayNightModus.setChecked(isDayNightModus);
+                break;
         }
     }
 
@@ -189,6 +195,8 @@ public class SettingsActivity extends BaseActivity {
         progressDialog.setCancelable(false);
 
         switchBatteryOptimization = findViewById(R.id.switchBatteryOptimization);
+
+        switchDayNightModus = findViewById(R.id.switchDayNightModus);
 
         db = new DatabaseHandler(this);
     }
@@ -288,6 +296,13 @@ public class SettingsActivity extends BaseActivity {
             boolean isBatteryOptimization = switchBatteryOptimization.isChecked();
             editor.putBoolean(SharedPref.STATIC_SHARED_PREF_BATTERY_OPTIMIZATION, isBatteryOptimization);
             editor.commit();
+        }  else if(sharedPreference.equals("DAY_NIGHT_MODUS")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            boolean isDayNightModus = switchDayNightModus.isChecked();
+            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS, isDayNightModus);
+            editor.commit();
         }
     }
     public void onClickRadioButtonBatteryGroup(View view) {
@@ -361,6 +376,10 @@ public class SettingsActivity extends BaseActivity {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
             openBatterySettings();
         }
+    }
+
+    public void onClickDayNightModus(View view) {
+        saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS);
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {

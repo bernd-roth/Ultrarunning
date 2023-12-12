@@ -88,7 +88,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private ActivityMapsBinding binding;
     private Polyline polyline;
     private List<LatLng> mPolylinePoints, mPolylinePointsTemp;
-    private boolean isDisableZoomCamera;
+    private boolean isDisableZoomCamera, isDayNightModusActive;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks;
     private String mapType;
     private SupportMapFragment mapFragment;
@@ -167,6 +167,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, Context.MODE_PRIVATE);
         mapType = sh.getString(SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE, "MAP_TYPE_NORMAL");
+
+        sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS, Context.MODE_PRIVATE);
+        isDayNightModusActive = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS, false);
     }
 
     private void createPolypoints(List<LatLng> polylinePoints) {
@@ -325,19 +328,23 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             }
         });
 
-        Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        Location location = new Location(loc);
+        if(isDayNightModusActive) {
+            Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location location = new Location(loc);
 
-        boolean isBetween = isCurrentTimeBBetweenSunriseSunset(location);
+            boolean isBetween = isCurrentTimeBBetweenSunriseSunset(location);
 
-        if (isBetween) {
-            Timber.d(getResources().getString(R.string.isInBetween));
-            boolean success = googleMap.setMapStyle(
-                    MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.style_json));
-            if (!success) {
-                Timber.d(getResources().getString(R.string.style_failed));
+            if (isBetween) {
+                Timber.d(getResources().getString(R.string.isInBetween));
+                boolean success = mMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                this, R.raw.style_json));
+                if (!success) {
+                    Timber.d(getResources().getString(R.string.style_failed));
+                }
             }
+        } else {
+            mMap.setMapStyle(null);
         }
     }
     private boolean isCurrentTimeBBetweenSunriseSunset(Location location) {
