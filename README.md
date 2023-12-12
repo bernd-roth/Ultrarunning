@@ -4,11 +4,13 @@ Ultrarunning is a Java program for tracking your marathons and ultramarathons.
 
 ## Installation
 
-Download the project and build it in Android Studio.
+Download the project and build it in Android Studio, or if you just want to use it
+you can install the RunningTracker.apk which is always the latest build.
 
 ## Usage
 
-Start the app and that`s it.
+Start the app, and point to settings button. 
+It is the second button from above on the right side.
 
 ## Vid
 

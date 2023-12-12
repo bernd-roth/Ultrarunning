@@ -58,14 +58,17 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.shredzone.commons.suncalc.SunTimes;
+
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
@@ -309,7 +312,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         }
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setPadding(0,0,0,90);
+        mMap.setPadding(0, 0, 0, 90);
         mMap.getUiSettings().setMapToolbarEnabled(true);
         mMap.setTrafficEnabled(true);
         camPos = mMap.getCameraPosition();
@@ -321,34 +324,46 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 scaleView.update(camPos.zoom, camPos.target.latitude);
             }
         });
-            TimeZone timeZone = TimeZone.getDefault();
-            String timeZoneIdentifier = timeZone.getDisplayName();
 
-            Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            Location location = new Location(loc);
+        Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Location location = new Location(loc);
 
-            Date date = new Date();
-            SunTimes times = SunTimes.compute()
-            .on(date)       // set a date
-            .at(location.getLatitude(), location.getLongitude())
-            .execute();
+        boolean isBetween = isCurrentTimeBBetweenSunriseSunset(location);
 
-            ZonedDateTime zdtNow = ZonedDateTime.now();
-            ZonedDateTime rise = times.getRise();
-            ZonedDateTime set = times.getSet();
-
-            if(zdtNow.isAfter(rise) && zdtNow.isBefore(set)) {
-                Timber.d("isAfter");
-                boolean success = googleMap.setMapStyle(
-                        MapStyleOptions.loadRawResourceStyle(
-                                this, R.raw.style_json));
-
-                if (!success) {
-                    Timber.d("Style parsing failed.");
-                }
+        if (isBetween) {
+            Timber.d("isAfter");
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.style_json));
+            if (!success) {
+                Timber.d("Style parsing failed.");
             }
+        }
+    }
+    private boolean isCurrentTimeBBetweenSunriseSunset(Location location) {
+        ZonedDateTime zdtNow = ZonedDateTime.now();
+
+        SunTimes times = SunTimes.compute()
+                .on(zdtNow)
+                .at(location.getLatitude(), location.getLongitude())
+                .execute();
+
+
+        ZonedDateTime rise = times.getRise();
+        ZonedDateTime set = times.getSet();
+
+        java.time.LocalDateTime localDateRise = rise.toLocalDateTime();
+        LocalDateTime minusDayRise = localDateRise.minusDays(1);
+
+        java.time.LocalDateTime localDateSet = set.toLocalDateTime();
+        LocalDateTime minusDaySet = localDateSet.minusDays(1);
+
+        return minusDayRise.isBefore(ChronoLocalDateTime.from(zdtNow)) && minusDaySet.isBefore(ChronoLocalDateTime.from(zdtNow));
     }
 
+    static long dateTimeDifference(Temporal d1, Temporal d2, ChronoUnit unit){
+        return unit.between(d1, d2);
+    }
     private void createCheckerFlag(List<LatLng> polylinePoints) {
         int height = 100;
         int width = 100;
