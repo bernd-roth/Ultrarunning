@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -47,6 +48,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -55,11 +57,15 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.shredzone.commons.suncalc.SunTimes;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
@@ -315,6 +321,32 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 scaleView.update(camPos.zoom, camPos.target.latitude);
             }
         });
+            TimeZone timeZone = TimeZone.getDefault();
+            String timeZoneIdentifier = timeZone.getDisplayName();
+
+            Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location location = new Location(loc);
+
+            Date date = new Date();
+            SunTimes times = SunTimes.compute()
+            .on(date)       // set a date
+            .at(location.getLatitude(), location.getLongitude())
+            .execute();
+
+            ZonedDateTime zdtNow = ZonedDateTime.now();
+            ZonedDateTime rise = times.getRise();
+            ZonedDateTime set = times.getSet();
+
+            if(zdtNow.isAfter(rise) && zdtNow.isBefore(set)) {
+                Timber.d("isAfter");
+                boolean success = googleMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                this, R.raw.style_json));
+
+                if (!success) {
+                    Timber.d("Style parsing failed.");
+                }
+            }
     }
 
     private void createCheckerFlag(List<LatLng> polylinePoints) {

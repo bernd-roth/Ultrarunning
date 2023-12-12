@@ -59,4 +59,6 @@ dependencies {
     implementation 'joda-time:joda-time:2.12.5'
     implementation 'org.greenrobot:eventbus:3.2.0'
     implementation 'com.github.pengrad:mapscaleview:1.6.0'
+    //sunrise/sunset calculation
+    implementation 'org.shredzone.commons:commons-suncalc:3.7'
 }
