@@ -328,13 +328,16 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             }
         });
 
+        //if true, day/night modus switches automatically depending on sunrise/sunset
         if(isDayNightModusActive) {
             Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             Location location = new Location(loc);
 
-            boolean isBetween = isCurrentTimeBBetweenSunriseSunset(location);
+            boolean isBetween = isCurrentTimeBetweenSunriseSunset(location);
 
             if (isBetween) {
+                mMap.setMapStyle(null);
+            } else {
                 Timber.d(getResources().getString(R.string.isInBetween));
                 boolean success = mMap.setMapStyle(
                         MapStyleOptions.loadRawResourceStyle(
@@ -343,11 +346,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     Timber.d(getResources().getString(R.string.style_failed));
                 }
             }
-        } else {
-            mMap.setMapStyle(null);
         }
     }
-    private boolean isCurrentTimeBBetweenSunriseSunset(Location location) {
+    private boolean isCurrentTimeBetweenSunriseSunset(Location location) {
         ZonedDateTime zdtNow = ZonedDateTime.now();
 
         SunTimes times = SunTimes.compute()
