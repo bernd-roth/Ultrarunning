@@ -50,10 +50,17 @@
         android:layout_height="wrap_content"
         android:textSize="16dp" />
 
-    <View
+    <TextView
+        android:id="@+id/textViewSlowestLap"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="#c0c0c0"/>
+        android:layout_height="wrap_content"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/textViewFastestLap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16dp" />
 
     <TextView
         android:id="@+id/textViewSection"
@@ -61,6 +68,11 @@
         android:layout_height="wrap_content"
         android:text="@string/cycle_time"
         android:gravity="center"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#c0c0c0"/>
 
     <TableLayout
         android:id="@+id/tableHeader"

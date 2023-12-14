@@ -26,6 +26,7 @@ import com.github.mikephil.charting.utils.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.pojo.Run;
@@ -34,7 +35,8 @@ public class StatisticsActivity extends AppCompatActivity {
     private LineChart mChart;
     private DatabaseHandler db;
     private List<Run> listOfRun;
-    private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed;
+    private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed,
+            textViewSlowestLap, textViewFastestLap;
     private float maxSpeed, avgSpeed, totalDistance;
     private List<Float> listSpeed;
     private TableLayout tableSection, tableHeader;
@@ -54,7 +56,7 @@ public class StatisticsActivity extends AppCompatActivity {
         calcAvgSpeedMaxSpeedTotalDistance();
         renderData();
         setData();
-        setTextView();
+        //setTextView();
     }
 
     private void callDatabaseForSpinner() {
@@ -89,10 +91,12 @@ public class StatisticsActivity extends AppCompatActivity {
         }
         return groupedList;
     }
-    private void showTableLayout(List<Long> groupedSectionList) {
+    private List<Integer> showTableLayout(List<Long> groupedSectionList) {
+        List<Integer> slowestFastestLap = new ArrayList<>();
         int rows = groupedSectionList.size();
         int colums  = 1;
         int counter = 1;
+        TreeMap<String, Integer> fastestSlowestLap = new TreeMap<>();
         tableHeader.setStretchAllColumns(true);
         tableHeader.bringToFront();
 
@@ -120,6 +124,17 @@ public class StatisticsActivity extends AppCompatActivity {
             tableSection.removeViews(0, Math.max(0, tableSection.getChildCount()));
         }
 
+        for(int i = 0; i < rows; i++){
+            fastestSlowestLap.put(String.valueOf(groupedSectionList.get(i)), counter);
+            counter++;
+        }
+
+        int fastestLap = chooseFastestLap(fastestSlowestLap);
+        int slowestLap = chooseSlowestLap(fastestSlowestLap);
+        slowestFastestLap.add(fastestLap);
+        slowestFastestLap.add(slowestLap);
+
+        counter=1;
         //Content of rows
         for(int i = 0; i < rows; i++){
             tr =  new TableRow(this);
@@ -131,22 +146,65 @@ public class StatisticsActivity extends AppCompatActivity {
                 MM = TimeUnit.MILLISECONDS.toMinutes(groupedSectionList.get(i)) % 60;
                 SS = TimeUnit.MILLISECONDS.toSeconds(groupedSectionList.get(i)) % 60;
 
-                txtGeneric.setText("\t\t\t\t" + counter++ + "\t\t\t\t"
-                        + HH + " " + getResources().getString(R.string.hours) + " "
-                        + MM + " " + getResources().getString(R.string.minutes) + " "
-                        + SS + " " + getResources().getString(R.string.seconds));
-                tr.addView(txtGeneric);
+                if(fastestLap==counter) {
+                    txtGeneric.setBackgroundResource(R.color.green);
+                    txtGeneric.setText("\t\t\t\t" + counter++ + "\t\t\t\t"
+                            + HH + " " + getResources().getString(R.string.hours) + " "
+                            + MM + " " + getResources().getString(R.string.minutes) + " "
+                            + SS + " " + getResources().getString(R.string.seconds));
+                    tr.addView(txtGeneric);
+                } else if(slowestLap==counter) {
+                    txtGeneric.setBackgroundResource(R.color.red);
+                    txtGeneric.setText("\t\t\t\t" + counter++ + "\t\t\t\t"
+                            + HH + " " + getResources().getString(R.string.hours) + " "
+                            + MM + " " + getResources().getString(R.string.minutes) + " "
+                            + SS + " " + getResources().getString(R.string.seconds));
+                    tr.addView(txtGeneric);
+                } else {
+                    txtGeneric.setText("\t\t\t\t" + counter++ + "\t\t\t\t"
+                            + HH + " " + getResources().getString(R.string.hours) + " "
+                            + MM + " " + getResources().getString(R.string.minutes) + " "
+                            + SS + " " + getResources().getString(R.string.seconds));
+                    tr.addView(txtGeneric);
+                }
             }
             tableSection.addView(tr);
         }
+        return slowestFastestLap;
     }
-    private void setTextView() {
+
+    private int chooseSlowestLap(TreeMap<String, Integer> fastestSlowestLap) {
+        int size = fastestSlowestLap.size();
+        int slowestLap = fastestSlowestLap.lastEntry().getValue();
+
+        if(slowestLap==size) {
+            size -= 2;
+            slowestLap = fastestSlowestLap.entrySet().stream().skip(size).findFirst().get().getValue();
+        }
+        return slowestLap;
+    }
+
+    private int chooseFastestLap(TreeMap<String, Integer> fastestSlowestLap) {
+        int size = fastestSlowestLap.size();
+        int fastestLap = fastestSlowestLap.entrySet().stream().skip(0).findFirst().get().getValue();
+
+        if(fastestLap==size) {
+            fastestLap = fastestSlowestLap.entrySet().stream().skip(1).findFirst().get().getValue();
+        }
+        return fastestLap;
+    }
+
+    private void setTextView(List<Integer> fastestSlowestLap) {
         //average speed
         textViewAvgSpeed.setText(String.format("Average speed: %.2f", avgSpeed) + " Km/h");
         //max speed
         textViewMaxSpeed.setText(String.format("Max. speed: %.2f", maxSpeed) + " Km/h");
         //distance
         textViewDistance.setText(String.format("Total distance: %.3f", totalDistance) + " Km");
+        //fastest lap
+        textViewFastestLap.setText(String.format("Fastest lap: %03d", fastestSlowestLap.get(0)));
+        //slowest lap
+        textViewSlowestLap.setText(String.format("Slowest lap: %03d", fastestSlowestLap.get(1)));
     }
 
     private void initializeObjects() {
@@ -157,6 +215,8 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewMaxSpeed = findViewById(R.id.textViewMaxSpeed);
         textViewDistance = findViewById(R.id.textViewDistance);
         textViewAvgSpeed = findViewById(R.id.textViewAvgSpeed);
+        textViewSlowestLap = findViewById(R.id.textViewSlowestLap);
+        textViewFastestLap = findViewById(R.id.textViewFastestLap);
 
         tableHeader = (TableLayout)findViewById(R.id.tableHeader);
         tableSection = (TableLayout)findViewById(R.id.tableSection);
@@ -177,9 +237,9 @@ public class StatisticsActivity extends AppCompatActivity {
                 calcAvgSpeedMaxSpeedTotalDistance();
                 renderData();
                 setData();
-                setTextView();
                 List<Long> groupedSectionList = calculateSections();
-                showTableLayout(groupedSectionList);
+                List<Integer> fastestSlowestLap = showTableLayout(groupedSectionList);
+                setTextView(fastestSlowestLap);
                 mChart.notifyDataSetChanged();
                 mChart.invalidate();
             }
