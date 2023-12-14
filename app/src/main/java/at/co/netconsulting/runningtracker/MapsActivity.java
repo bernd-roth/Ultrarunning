@@ -366,11 +366,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         java.time.LocalDateTime localDateSet = set.toLocalDateTime();
         LocalDateTime minusDaySet = localDateSet.minusDays(1);
 
-        return minusDayRise.isBefore(ChronoLocalDateTime.from(zdtNow)) && minusDaySet.isBefore(ChronoLocalDateTime.from(zdtNow));
-    }
-
-    static long dateTimeDifference(Temporal d1, Temporal d2, ChronoUnit unit){
-        return unit.between(d1, d2);
+        return !minusDayRise.isBefore(ChronoLocalDateTime.from(zdtNow)) || minusDaySet.isAfter(ChronoLocalDateTime.from(zdtNow));
     }
     private void createCheckerFlag(List<LatLng> polylinePoints) {
         int height = 100;
