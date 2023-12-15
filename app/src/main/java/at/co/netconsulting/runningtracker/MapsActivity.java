@@ -371,14 +371,16 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         java.time.LocalDateTime localDateRise = rise.toLocalDateTime();
         java.time.LocalDateTime localDateSet = set.toLocalDateTime();
 
+        int currentDayOfMonth = new org.joda.time.LocalDateTime().getDayOfMonth();
+
         //compare current date with sunrise date
-        if(rise.getDayOfMonth()!=localDateRise.getDayOfMonth()) {
+        if(currentDayOfMonth!=localDateRise.getDayOfMonth()) {
             minusDayRise = localDateRise.minusDays(0);
         } else {
             minusDayRise = localDateRise.minusDays(1);
         }
 
-        if(set.getDayOfMonth()!=localDateSet.getDayOfMonth()) {
+        if(currentDayOfMonth!=localDateSet.getDayOfMonth()) {
             minusDaySet = localDateSet.minusDays(1);
         } else {
             minusDaySet = localDateSet.minusDays(0);
