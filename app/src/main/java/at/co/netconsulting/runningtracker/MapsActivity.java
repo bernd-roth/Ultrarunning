@@ -360,13 +360,23 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         ZonedDateTime rise = times.getRise();
         ZonedDateTime set = times.getSet();
 
+        LocalDateTime minusDaySet, minusDayRise;
         java.time.LocalDateTime localDateRise = rise.toLocalDateTime();
-        LocalDateTime minusDayRise = localDateRise.minusDays(1);
-
         java.time.LocalDateTime localDateSet = set.toLocalDateTime();
-        LocalDateTime minusDaySet = localDateSet.minusDays(1);
 
-        return !minusDayRise.isBefore(ChronoLocalDateTime.from(zdtNow)) || minusDaySet.isAfter(ChronoLocalDateTime.from(zdtNow));
+        //compare current date with sunrise date
+        if(rise.getDayOfMonth()!=localDateRise.getDayOfMonth()) {
+            minusDayRise = localDateRise.minusDays(0);
+        } else {
+            minusDayRise = localDateRise.minusDays(1);
+        }
+
+        if(set.getDayOfMonth()!=localDateSet.getDayOfMonth()) {
+            minusDaySet = localDateSet.minusDays(1);
+        } else {
+            minusDaySet = localDateSet.minusDays(0);
+        }
+        return ChronoLocalDateTime.from(zdtNow).isAfter(minusDayRise) && ChronoLocalDateTime.from(zdtNow).isBefore(minusDaySet);
     }
     private void createCheckerFlag(List<LatLng> polylinePoints) {
         int height = 100;
