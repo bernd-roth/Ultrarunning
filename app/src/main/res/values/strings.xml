@@ -104,4 +104,5 @@
     <string name="style_failed">Style parsing failed.</string>
     <string name="isInBetween">isInBetweenSunriseSunset</string>
     <string name="day_night_modus">Automatic day/night modus</string>
+    <string name="enable_traffic">Enable traffic</string>
 </resources>

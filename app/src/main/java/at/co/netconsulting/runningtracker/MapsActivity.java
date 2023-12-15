@@ -88,7 +88,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private ActivityMapsBinding binding;
     private Polyline polyline;
     private List<LatLng> mPolylinePoints, mPolylinePointsTemp;
-    private boolean isDisableZoomCamera, isDayNightModusActive;
+    private boolean isDisableZoomCamera, isDayNightModusActive, isTrafficEnabled;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks;
     private String mapType;
     private SupportMapFragment mapFragment;
@@ -170,6 +170,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS, Context.MODE_PRIVATE);
         isDayNightModusActive = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS, false);
+
+        sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC, Context.MODE_PRIVATE);
+        isTrafficEnabled = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC, false);
     }
 
     private void createPolypoints(List<LatLng> polylinePoints) {
@@ -317,7 +320,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setPadding(0, 0, 0, 90);
         mMap.getUiSettings().setMapToolbarEnabled(true);
-        mMap.setTrafficEnabled(true);
+        if(isTrafficEnabled) {
+            mMap.setTrafficEnabled(true);
+        } else {
+            mMap.setTrafficEnabled(false);
+        }
         camPos = mMap.getCameraPosition();
         scaleView.update(camPos.zoom, camPos.target.latitude);
         mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {

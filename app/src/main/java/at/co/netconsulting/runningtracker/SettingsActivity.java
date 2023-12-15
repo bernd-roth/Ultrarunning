@@ -57,8 +57,8 @@ public class SettingsActivity extends BaseActivity {
     private DatabaseHandler db;
     private ProgressDialog progressDialog;
     private String person;
-    private boolean isBatteryOptimization, isDayNightModus;
-    private Switch switchBatteryOptimization, switchDayNightModus;
+    private boolean isBatteryOptimization, isDayNightModus, isTrafficEnabled;
+    private Switch switchBatteryOptimization, switchDayNightModus, switchEnableTraffic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +75,7 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_BATTERY_OPTIMIZATION);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -151,6 +152,11 @@ public class SettingsActivity extends BaseActivity {
                 isDayNightModus = sh.getBoolean(sharedPrefKey, false);
                 switchDayNightModus.setChecked(isDayNightModus);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isTrafficEnabled = sh.getBoolean(sharedPrefKey, false);
+                switchEnableTraffic.setChecked(isTrafficEnabled);
+                break;
         }
     }
 
@@ -197,6 +203,7 @@ public class SettingsActivity extends BaseActivity {
         switchBatteryOptimization = findViewById(R.id.switchBatteryOptimization);
 
         switchDayNightModus = findViewById(R.id.switchDayNightModus);
+        switchEnableTraffic = findViewById(R.id.switchShowTraffic);
 
         db = new DatabaseHandler(this);
     }
@@ -303,6 +310,13 @@ public class SettingsActivity extends BaseActivity {
             boolean isDayNightModus = switchDayNightModus.isChecked();
             editor.putBoolean(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS, isDayNightModus);
             editor.commit();
+        }  else if(sharedPreference.equals("ENABLE_TRAFFIC")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            boolean isTrafficEnabled = switchEnableTraffic.isChecked();
+            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC, isTrafficEnabled);
+            editor.commit();
         }
     }
     public void onClickRadioButtonBatteryGroup(View view) {
@@ -380,6 +394,10 @@ public class SettingsActivity extends BaseActivity {
 
     public void onClickDayNightModus(View view) {
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS);
+    }
+
+    public void onClickEnableTraffic(View view) {
+        saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC);
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
