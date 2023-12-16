@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -375,9 +376,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         //compare current date with sunrise date
         if(currentDayOfMonth!=localDateRise.getDayOfMonth()) {
-            minusDayRise = localDateRise.minusDays(0);
-        } else {
             minusDayRise = localDateRise.minusDays(1);
+        } else {
+            minusDayRise = localDateRise.minusDays(0);
         }
 
         if(currentDayOfMonth!=localDateSet.getDayOfMonth()) {
@@ -385,6 +386,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         } else {
             minusDaySet = localDateSet.minusDays(0);
         }
+
+        Log.d("Sunrise: %s", String.valueOf(minusDayRise));
+        Log.d("Sunset: %s", String.valueOf(minusDaySet));
+
         return ChronoLocalDateTime.from(zdtNow).isAfter(minusDayRise) && ChronoLocalDateTime.from(zdtNow).isBefore(minusDaySet);
     }
     private void createCheckerFlag(List<LatLng> polylinePoints) {
