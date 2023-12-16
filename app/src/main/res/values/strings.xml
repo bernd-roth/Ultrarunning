@@ -83,7 +83,7 @@
     <string name="all_entries_deleted">All entries successfully deleted!</string>
     <string name="single_entry_deleted">Single entry successfully deleted!</string>
     <string name="save_settings_map_type_rec_profil_runners_name">Google map type, Recording Profil, Runner`s name were saved</string>
-    <string name="distance_velocity">Distance/Velocity</string>
+    <string name="distance_speed">Distance (in meter)/Speed</string>
     <string name="distance_per_km_h">Distance per km/h</string>
     <string name="dialog_message">Are you sure to delete all entries?</string>
     <string name="dialog_title">Delete all entries</string>
@@ -105,4 +105,5 @@
     <string name="isInBetween">isInBetweenSunriseSunset</string>
     <string name="day_night_modus">Automatic day/night modus</string>
     <string name="enable_traffic">Enable traffic</string>
+    <string name="time_speed">Time (in seconds)/Speed</string>
 </resources>

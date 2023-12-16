@@ -21,6 +21,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class StatisticsActivity extends AppCompatActivity {
-    private LineChart mChart;
+    private LineChart mChart, mChartTimeSpeed;
     private DatabaseHandler db;
     private List<Run> listOfRun;
     private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed,
@@ -55,10 +56,11 @@ public class StatisticsActivity extends AppCompatActivity {
         callDatabase();
         calcAvgSpeedMaxSpeedTotalDistance();
         renderData();
+        renderDataTimeSpeed();
         setData();
+        setDataRenderDataTimeSpeed();
         //setTextView();
     }
-
     private void callDatabaseForSpinner() {
         ArrayList parsedToStringRun = new ArrayList<String>();
 
@@ -212,6 +214,10 @@ public class StatisticsActivity extends AppCompatActivity {
         mChart.setTouchEnabled(true);
         mChart.setPinchZoom(true);
 
+        mChartTimeSpeed = findViewById(R.id.chartTimeSpeed);
+        mChartTimeSpeed.setTouchEnabled(true);
+        mChartTimeSpeed.setPinchZoom(true);
+
         textViewMaxSpeed = findViewById(R.id.textViewMaxSpeed);
         textViewDistance = findViewById(R.id.textViewDistance);
         textViewAvgSpeed = findViewById(R.id.textViewAvgSpeed);
@@ -237,11 +243,16 @@ public class StatisticsActivity extends AppCompatActivity {
                 calcAvgSpeedMaxSpeedTotalDistance();
                 renderData();
                 setData();
+                renderDataTimeSpeed();
+                setDataRenderDataTimeSpeed();
                 List<Long> groupedSectionList = calculateSections();
                 List<Integer> fastestSlowestLap = showTableLayout(groupedSectionList);
                 setTextView(fastestSlowestLap);
                 mChart.notifyDataSetChanged();
                 mChart.invalidate();
+                //Time/Speed chart
+                mChartTimeSpeed.notifyDataSetChanged();
+                mChartTimeSpeed.invalidate();
             }
 
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -294,6 +305,30 @@ public class StatisticsActivity extends AppCompatActivity {
         mChart.getAxisRight().setEnabled(false);
     }
 
+    private void renderDataTimeSpeed() {
+        LimitLine llXAxis = new LimitLine(10f, "Index 10");
+        llXAxis.setLineWidth(4f);
+        llXAxis.enableDashedLine(10f, 10f, 0f);
+        llXAxis.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_BOTTOM);
+        llXAxis.setTextSize(10f);
+
+        XAxis xAxis = mChartTimeSpeed.getXAxis();
+        xAxis.enableGridDashedLine(10f, 10f, 0f);
+        xAxis.setAxisMinimum(0f);
+        xAxis.setDrawLimitLinesBehindData(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        YAxis leftAxis = mChartTimeSpeed.getAxisLeft();
+        leftAxis.removeAllLimitLines();
+        leftAxis.setAxisMaximum(maxSpeed);
+        leftAxis.setAxisMinimum(0);
+        leftAxis.enableGridDashedLine(10f, 10f, 0f);
+        leftAxis.setDrawZeroLine(false);
+        leftAxis.setDrawLimitLinesBehindData(false);
+
+        mChartTimeSpeed.getAxisRight().setEnabled(false);
+    }
+
     private void callDatabase() {
         int intLastEntry = db.getLastEntry();
 
@@ -324,7 +359,7 @@ public class StatisticsActivity extends AppCompatActivity {
             mChart.getData().notifyDataChanged();
             mChart.notifyDataSetChanged();
         } else {
-            set1 = new LineDataSet(values, getString(R.string.distance_velocity));
+            set1 = new LineDataSet(values, getString(R.string.distance_speed));
             set1.setDrawIcons(false);
             set1.enableDashedLine(10f, 5f, 0f);
             set1.enableDashedHighlightLine(10f, 5f, 0f);
@@ -349,6 +384,61 @@ public class StatisticsActivity extends AppCompatActivity {
             dataSets.add(set1);
             LineData data = new LineData(dataSets);
             mChart.setData(data);
+        }
+    }
+
+    private void setDataRenderDataTimeSpeed() {
+        ArrayList<Entry> values = new ArrayList<>();
+        int sizeOfList = listOfRun.size();
+        int i = 0;
+
+        if(sizeOfList!=0) {
+            for (Run run : listOfRun) {
+                if(i%60==0) {
+                    //float coveredMeter = (float) run.getMeters_covered();
+                    long time = i;
+                    float speed = run.getSpeed();
+                    values.add(new Entry(time, speed));
+                }
+                i++;
+            }
+        }
+
+        LineDataSet set1;
+        mChartTimeSpeed.getDescription().setEnabled(false);
+
+        if (mChartTimeSpeed.getData() != null &&
+                mChartTimeSpeed.getData().getDataSetCount() > 0) {
+            set1 = (LineDataSet) mChartTimeSpeed.getData().getDataSetByIndex(0);
+            set1.setValues(values);
+            mChartTimeSpeed.getData().notifyDataChanged();
+            mChartTimeSpeed.notifyDataSetChanged();
+        } else {
+            set1 = new LineDataSet(values, getString(R.string.time_speed));
+            set1.setDrawIcons(false);
+            set1.enableDashedLine(10f, 5f, 0f);
+            set1.enableDashedHighlightLine(10f, 5f, 0f);
+            set1.setColor(Color.DKGRAY);
+            set1.setCircleColor(Color.DKGRAY);
+            set1.setLineWidth(1f);
+            set1.setCircleRadius(3f);
+            set1.setDrawCircleHole(false);
+            set1.setValueTextSize(9f);
+            set1.setDrawFilled(true);
+            set1.setFormLineWidth(1f);
+            set1.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
+            set1.setFormSize(15.f);
+
+            if (Utils.getSDKInt() >= 18) {
+                Drawable drawable = ContextCompat.getDrawable(this, R.drawable.fade_blue);
+                set1.setFillDrawable(drawable);
+            } else {
+                set1.setFillColor(Color.DKGRAY);
+            }
+            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+            dataSets.add(set1);
+            LineData data = new LineData(dataSets);
+            mChartTimeSpeed.setData(data);
         }
     }
 
