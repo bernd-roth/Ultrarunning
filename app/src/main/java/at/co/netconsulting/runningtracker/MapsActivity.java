@@ -364,7 +364,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 .at(location.getLatitude(), location.getLongitude())
                 .execute();
 
-
         ZonedDateTime rise = times.getRise();
         ZonedDateTime set = times.getSet();
 
@@ -528,7 +527,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
     private void showAlertDialogWithTracks() {
         DatabaseHandler db = new DatabaseHandler(this);
-        List<Run> allEntries = db.getAllEntriesGroupedByRun();
+        List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
         int checkedItem = 0;
         final int[] whichItemChecked = new int[1];
 
