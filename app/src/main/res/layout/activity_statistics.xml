@@ -78,6 +78,35 @@
         android:textSize="16dp" />
 
     <TextView
+        android:id="@+id/textViewStartingElevation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/textViewEndingElevation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/textViewHighestElevation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/textViewTotalElevation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#c0c0c0"/>
+
+    <TextView
         android:id="@+id/textViewSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

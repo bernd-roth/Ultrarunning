@@ -21,7 +21,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
 import java.util.ArrayList;
@@ -37,8 +36,10 @@ public class StatisticsActivity extends AppCompatActivity {
     private DatabaseHandler db;
     private List<Run> listOfRun;
     private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed,
-            textViewSlowestLap, textViewFastestLap;
+            textViewSlowestLap, textViewFastestLap, textViewStartingElevation,
+            textViewEndingElevation, textViewHighestElevation, textViewTotalElevation;
     private float maxSpeed, avgSpeed, totalDistance;
+    private double totalElevation, elevationTmp, highestElevation, lastElevationPoint, sumElevation;
     private List<Float> listSpeed;
     private TableLayout tableSection, tableHeader;
     private TextView txtGeneric;
@@ -46,7 +47,6 @@ public class StatisticsActivity extends AppCompatActivity {
     private long HH, MM, SS;
     private Spinner spinnerRunChoose;
     private LinearLayout linearLayout;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,12 +55,32 @@ public class StatisticsActivity extends AppCompatActivity {
         callDatabaseForSpinner();
         callDatabase();
         calcAvgSpeedMaxSpeedTotalDistance();
+        calcElevation();
         renderData();
         renderDataTimeSpeed();
         setData();
         setDataRenderDataTimeSpeed();
         //setTextView();
     }
+
+    private void calcElevation() {
+        if(listOfRun.size()>0) {
+            for (int i = 0; i < listOfRun.size(); i++) {
+                if(i==0) {
+                    lastElevationPoint=listOfRun.get(i).getAltitude();
+                } else {
+                    sumElevation = listOfRun.get(i).getAltitude()-lastElevationPoint;
+                    totalElevation += sumElevation;
+                    lastElevationPoint = listOfRun.get(i).getAltitude();
+                }
+                //highest elevation
+                if(listOfRun.get(i).getAltitude()>highestElevation) {
+                    highestElevation = listOfRun.get(i).getAltitude();
+                }
+            }
+        }
+    }
+
     private void callDatabaseForSpinner() {
         ArrayList parsedToStringRun = new ArrayList<String>();
 
@@ -198,15 +218,23 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private void setTextView(List<Integer> fastestSlowestLap) {
         //average speed
-        textViewAvgSpeed.setText(String.format("Average speed: %.2f", avgSpeed) + " Km/h");
+        textViewAvgSpeed.setText(String.format("Average speed: %.2f km/h", avgSpeed));
         //max speed
-        textViewMaxSpeed.setText(String.format("Max. speed: %.2f", maxSpeed) + " Km/h");
+        textViewMaxSpeed.setText(String.format("Max. speed: %.2f km/h", maxSpeed));
         //distance
-        textViewDistance.setText(String.format("Total distance: %.3f", totalDistance) + " Km");
+        textViewDistance.setText(String.format("Total distance: %.3f km", totalDistance));
         //fastest lap
-        textViewFastestLap.setText(String.format("Fastest lap: %03d", fastestSlowestLap.get(0)));
+        textViewFastestLap.setText(String.format("Fastest lap: %03d km/h", fastestSlowestLap.get(0)));
         //slowest lap
-        textViewSlowestLap.setText(String.format("Slowest lap: %03d", fastestSlowestLap.get(1)));
+        textViewSlowestLap.setText(String.format("Slowest lap: %03d km/h", fastestSlowestLap.get(1)));
+        //starting elevation
+        textViewStartingElevation.setText(String.format("Starting elevation: %03f meter", listOfRun.get(0).getAltitude()));
+        //ending elevation
+        textViewEndingElevation.setText(String.format("Ending elevation: %03f meter", listOfRun.get(listOfRun.size() - 1).getAltitude()));
+        //highest elevation
+        textViewHighestElevation.setText(String.format("Highest elevation: %03f meter", highestElevation));
+        //Total elevation
+        textViewTotalElevation.setText(String.format("Total elevation: %03f meter", totalElevation));
     }
 
     private void initializeObjects() {
@@ -223,6 +251,10 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewAvgSpeed = findViewById(R.id.textViewAvgSpeed);
         textViewSlowestLap = findViewById(R.id.textViewSlowestLap);
         textViewFastestLap = findViewById(R.id.textViewFastestLap);
+        textViewStartingElevation = findViewById(R.id.textViewStartingElevation);
+        textViewEndingElevation = findViewById(R.id.textViewEndingElevation);
+        textViewHighestElevation = findViewById(R.id.textViewHighestElevation);
+        textViewTotalElevation = findViewById(R.id.textViewTotalElevation);
 
         tableHeader = (TableLayout)findViewById(R.id.tableHeader);
         tableSection = (TableLayout)findViewById(R.id.tableSection);
@@ -240,9 +272,14 @@ public class StatisticsActivity extends AppCompatActivity {
                 listOfRun.clear();
                 listOfRun = db.getSingleEntryForStatistics(intNumberOfRun);
 
+                //first graph
                 calcAvgSpeedMaxSpeedTotalDistance();
                 renderData();
                 setData();
+
+                calcElevation();
+
+                //second graph
                 renderDataTimeSpeed();
                 setDataRenderDataTimeSpeed();
                 List<Long> groupedSectionList = calculateSections();
