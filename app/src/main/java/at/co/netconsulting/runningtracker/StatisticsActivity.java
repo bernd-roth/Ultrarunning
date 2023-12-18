@@ -224,9 +224,9 @@ public class StatisticsActivity extends AppCompatActivity {
         //distance
         textViewDistance.setText(String.format("Total distance: %.3f km", totalDistance));
         //fastest lap
-        textViewFastestLap.setText(String.format("Fastest lap: %03d km/h", fastestSlowestLap.get(0)));
+        textViewFastestLap.setText(String.format("Fastest lap: %03d", fastestSlowestLap.get(0)));
         //slowest lap
-        textViewSlowestLap.setText(String.format("Slowest lap: %03d km/h", fastestSlowestLap.get(1)));
+        textViewSlowestLap.setText(String.format("Slowest lap: %03d", fastestSlowestLap.get(1)));
         //starting elevation
         textViewStartingElevation.setText(String.format("Starting elevation: %03f meter", listOfRun.get(0).getAltitude()));
         //ending elevation
