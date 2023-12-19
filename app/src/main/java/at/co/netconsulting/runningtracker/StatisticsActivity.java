@@ -39,11 +39,11 @@ public class StatisticsActivity extends AppCompatActivity {
             textViewSlowestLap, textViewFastestLap, textViewStartingElevation,
             textViewEndingElevation, textViewHighestElevation, textViewTotalElevation;
     private float maxSpeed, avgSpeed, totalDistance;
-    private double totalElevation, elevationTmp, highestElevation, lastElevationPoint, sumElevation;
+    private double totalElevation, highestElevation, lastElevationPoint, sumElevation;
     private List<Float> listSpeed;
-    private TableLayout tableSection, tableHeader;
-    private TextView txtGeneric;
-    private TableRow tr;
+    private TableLayout tableSection, tableHeader, tableYearSection, tableHeaderYear;
+    private TextView txtGeneric, txtGenericYear;
+    private TableRow tr, trYear;
     private long HH, MM, SS;
     private Spinner spinnerRunChoose;
     private LinearLayout linearLayout;
@@ -259,6 +259,9 @@ public class StatisticsActivity extends AppCompatActivity {
         tableHeader = (TableLayout)findViewById(R.id.tableHeader);
         tableSection = (TableLayout)findViewById(R.id.tableSection);
 
+        tableHeaderYear = (TableLayout)findViewById(R.id.tableHeaderYearSection);
+        tableYearSection = (TableLayout)findViewById(R.id.tableYearSection);
+
         listOfRun = new ArrayList<>();
         listSpeed = new ArrayList<>();
 
@@ -285,6 +288,11 @@ public class StatisticsActivity extends AppCompatActivity {
                 List<Long> groupedSectionList = calculateSections();
                 List<Integer> fastestSlowestLap = showTableLayout(groupedSectionList);
                 setTextView(fastestSlowestLap);
+
+                //table section year
+                TreeMap<Integer, Double> year = calculateSectionsYear();
+                showTableLayoutYear(year);
+
                 mChart.notifyDataSetChanged();
                 mChart.invalidate();
                 //Time/Speed chart
@@ -302,6 +310,83 @@ public class StatisticsActivity extends AppCompatActivity {
         db = new DatabaseHandler(this);
     }
 
+    private void showTableLayoutYear(TreeMap<Integer, Double> year) {
+        int colums = 1;
+        int rows = year.size();
+
+        // Convert keys to a List
+        List<Integer> keyList = new ArrayList<>(year.keySet());
+        // Convert values to a List
+        List<Double> valueList = new ArrayList<>(year.values());
+
+        tableHeaderYear.setStretchAllColumns(true);
+        tableHeaderYear.bringToFront();
+
+        tableYearSection.setStretchAllColumns(true);
+        tableYearSection.bringToFront();
+
+        //Header
+        for (int i = 0; i < 1; i++) {
+            trYear = new TableRow(this);
+            for (int j = 0; j < colums; j++) {
+                if (txtGenericYear == null) {
+                    txtGenericYear = new TextView(this);
+                    txtGenericYear.setTextSize(18);
+
+                    txtGenericYear.setText("\t\t\t\t" + "Year" + "\t\t\t\t\t\t\t\t\t" + "Total Km");
+                    txtGenericYear.setBackgroundColor(Color.LTGRAY);
+                    trYear.addView(txtGenericYear);
+                }
+            }
+            tableHeaderYear.addView(trYear);
+        }
+
+        // remove previous tablelayout if necessary
+        if(tableYearSection.getChildCount()>0) {
+            tableYearSection.removeViews(0, Math.max(0, tableYearSection.getChildCount()));
+        }
+
+        //Content of rows
+        for (int i = 0; i < rows; i++) {
+            trYear = new TableRow(this);
+            for (int j = 0; j < colums; j++) {
+                txtGenericYear = new TextView(this);
+                txtGenericYear.setTextSize(18);
+
+                String convertedKm = String.format("%.2f", valueList.get(i)/1000);
+                txtGenericYear.setText("\t\t\t\t" + keyList.get(i) + "\t\t\t\t\t\t\t\t\t\t" + convertedKm);
+
+                trYear.addView(txtGenericYear);
+            }
+            tableYearSection.addView(trYear);
+        }
+    }
+
+    private TreeMap<Integer, Double> calculateSectionsYear() {
+        TreeMap<Integer, Double> groupedTreeMap = new TreeMap<>();
+        List<Run> listOfRun = db.getAllEntriesForYearCalculation();
+        double meters = 0;
+        String yearTemp = "0";
+
+        for(int i = 0; i<listOfRun.size(); i++) {
+            String[] dateSplit= listOfRun.get(i).getDateTime().split("-");
+            String[] yearSplit = dateSplit[2].split(" ");
+            String year = yearSplit[0];
+            if(year.equals(yearTemp)) {
+                meters += listOfRun.get(i).getMeters_covered();
+                updateTreeMap(groupedTreeMap, year, meters);
+            } else {
+                meters = listOfRun.get(i).getMeters_covered();
+                yearTemp = year;
+                groupedTreeMap.put(Integer.valueOf(year), meters);
+            }
+        }
+        return groupedTreeMap;
+    }
+    private void updateTreeMap(TreeMap<Integer, Double> groupedTreeMap, String year, double meters) {
+        int lastKey = groupedTreeMap.lastKey();
+        groupedTreeMap.put(lastKey, meters);
+    }
     public void renderData() {
         LimitLine llXAxis = new LimitLine(10f, "Index 10");
         llXAxis.setLineWidth(4f);

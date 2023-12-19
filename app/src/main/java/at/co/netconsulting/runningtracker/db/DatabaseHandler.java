@@ -190,30 +190,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return allEntryList;
     }
-//    public List<Run> getLatLngForSingleRun(int numberOfRun) {
-//        List<Run> allEntryList = new ArrayList<Run>();
-//
-//        // Select All Query
-//        String selectQuery = "SELECT "
-//                + KEY_LAT + ", "
-//                + KEY_LNG
-//                + " FROM " + TABLE_RUNS + " WHERE " + KEY_NUMBER_OF_RUN + " = " + numberOfRun;
-//
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        Cursor cursor = db.rawQuery(selectQuery, null);
-//
-//        // looping through all rows and adding to list
-//        if (cursor.moveToFirst()) {
-//            do {
-//                Run run = new Run();
-//                run.setLat(cursor.getDouble(0));
-//                run.setLng(cursor.getDouble(1));
-//                allEntryList.add(run);
-//            } while (cursor.moveToNext());
-//        }
-//        cursor.close();
-//        return allEntryList;
-//    }
     public List<Run> getAllEntriesOrderedByRunNumber() {
         List<Run> allEntryList = new ArrayList<Run>();
 
@@ -325,22 +301,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             Log.e("DatabaseHandler", sqlEx.getMessage(), sqlEx);
         }
     }
-    public void exportTableContent(String line) {
-        try {
-            String[] lineSplitted = line.split(" ");
+    public List<Run> getAllEntriesForYearCalculation() {
+        List<Run> allEntryList = new ArrayList<Run>();
 
-            file = new File(context.getExternalFilesDir(null), "Kalman_filtered.csv");
-            boolean fileExists = file.createNewFile();
-            if(fileExists) {
-                csvWrite = new CSVWriter(new FileWriter(file));
-            } else {
-                csvWrite = new CSVWriter(new FileWriter(file, true));
-            }
-            csvWrite.writeNext(lineSplitted);
-            csvWrite.close();
-        } catch(Exception sqlEx) {
-            Log.e("DatabaseHandler", sqlEx.getMessage(), sqlEx);
+        // Select All Query
+        String selectQuery = "SELECT "
+                + "MAX("
+                + KEY_DATE_TIME + "), "
+                + KEY_METERS_COVERED + ", "
+                + KEY_NUMBER_OF_RUN + ", "
+                + KEY_ALTITUDE
+                + " FROM " + TABLE_RUNS + " GROUP BY " + KEY_NUMBER_OF_RUN;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Run run = new Run();
+                run.setDateTime(cursor.getString(0));
+                run.setMeters_covered(cursor.getDouble(1));
+                run.setNumber_of_run(cursor.getInt(2));
+                run.setAltitude(cursor.getDouble(3));
+                allEntryList.add(run);
+            } while (cursor.moveToNext());
         }
+        return allEntryList;
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
