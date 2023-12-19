@@ -4,10 +4,13 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -23,6 +26,9 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
+
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -368,6 +374,8 @@ public class StatisticsActivity extends AppCompatActivity {
         double meters = 0;
         String yearTemp = "0";
 
+        createViewSeparator();
+
         for(int i = 0; i<listOfRun.size(); i++) {
             String[] dateSplit= listOfRun.get(i).getDateTime().split("-");
             String[] yearSplit = dateSplit[2].split(" ");
@@ -383,6 +391,32 @@ public class StatisticsActivity extends AppCompatActivity {
         }
         return groupedTreeMap;
     }
+
+    private void createViewSeparator() {
+        View mView = new View(StatisticsActivity.this);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        mView.setBackgroundResource(android.R.color.black);
+        linearLayout.addView(mView, params);
+
+        View viewSeperator = new View(this);
+        viewSeperator.setBackgroundResource(R.color.grey);
+        viewSeperator.setActivated(true);
+        viewSeperator.setMinimumHeight(6);
+        linearLayout.addView(viewSeperator);
+
+        TextView textView = new TextView(this);
+        textView.setText("Aggregation");
+        textView.setActivated(true);
+        textView.setGravity(Gravity.CENTER);
+        linearLayout.addView(textView);
+
+        View viewSeperator1 = new View(this);
+        viewSeperator1.setBackgroundResource(R.color.grey);
+        viewSeperator1.setActivated(true);
+        viewSeperator1.setMinimumHeight(6);
+        linearLayout.addView(viewSeperator1);
+    }
+
     private void updateTreeMap(TreeMap<Integer, Double> groupedTreeMap, String year, double meters) {
         int lastKey = groupedTreeMap.lastKey();
         groupedTreeMap.put(lastKey, meters);

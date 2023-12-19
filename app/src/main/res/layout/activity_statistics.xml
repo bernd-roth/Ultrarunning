@@ -10,16 +10,6 @@
     android:orientation="vertical"
     android:padding="30dp">
 
-    <!--
-    <TextView
-        android:id="@+id/textViewLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="10dp"
-        android:layout_gravity="center"
-        android:text="@string/distance_per_km_h"/>
--->
-
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="match_parent"
@@ -123,12 +113,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
-
-    <View
-        android:id="@+id/viewSeperator"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="#c0c0c0"/>
 
     <TableLayout
         android:id="@+id/tableSection"
