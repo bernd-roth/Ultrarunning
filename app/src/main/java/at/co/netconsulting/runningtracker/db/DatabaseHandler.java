@@ -338,27 +338,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void exportTableContent() {
         try {
 //            List<String> position = new ArrayList<>();
-//            file = new File(context.getExternalFilesDir(null), "run.csv");
-//            file.createNewFile();
-//            csvWrite = new CSVWriter(new FileWriter(file));
-//            db = getReadableDatabase();
-//            curCSV = db.rawQuery("SELECT * FROM " + TABLE_RUNS, null);
-//            csvWrite.writeNext(curCSV.getColumnNames());
+            file = new File(context.getExternalFilesDir(null), "run.csv");
+            file.createNewFile();
+            csvWrite = new CSVWriter(new FileWriter(file));
+            db = getReadableDatabase();
+            curCSV = db.rawQuery("SELECT * FROM " + TABLE_RUNS, null);
+            csvWrite.writeNext(curCSV.getColumnNames());
 
-//            while(curCSV.moveToNext()) {
-//                String arrStr[] ={curCSV.getString(0),
-//                        curCSV.getString(1),
-//                        curCSV.getString(2),
-//                        curCSV.getString(3),
-//                        curCSV.getString(4),
-//                        curCSV.getString(5),
-//                        curCSV.getString(6),
-//                        curCSV.getString(7),
-//                        curCSV.getString(8),
-//                        curCSV.getString(9),
-//                        curCSV.getString(10),
-//                        curCSV.getString(11),
-//                };
+            while(curCSV.moveToNext()) {
+                String arrStr[] ={curCSV.getString(0),
+                        curCSV.getString(1),
+                        curCSV.getString(2),
+                        curCSV.getString(3),
+                        curCSV.getString(4),
+                        curCSV.getString(5),
+                        curCSV.getString(6),
+                        curCSV.getString(7),
+                        curCSV.getString(8),
+                        curCSV.getString(9),
+                        curCSV.getString(10),
+                        curCSV.getString(11),
+                };
 //                String lat = curCSV.getString(2);
 //                String lon = curCSV.getString(3);
 //                String run = curCSV.getString(8);
@@ -368,10 +368,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //                position.add(lon);
 //                position.add(run);
 //                position.add(timeInMilliseconds);
-//                csvWrite.writeNext(arrStr);
-//            }
-//            csvWrite.close();
-//            curCSV.close();
+                csvWrite.writeNext(arrStr);
+            }
+            csvWrite.close();
+            curCSV.close();
 //            generateGfx(new File(context.getExternalFilesDir(null), "run1.csv"), null, position);
             exportAllDatabases(context);
         } catch(Exception sqlEx) {

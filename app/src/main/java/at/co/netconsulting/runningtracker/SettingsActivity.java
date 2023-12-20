@@ -1,16 +1,16 @@
 package at.co.netconsulting.runningtracker;
 
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,19 +19,24 @@ import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.preference.PreferenceFragmentCompat;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
-
+import java.util.Objects;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
-import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
 import at.co.netconsulting.runningtracker.pojo.Run;
+import io.ticofab.androidgpxparser.parser.GPXParser;
+import io.ticofab.androidgpxparser.parser.domain.Gpx;
 
 public class SettingsActivity extends BaseActivity {
     private SharedPreferences sharedpreferences;
@@ -59,6 +64,8 @@ public class SettingsActivity extends BaseActivity {
     private String person;
     private boolean isBatteryOptimization, isDayNightModus, isTrafficEnabled;
     private Switch switchBatteryOptimization, switchDayNightModus, switchEnableTraffic;
+    private ActivityResultLauncher<Intent> launcher; // Initialise this object in Activity.onCreate()
+    private Uri baseDocumentTreeUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -401,8 +408,40 @@ public class SettingsActivity extends BaseActivity {
     }
 
     public void importGPX(View view) {
-
+        Intent data = new Intent(Intent.ACTION_GET_CONTENT);
+        data.setType("*/*");
+        data = Intent.createChooser(data, "Choose a file");
+        startActivityResultLauncher.launch(data);
     }
+    ActivityResultLauncher<Intent> startActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    // Handle the returned Uri
+                    Log.d("onActivityResult", "FileChooser works");
+                    ContentResolver resolver = getContentResolver();
+                    baseDocumentTreeUri = Objects.requireNonNull(result.getData()).getData();
+
+                    try (InputStream stream = resolver.openInputStream(baseDocumentTreeUri)) {
+                        // Perform operations on "stream".
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+                        StringBuilder builder = new StringBuilder();
+                        String line;
+
+                        while (true) {
+                            if (!((line = reader.readLine()) != null))
+                                break;
+                            builder.append(line);
+                        }
+                        String s = builder.toString();
+                        Log.d("StringBuilder", s);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+            });
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
