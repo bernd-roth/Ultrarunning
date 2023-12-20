@@ -103,11 +103,6 @@
         android:text="@string/cycle_time"
         android:gravity="center"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="#c0c0c0"/>
-
     <TableLayout
         android:id="@+id/tableHeader"
         android:layout_width="match_parent"

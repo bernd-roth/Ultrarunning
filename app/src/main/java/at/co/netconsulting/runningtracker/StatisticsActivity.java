@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +54,8 @@ public class StatisticsActivity extends AppCompatActivity {
     private long HH, MM, SS;
     private Spinner spinnerRunChoose;
     private LinearLayout linearLayout;
+    private View mView, viewSeperator, viewSeperator1;
+    private TextView textView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -295,6 +298,17 @@ public class StatisticsActivity extends AppCompatActivity {
                 List<Integer> fastestSlowestLap = showTableLayout(groupedSectionList);
                 setTextView(fastestSlowestLap);
 
+                if(textView == null) {
+                    float dp = convertDpToPx(2);
+                    createViewSeparator(dp);
+                } else if(textView.getVisibility() == TextView.VISIBLE){
+                    linearLayout.removeView(textView);
+                    linearLayout.removeView(viewSeperator);
+                    linearLayout.removeView(viewSeperator1);
+                    float dp = convertDpToPx(2);
+                    createViewSeparator(dp);
+                }
+
                 //table section year
                 TreeMap<Integer, Double> year = calculateSectionsYear();
                 showTableLayoutYear(year);
@@ -374,7 +388,7 @@ public class StatisticsActivity extends AppCompatActivity {
         double meters = 0;
         String yearTemp = "0";
 
-        createViewSeparator();
+
 
         for(int i = 0; i<listOfRun.size(); i++) {
             String[] dateSplit= listOfRun.get(i).getDateTime().split("-");
@@ -391,29 +405,31 @@ public class StatisticsActivity extends AppCompatActivity {
         }
         return groupedTreeMap;
     }
-
-    private void createViewSeparator() {
-        View mView = new View(StatisticsActivity.this);
+    public float convertDpToPx(float dp) {
+        return dp * getResources().getDisplayMetrics().density;
+    }
+    private void createViewSeparator(float dp) {
+        mView = new View(StatisticsActivity.this);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         mView.setBackgroundResource(android.R.color.black);
         linearLayout.addView(mView, params);
 
-        View viewSeperator = new View(this);
+        viewSeperator = new View(this);
         viewSeperator.setBackgroundResource(R.color.grey);
         viewSeperator.setActivated(true);
-        viewSeperator.setMinimumHeight(6);
+        viewSeperator.setMinimumHeight((int) dp);
         linearLayout.addView(viewSeperator);
 
-        TextView textView = new TextView(this);
+        textView = new TextView(this);
         textView.setText("Aggregation");
         textView.setActivated(true);
         textView.setGravity(Gravity.CENTER);
         linearLayout.addView(textView);
 
-        View viewSeperator1 = new View(this);
+        viewSeperator1 = new View(this);
         viewSeperator1.setBackgroundResource(R.color.grey);
         viewSeperator1.setActivated(true);
-        viewSeperator1.setMinimumHeight(6);
+        viewSeperator1.setMinimumHeight((int) dp);
         linearLayout.addView(viewSeperator1);
     }
 
