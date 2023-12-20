@@ -5,12 +5,26 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
+
 import com.opencsv.CSVWriter;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+
 import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
@@ -22,7 +36,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_LAT = "lat";
     private static final String KEY_LNG = "lng";
     private static final String KEY_METERS_COVERED = "km";
-	private static final String KEY_SPEED = "speed";
+    private static final String KEY_SPEED = "speed";
     private static final String KEY_COMMENT = "comment";
     private static final String KEY_NUMBER_OF_RUN = "number_of_run";
     private static final String KEY_DATETIME_IN_MS = "date_time_ms";
@@ -72,6 +86,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //2nd argument is String containing nullColumnHack
         db.close(); // Closing database connection
     }
+
     public int getLastEntry() {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -102,6 +117,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " SELECT MAX(" + KEY_NUMBER_OF_RUN + ") FROM "
                 + TABLE_RUNS + ")");
     }
+
     public List<Run> getAllEntriesGroupedByRun() {
         List<Run> allEntryList = new ArrayList<Run>();
 
@@ -146,6 +162,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return allEntryList;
     }
+
     public List<Run> getSingleEntryForStatistics(int numberOfRun) {
         List<Run> allEntryList = new ArrayList<Run>();
 
@@ -190,6 +207,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return allEntryList;
     }
+
     public List<Run> getAllEntriesOrderedByRunNumber() {
         List<Run> allEntryList = new ArrayList<Run>();
 
@@ -220,6 +238,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return runs;
     }
+
     public List<Run> getSingleEntryOrderedByDateTime(int numberOfRun) {
         List<Run> allEntryList = new ArrayList<Run>();
 
@@ -246,6 +265,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return allEntryList;
     }
+
     public int countDataOfRun(int numberOfRun) {
         // Select All Query
         String selectQuery = "SELECT COUNT("
@@ -257,11 +277,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // looping through all rows and adding to list
         cursor.moveToFirst();
-        int count= cursor.getInt(0);
+        int count = cursor.getInt(0);
         cursor.close();
 
         return count;
     }
+
     public void delete() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_RUNS, null, null);
@@ -271,34 +292,126 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_RUNS, "number_of_run = ?", new String[]{String.valueOf(number_of_run)});
     }
+
+    public static void generateGfx(File file, String name, List<String> points) throws IOException {
+        FileWriter writer = new FileWriter(file, false);
+        String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"MapSource 6.15.5\" version=\"1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><trk>\n";
+        writer.append(header);
+        name = "<name>" + name + "</name><trkseg>\n";
+        writer.append(name);
+
+        String segments = "";
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        final Calendar cal = Calendar.getInstance();
+        int counter=1;
+        String lat = "", lon = "", timeInMillis = "", run = "";
+        for (String location : points) {
+            if(counter==4) {
+                cal.setTimeInMillis(Long.parseLong(location));
+                segments += "<trkpt lat=\"" + lat + "\" lon=\"" + lon + "\"><time>" + cal.getTime() + "</time><run>" + run + "</run></trkpt>\n";
+                writer.append(segments);
+                counter=1;
+            } else if(counter==3) {
+                run = location;
+                counter++;
+            } else if(counter==2){
+                lon = location;
+                counter++;
+            } else if(counter==1) {
+                lat = location;
+                counter++;
+            }
+        }
+
+        String footer = "</trkseg></trk></gpx>";
+
+        try {
+            writer.append(footer);
+            writer.flush();
+            writer.close();
+
+        } catch (IOException e) {
+            Log.e("generateGfx", "Error Writting Path", e);
+        }
+    }
+
     public void exportTableContent() {
         try {
-            file = new File(context.getExternalFilesDir(null), "run.csv");
-            file.createNewFile();
-            csvWrite = new CSVWriter(new FileWriter(file));
-            db = getReadableDatabase();
-            curCSV = db.rawQuery("SELECT * FROM " + TABLE_RUNS,null);
-            csvWrite.writeNext(curCSV.getColumnNames());
-            while(curCSV.moveToNext()) {
-                String arrStr[] ={curCSV.getString(0),
-                        curCSV.getString(1),
-                        curCSV.getString(2),
-                        curCSV.getString(3),
-                        curCSV.getString(4),
-                        curCSV.getString(5),
-                        curCSV.getString(6),
-                        curCSV.getString(7),
-                        curCSV.getString(8),
-                        curCSV.getString(9),
-                        curCSV.getString(10),
-                        curCSV.getString(11),
-                };
-                csvWrite.writeNext(arrStr);
-            }
-            csvWrite.close();
-            curCSV.close();
+//            List<String> position = new ArrayList<>();
+//            file = new File(context.getExternalFilesDir(null), "run.csv");
+//            file.createNewFile();
+//            csvWrite = new CSVWriter(new FileWriter(file));
+//            db = getReadableDatabase();
+//            curCSV = db.rawQuery("SELECT * FROM " + TABLE_RUNS, null);
+//            csvWrite.writeNext(curCSV.getColumnNames());
+
+//            while(curCSV.moveToNext()) {
+//                String arrStr[] ={curCSV.getString(0),
+//                        curCSV.getString(1),
+//                        curCSV.getString(2),
+//                        curCSV.getString(3),
+//                        curCSV.getString(4),
+//                        curCSV.getString(5),
+//                        curCSV.getString(6),
+//                        curCSV.getString(7),
+//                        curCSV.getString(8),
+//                        curCSV.getString(9),
+//                        curCSV.getString(10),
+//                        curCSV.getString(11),
+//                };
+//                String lat = curCSV.getString(2);
+//                String lon = curCSV.getString(3);
+//                String run = curCSV.getString(8);
+//                String timeInMilliseconds = curCSV.getString(9);
+//
+//                position.add(lat);
+//                position.add(lon);
+//                position.add(run);
+//                position.add(timeInMilliseconds);
+//                csvWrite.writeNext(arrStr);
+//            }
+//            csvWrite.close();
+//            curCSV.close();
+//            generateGfx(new File(context.getExternalFilesDir(null), "run1.csv"), null, position);
+            exportAllDatabases(context);
         } catch(Exception sqlEx) {
             Log.e("DatabaseHandler", sqlEx.getMessage(), sqlEx);
+        }
+    }
+    public static void exportAllDatabases(final Context context) {
+        final File[] databases = new File(context.getFilesDir().getParentFile().getPath() + "/databases").listFiles();
+            for (File databaseFile: databases) {
+                File backupFile = new File(context.getExternalFilesDir(null), databaseFile.getName() + "-" + System.currentTimeMillis() + ".db");
+                FileChannel inputChannel = null;
+                FileChannel outputChannel = null;
+
+                if(databaseFile.getName().startsWith("DATABASE")) {
+                    try {
+                        inputChannel = new FileInputStream(databaseFile.getAbsolutePath()).getChannel();
+                        outputChannel = new FileOutputStream(backupFile).getChannel();
+                        outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (inputChannel != null) {
+                            try {
+                                inputChannel.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if (outputChannel != null) {
+                            try {
+                                outputChannel.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                } else {
+                }
         }
     }
     public List<Run> getAllEntriesForYearCalculation() {

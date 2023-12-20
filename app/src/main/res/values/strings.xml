@@ -45,7 +45,7 @@
 
     <!-- Button activity_settings.xml -->
     <string name="save">Save</string>
-    <string name="export_all_entries_from_database">Export all entries from database</string>
+    <string name="export_database">Export database</string>
     <string name="export">Export</string>
     <string name="delete">Delete</string>
     <string name="kalmanfilter">Kalman-Filter</string>
@@ -106,4 +106,6 @@
     <string name="day_night_modus">Automatic day/night modus</string>
     <string name="enable_traffic">Enable traffic</string>
     <string name="time_speed">Time (in seconds)/Speed</string>
+    <string name="import_gpx_file">Import GPX file</string>
+    <string name="button_import">Import</string>
 </resources>

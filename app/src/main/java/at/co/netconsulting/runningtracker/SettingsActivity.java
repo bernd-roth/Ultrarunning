@@ -400,6 +400,10 @@ public class SettingsActivity extends BaseActivity {
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC);
     }
 
+    public void importGPX(View view) {
+
+    }
+
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

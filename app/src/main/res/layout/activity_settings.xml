@@ -215,7 +215,7 @@
                     android:id="@+id/textViewExportDatabase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/export_all_entries_from_database" />
+                    android:text="@string/export_database" />
 
                 <Button
                     android:id="@+id/buttonExport"
@@ -223,6 +223,29 @@
                     android:layout_height="wrap_content"
                     android:text="@string/export"
                     android:onClick="export"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
+<!--
+                <TextView
+                    android:id="@+id/textViewImportGPX"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/import_gpx_file" />
+
+                <Button
+                    android:id="@+id/buttonImport"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_import"
+                    android:onClick="importGPX"/>
+-->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
 
                 <TextView
                     android:id="@+id/textViewDeleteDatabase"
