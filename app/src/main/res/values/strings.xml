@@ -108,4 +108,5 @@
     <string name="time_speed">Time (in seconds)/Speed</string>
     <string name="import_gpx_file">Import GPX file</string>
     <string name="button_import">Import</string>
+    <string name="buttonCloseDialog">Close dialog</string>
 </resources>

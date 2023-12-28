@@ -555,102 +555,111 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             arrayAdapter.add(allEntries.get(i).getNumber_of_run() + ": " + allEntries.get(i).getDateTime() + "\n"
             + count + " points to load");
         }
-        builderSingle.setNegativeButton(getResources().getString(R.string.buttonWithoutColoring), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                int numberOfRun = allEntries.get(whichItemChecked[0]).getNumber_of_run();
+        if(allEntries.size()>0) {
+            builderSingle.setNegativeButton(getResources().getString(R.string.buttonWithoutColoring), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    int numberOfRun = allEntries.get(whichItemChecked[0]).getNumber_of_run();
 
-                final LatLng[] latLng = new LatLng[1];
+                    final LatLng[] latLng = new LatLng[1];
 
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                Handler handler = new Handler(Looper.getMainLooper());
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    Handler handler = new Handler(Looper.getMainLooper());
 
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        //Background work here
-                        List<Run> allEntries = db.getSingleEntryOrderedByDateTime(numberOfRun);
-                        for(int i = 0; i < allEntries.size(); i++) {
-                            latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
-                            mPolylinePoints.add(latLng[0]);
-                        }
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                //UI Thread work here
-                                mMap.clear();
-                                drawView.setVisibility(View.INVISIBLE);
-                                textViewSlow.setVisibility(View.INVISIBLE);
-                                textViewFast.setVisibility(View.INVISIBLE);
-                                mMap.addMarker(new MarkerOptions()
-                                        .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude))
-                                        .title(getString(R.string.starting_position)));
-                                polyline = mMap.addPolyline(new PolylineOptions().addAll(mPolylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-                                createCheckerFlag(mPolylinePoints);
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            //Background work here
+                            List<Run> allEntries = db.getSingleEntryOrderedByDateTime(numberOfRun);
+                            for (int i = 0; i < allEntries.size(); i++) {
+                                latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
+                                mPolylinePoints.add(latLng[0]);
                             }
-                        });
-                    }
-                });
-            }
-        });
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //UI Thread work here
+                                    mMap.clear();
+                                    drawView.setVisibility(View.INVISIBLE);
+                                    textViewSlow.setVisibility(View.INVISIBLE);
+                                    textViewFast.setVisibility(View.INVISIBLE);
+                                    mMap.addMarker(new MarkerOptions()
+                                            .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude))
+                                            .title(getString(R.string.starting_position)));
+                                    polyline = mMap.addPolyline(new PolylineOptions().addAll(mPolylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+                                    createCheckerFlag(mPolylinePoints);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            builderSingle.setNeutralButton("Show", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    int numberOfRun = allEntries.get(whichItemChecked[0]).getNumber_of_run();
+
+                    final LatLng[] latLng = new LatLng[1];
+
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    Handler handler = new Handler(Looper.getMainLooper());
+
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            //Background work here
+                            List<Run> allEntries = db.getSingleEntryOrderedByDateTime(numberOfRun);
+                            List<ColoredPoint> sourcePoints = new ArrayList<>();
+
+                            for(int i = 0; i<allEntries.size(); i++) {
+                                latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
+                                //FIXME make speed adjustable
+                                if(allEntries.get(i).getSpeed()>8) { //running is over 8-10 km/h
+                                    sourcePoints.add(new ColoredPoint(latLng[0], Color.GREEN));
+                                } else if(allEntries.get(i).getSpeed()>6 && // jogging is 6-8 km/h
+                                        allEntries.get(i).getSpeed()<8){
+                                    sourcePoints.add(new ColoredPoint(latLng[0], Color.YELLOW));
+                                } else { // walking is around 5.5-6 km/h
+                                    sourcePoints.add(new ColoredPoint(latLng[0], Color.RED));
+                                }
+                                mPolylinePoints.add(latLng[0]);
+                            }
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //UI Thread work here
+                                    showPolyline(sourcePoints);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            builderSingle.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    String numberOfRun = arrayAdapter.getItem(whichItemChecked[0]);
+                    String[] splittedString = numberOfRun.split(":");
+                    int intNumberOfRun = Integer.parseInt(splittedString[0]);
+
+                    db.deleteSingleEntry(intNumberOfRun);
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.single_entry_deleted), Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            builderSingle.setNegativeButton(getResources().getString(R.string.buttonCloseDialog), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+        }
 
         builderSingle.setSingleChoiceItems(arrayAdapter, checkedItem, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // user checked an item
                 whichItemChecked[0] = which;
-            }
-        });
-        builderSingle.setNeutralButton("Show", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                int numberOfRun = allEntries.get(whichItemChecked[0]).getNumber_of_run();
-
-                final LatLng[] latLng = new LatLng[1];
-
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                Handler handler = new Handler(Looper.getMainLooper());
-
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        //Background work here
-                        List<Run> allEntries = db.getSingleEntryOrderedByDateTime(numberOfRun);
-                        List<ColoredPoint> sourcePoints = new ArrayList<>();
-
-                        for(int i = 0; i<allEntries.size(); i++) {
-                            latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
-                            //FIXME make speed adjustable
-                            if(allEntries.get(i).getSpeed()>8) { //running is over 8-10 km/h
-                                sourcePoints.add(new ColoredPoint(latLng[0], Color.GREEN));
-                            } else if(allEntries.get(i).getSpeed()>6 && // jogging is 6-8 km/h
-                                    allEntries.get(i).getSpeed()<8){
-                                sourcePoints.add(new ColoredPoint(latLng[0], Color.YELLOW));
-                            } else { // walking is around 5.5-6 km/h
-                                sourcePoints.add(new ColoredPoint(latLng[0], Color.RED));
-                            }
-                            mPolylinePoints.add(latLng[0]);
-                        }
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                //UI Thread work here
-                                showPolyline(sourcePoints);
-                            }
-                        });
-                    }
-                });
-            }
-        });
-        builderSingle.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                String numberOfRun = arrayAdapter.getItem(whichItemChecked[0]);
-                String[] splittedString = numberOfRun.split(":");
-                int intNumberOfRun = Integer.parseInt(splittedString[0]);
-
-                db.deleteSingleEntry(intNumberOfRun);
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.single_entry_deleted), Toast.LENGTH_LONG).show();
             }
         });
         setAlertDialogWithSpecificHeight(builderSingle);
