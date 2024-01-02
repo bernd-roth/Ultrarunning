@@ -25,9 +25,15 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.preference.PreferenceFragmentCompat;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Objects;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
@@ -44,7 +50,8 @@ public class SettingsActivity extends BaseActivity {
     private EditText editTextNumberSignedMinimumDistanceMeter, editTextPerson;
     private Button buttonSave,
             buttonExport,
-            buttonDelete;
+            buttonDelete,
+            buttonImport;
     private String mapType, recordingProfil;
     private RadioButton radioButtonNormal,
             radioButtonHybrid,
@@ -200,6 +207,9 @@ public class SettingsActivity extends BaseActivity {
 
         buttonDelete = findViewById(R.id.buttonDelete);
         buttonDelete.setTransformationMethod(null);
+
+        buttonImport = findViewById(R.id.buttonImport);
+        buttonImport.setTransformationMethod(null);
 
         progressDialog = new ProgressDialog(SettingsActivity.this);
         progressDialog.setMessage("Exporting..."); // Setting Message
@@ -420,29 +430,25 @@ public class SettingsActivity extends BaseActivity {
                 public void onActivityResult(ActivityResult result) {
                     // Handle the returned Uri
                     Log.d("onActivityResult", "FileChooser works");
-                    ContentResolver resolver = getContentResolver();
-                    baseDocumentTreeUri = Objects.requireNonNull(result.getData()).getData();
 
-                    try (InputStream stream = resolver.openInputStream(baseDocumentTreeUri)) {
-                        // Perform operations on "stream".
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-                        StringBuilder builder = new StringBuilder();
-                        String line;
-
-                        while (true) {
-                            if (!((line = reader.readLine()) != null))
-                                break;
-                            builder.append(line);
-                        }
-                        String s = builder.toString();
-                        Log.d("StringBuilder", s);
+                    try {
+                        InputStream is = getContentResolver().openInputStream(result.getData().getData());
+                        Uri uri = Uri.fromFile(new File(getApplicationContext().getFilesDir().getParentFile().getPath() + "/databases/DATABASE_RUN"));
+                        OutputStream out = getContentResolver().openOutputStream(uri);
+                        copy(is, out);
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-
                 }
             });
-
+    private void copy(final InputStream in, final OutputStream out) throws IOException {
+        final byte[] b = new byte[8192];
+        for (int r; (r = in.read(b)) != -1;) {
+            out.write(b, 0, r);
+        }
+    }
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

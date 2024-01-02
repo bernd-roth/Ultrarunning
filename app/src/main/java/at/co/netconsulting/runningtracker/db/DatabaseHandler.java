@@ -380,38 +380,38 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     public static void exportAllDatabases(final Context context) {
         final File[] databases = new File(context.getFilesDir().getParentFile().getPath() + "/databases").listFiles();
-            for (File databaseFile: databases) {
-                File backupFile = new File(context.getExternalFilesDir(null), databaseFile.getName() + "-" + System.currentTimeMillis() + ".db");
-                FileChannel inputChannel = null;
-                FileChannel outputChannel = null;
+        for (File databaseFile: databases) {
+            File backupFile = new File(context.getExternalFilesDir(null), databaseFile.getName());
+            FileChannel inputChannel = null;
+            FileChannel outputChannel = null;
 
-                if(databaseFile.getName().startsWith("DATABASE")) {
-                    try {
-                        inputChannel = new FileInputStream(databaseFile.getAbsolutePath()).getChannel();
-                        outputChannel = new FileOutputStream(backupFile).getChannel();
-                        outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (inputChannel != null) {
-                            try {
-                                inputChannel.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        if (outputChannel != null) {
-                            try {
-                                outputChannel.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+            if(databaseFile.getName().startsWith("DATABASE")) {
+                try {
+                    inputChannel = new FileInputStream(databaseFile.getAbsolutePath()).getChannel();
+                    outputChannel = new FileOutputStream(backupFile).getChannel();
+                    outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (inputChannel != null) {
+                        try {
+                            inputChannel.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
-                } else {
+                    if (outputChannel != null) {
+                        try {
+                            outputChannel.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
+            } else {
+            }
         }
     }
     public List<Run> getAllEntriesForYearCalculation() {
