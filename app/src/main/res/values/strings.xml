@@ -82,7 +82,7 @@
     <string name="reduceTooManyLatLng">Reduce too many LatLng points</string>
     <string name="all_entries_deleted">All entries successfully deleted!</string>
     <string name="single_entry_deleted">Single entry successfully deleted!</string>
-    <string name="save_settings_map_type_rec_profil_runners_name">Google map type, Recording Profil, Runner`s name were saved</string>
+    <string name="save_settings_map_type_rec_profil_runners_name">Google map type, Recording Profil, Runner`s name, and backup database were saved</string>
     <string name="distance_speed">Distance (in meter)/Speed</string>
     <string name="distance_per_km_h">Distance per km/h</string>
     <string name="dialog_message">Are you sure to delete all entries?</string>
@@ -109,4 +109,5 @@
     <string name="import_database_file">Import database</string>
     <string name="button_import">Import</string>
     <string name="buttonCloseDialog">Close dialog</string>
+    <string name="export_database_scheduled">Backup database every x day (0 will be omitted and treated as 1)</string>
 </resources>

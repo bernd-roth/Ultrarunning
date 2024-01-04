@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.opencsv.CSVWriter;
 
@@ -26,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import at.co.netconsulting.runningtracker.pojo.Run;
+import timber.log.Timber;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 7;
@@ -337,81 +339,38 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void exportTableContent() {
         try {
-//            List<String> position = new ArrayList<>();
-            file = new File(context.getExternalFilesDir(null), "run.csv");
-            file.createNewFile();
-            csvWrite = new CSVWriter(new FileWriter(file));
-            db = getReadableDatabase();
-            curCSV = db.rawQuery("SELECT * FROM " + TABLE_RUNS, null);
-            csvWrite.writeNext(curCSV.getColumnNames());
-
-            while(curCSV.moveToNext()) {
-                String arrStr[] ={curCSV.getString(0),
-                        curCSV.getString(1),
-                        curCSV.getString(2),
-                        curCSV.getString(3),
-                        curCSV.getString(4),
-                        curCSV.getString(5),
-                        curCSV.getString(6),
-                        curCSV.getString(7),
-                        curCSV.getString(8),
-                        curCSV.getString(9),
-                        curCSV.getString(10),
-                        curCSV.getString(11),
-                };
-//                String lat = curCSV.getString(2);
-//                String lon = curCSV.getString(3);
-//                String run = curCSV.getString(8);
-//                String timeInMilliseconds = curCSV.getString(9);
-//
-//                position.add(lat);
-//                position.add(lon);
-//                position.add(run);
-//                position.add(timeInMilliseconds);
-                csvWrite.writeNext(arrStr);
-            }
-            csvWrite.close();
-            curCSV.close();
-//            generateGfx(new File(context.getExternalFilesDir(null), "run1.csv"), null, position);
             exportAllDatabases(context);
         } catch(Exception sqlEx) {
             Log.e("DatabaseHandler", sqlEx.getMessage(), sqlEx);
         }
     }
     public static void exportAllDatabases(final Context context) {
-        final File[] databases = new File(context.getFilesDir().getParentFile().getPath() + "/databases").listFiles();
-        for (File databaseFile: databases) {
-            File backupFile = new File(context.getExternalFilesDir(null), databaseFile.getName());
-            FileChannel inputChannel = null;
-            FileChannel outputChannel = null;
+        try {
+            File download_folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File data = Environment.getDataDirectory();
+            final File[] databases = new File(context.getFilesDir().getParentFile().getPath() + "/databases").listFiles();
 
-            if(databaseFile.getName().startsWith("DATABASE")) {
-                try {
-                    inputChannel = new FileInputStream(databaseFile.getAbsolutePath()).getChannel();
-                    outputChannel = new FileOutputStream(backupFile).getChannel();
-                    outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (inputChannel != null) {
-                        try {
-                            inputChannel.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if (outputChannel != null) {
-                        try {
-                            outputChannel.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+            for (File databaseFile : databases) {
+                if (download_folder.canWrite()) {
+                    if (databaseFile.getName().startsWith("DATABASE_RUN")) {
+                        String currentDBPath = "//data//" + context.getPackageName() + "//databases//DATABASE_RUN";
+                        String backupDBPath = databaseFile.getName() + "_" + System.currentTimeMillis();
+                        File currentDB = new File(data, currentDBPath);
+                        File backupDB = new File(download_folder, backupDBPath);
+
+                        if (currentDB.exists()) {
+                            FileChannel src = new FileInputStream(currentDB).getChannel();
+                            FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                            dst.transferFrom(src, 0, src.size());
+                            src.close();
+                            dst.close();
                         }
                     }
                 }
-            } else {
             }
+        } catch (Exception e) {
+            Toast.makeText(context, "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Timber.e("DatabaseHandler: Exception: " + e.getMessage());
         }
     }
     public List<Run> getAllEntriesForYearCalculation() {

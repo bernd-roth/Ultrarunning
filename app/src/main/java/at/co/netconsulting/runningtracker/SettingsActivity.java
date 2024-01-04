@@ -1,8 +1,10 @@
 package at.co.netconsulting.runningtracker;
 
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,30 +26,27 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.preference.PreferenceFragmentCompat;
-import java.io.BufferedReader;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Objects;
+
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
-import io.ticofab.androidgpxparser.parser.GPXParser;
-import io.ticofab.androidgpxparser.parser.domain.Gpx;
 
 public class SettingsActivity extends BaseActivity {
     private SharedPreferences sharedpreferences;
-    private EditText editTextNumberSignedMinimumTimeMs;
-    private EditText editTextNumberSignedMinimumDistanceMeter, editTextPerson;
+    private EditText editTextNumberSignedMinimumDistanceMeter, editTextPerson,
+            editTextNumberSignedMinimumTimeMs, editTextNumber;
     private Button buttonSave,
             buttonExport,
             buttonDelete,
@@ -64,7 +63,7 @@ public class SettingsActivity extends BaseActivity {
             radioButtonMaximumSavingBattery,
 //            radioButtonFast,
             radioButtonIndividual;
-    private int minDistanceMeter;
+    private int minDistanceMeter, numberInDays;
     private long minTimeMs;
     private DatabaseHandler db;
     private ProgressDialog progressDialog;
@@ -73,6 +72,7 @@ public class SettingsActivity extends BaseActivity {
     private Switch switchBatteryOptimization, switchDayNightModus, switchEnableTraffic;
     private ActivityResultLauncher<Intent> launcher; // Initialise this object in Activity.onCreate()
     private Uri baseDocumentTreeUri;
+    PendingIntent pendingIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +90,7 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_BATTERY_OPTIMIZATION);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -171,6 +172,11 @@ public class SettingsActivity extends BaseActivity {
                 isTrafficEnabled = sh.getBoolean(sharedPrefKey, false);
                 switchEnableTraffic.setChecked(isTrafficEnabled);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                numberInDays = sh.getInt(sharedPrefKey, 1);
+                editTextNumber.setText("" + numberInDays);
+                break;
         }
     }
 
@@ -184,6 +190,7 @@ public class SettingsActivity extends BaseActivity {
         editTextNumberSignedMinimumTimeMs = findViewById(R.id.editTextNumberSignedMinimumTimeMs);
         editTextNumberSignedMinimumDistanceMeter = findViewById(R.id.editTextNumberSignedMinimumDistanceMeter);
         editTextPerson = findViewById(R.id.editTextPerson);
+        editTextNumber = findViewById(R.id.editTextNumber);
 
         buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setTransformationMethod(null);
@@ -334,6 +341,13 @@ public class SettingsActivity extends BaseActivity {
             boolean isTrafficEnabled = switchEnableTraffic.isChecked();
             editor.putBoolean(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC, isTrafficEnabled);
             editor.commit();
+        }  else if(sharedPreference.equals("SCHEDULE_SAVE")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            int numberInDays = Integer.parseInt(editTextNumber.getText().toString());
+            editor.putInt(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE, numberInDays);
+            editor.commit();
         }
     }
     public void onClickRadioButtonBatteryGroup(View view) {
@@ -459,7 +473,34 @@ public class SettingsActivity extends BaseActivity {
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
+        saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
+        scheduleDatabaseBackup();
         Toast.makeText(getApplicationContext(), R.string.save_settings_map_type_rec_profil_runners_name, Toast.LENGTH_LONG).show();
+    }
+    private void scheduleDatabaseBackup() {
+        int scheduledDays = Integer.parseInt(editTextNumber.getText().toString())*24;
+
+        if(scheduledDays == 0) {
+            scheduledDays = 1;
+        }
+
+        Long time;
+        ArrayList scheduledAlarms = new ArrayList();
+
+        Intent intentAlarm = new Intent(this, AlarmReceiver.class);
+
+        for(int i = 1; i<=1000; i++) {
+            time = new GregorianCalendar().getTimeInMillis()+scheduledDays*i*60*60*1000;
+            scheduledAlarms.add(time);
+        }
+        intentAlarm.putExtra("scheduled_alarm", scheduledAlarms);
+
+        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT |
+                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        time = (Long) scheduledAlarms.get(0);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent);
     }
     public void delete(View view) {
         Button buttonDelete = (Button)view;

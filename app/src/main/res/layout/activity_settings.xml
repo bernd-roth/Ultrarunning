@@ -199,30 +199,30 @@
                     android:hint="@string/anonym_person"
                     android:inputType="text" />
 
-                <Button
-                    android:id="@+id/buttonSave"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/save"
-                    android:onClick="save"/>
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
                     android:background="#c0c0c0"/>
 
                 <TextView
-                    android:id="@+id/textViewExportDatabase"
+                    android:id="@+id/textViewExportDatabaseScheduled"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/export_database" />
+                    android:text="@string/export_database_scheduled" />
+
+                <EditText
+                    android:id="@+id/editTextNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number" />
 
                 <Button
-                    android:id="@+id/buttonExport"
+                    android:id="@+id/buttonSave"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/export"
-                    android:onClick="export"/>
+                    android:text="@string/save"
+                    android:onClick="save"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -241,6 +241,24 @@
                     android:layout_height="wrap_content"
                     android:text="@string/button_import"
                     android:onClick="importGPX"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
+
+                <TextView
+                    android:id="@+id/textViewExportDatabase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_database" />
+
+                <Button
+                    android:id="@+id/buttonExport"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export"
+                    android:onClick="export"/>
 
                 <View
                     android:layout_width="match_parent"
