@@ -216,7 +216,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Select All Query
         String selectQuery = "SELECT "
                 + KEY_NUMBER_OF_RUN + ", "
-                + KEY_DATE_TIME
+                + KEY_DATE_TIME + ", "
+                + KEY_COMMENT + ", "
+                + KEY_METERS_COVERED
                 + " FROM " + TABLE_RUNS + " GROUP BY "
                 + KEY_NUMBER_OF_RUN + " ORDER BY "
                 + KEY_NUMBER_OF_RUN + " DESC";
@@ -233,6 +235,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
                 run.setNumber_of_run(cursor.getInt(0));
                 run.setDateTime(cursor.getString(1));
+                run.setComment(cursor.getString(2));
+                run.setMeters_covered(cursor.getDouble(3));
 
                 runs.add(run);
             } while (cursor.moveToNext());

@@ -115,10 +115,15 @@ public class StatisticsActivity extends AppCompatActivity {
         ArrayList parsedToStringRun = new ArrayList<String>();
 
         for(Run run : db.getAllEntriesOrderedByRunNumber()) {
-            parsedToStringRun.add(run.getNumber_of_run() + ":" + run.getDateTime());
+            String meters_covered = String.format("%.2f", run.getMeters_covered()/1000);
+            parsedToStringRun.add(run.getNumber_of_run() + ":" + run.getDateTime()
+                    + "\nDistance: " + meters_covered + " Km"
+                    + "\nComment: " + run.getComment());
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, parsedToStringRun);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, parsedToStringRun);
+        adapter.setDropDownViewResource(android.R.layout.simple_expandable_list_item_1);
+
         spinnerRunChoose.setAdapter(adapter);
     }
 
