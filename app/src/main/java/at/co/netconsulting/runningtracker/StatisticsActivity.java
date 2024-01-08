@@ -30,9 +30,13 @@ import com.github.mikephil.charting.utils.Utils;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
@@ -44,9 +48,11 @@ public class StatisticsActivity extends AppCompatActivity {
     private List<Run> listOfRun;
     private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed,
             textViewSlowestLap, textViewFastestLap, textViewStartingElevation,
-            textViewEndingElevation, textViewHighestElevation, textViewTotalElevation;
+            textViewEndingElevation, textViewHighestElevation, textViewTotalElevation,
+            textViewMovementTime;
     private float maxSpeed, avgSpeed, totalDistance;
-    private double totalElevation, highestElevation, lastElevationPoint, sumElevation;
+    private double  totalElevation, highestElevation, lastElevationPoint, sumElevation;
+    private String totalMovementTime;
     private List<Float> listSpeed;
     private TableLayout tableSection, tableHeader, tableYearSection, tableHeaderYear;
     private TextView txtGeneric, txtGenericYear;
@@ -65,11 +71,26 @@ public class StatisticsActivity extends AppCompatActivity {
         callDatabase();
         calcAvgSpeedMaxSpeedTotalDistance();
         calcElevation();
+        calcMovementTime();
         renderData();
         renderDataTimeSpeed();
         setData();
         setDataRenderDataTimeSpeed();
         //setTextView();
+    }
+
+    private void calcMovementTime() {
+        if(listOfRun.size()>0) {
+            long firstElement = listOfRun.get(0).getDateTimeInMs();
+            long lastElement = listOfRun.get(listOfRun.size()-1).getDateTimeInMs();
+
+            long calcResult = lastElement-firstElement;
+
+            Duration duration = Duration.ofMillis(calcResult);
+
+            totalMovementTime = String.format("%02d:%02d:%02d:%02d", duration.toDays(), duration.toHours() % 24,
+                    duration.toMinutes() % 60, duration.getSeconds() % 60);
+        }
     }
 
     private void calcElevation() {
@@ -244,6 +265,8 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewHighestElevation.setText(String.format("Highest elevation: %03f meter", highestElevation));
         //Total elevation
         textViewTotalElevation.setText(String.format("Total elevation: %03f meter", totalElevation));
+        //Movement time
+        textViewMovementTime.setText(String.format("Total movement time: %s", totalMovementTime));
     }
 
     private void initializeObjects() {
@@ -264,6 +287,7 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewEndingElevation = findViewById(R.id.textViewEndingElevation);
         textViewHighestElevation = findViewById(R.id.textViewHighestElevation);
         textViewTotalElevation = findViewById(R.id.textViewTotalElevation);
+        textViewMovementTime = findViewById(R.id.textViewMovementTime);
 
         tableHeader = (TableLayout)findViewById(R.id.tableHeader);
         tableSection = (TableLayout)findViewById(R.id.tableSection);
