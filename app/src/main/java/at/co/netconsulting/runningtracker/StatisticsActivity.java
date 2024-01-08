@@ -258,13 +258,13 @@ public class StatisticsActivity extends AppCompatActivity {
         //slowest lap
         textViewSlowestLap.setText(String.format("Slowest lap: %03d", fastestSlowestLap.get(1)));
         //starting elevation
-        textViewStartingElevation.setText(String.format("Starting elevation: %03f meter", listOfRun.get(0).getAltitude()));
+        textViewStartingElevation.setText(String.format("Starting elevation: %.3f meter", listOfRun.get(0).getAltitude()));
         //ending elevation
-        textViewEndingElevation.setText(String.format("Ending elevation: %03f meter", listOfRun.get(listOfRun.size() - 1).getAltitude()));
+        textViewEndingElevation.setText(String.format("Ending elevation: %.3f meter", listOfRun.get(listOfRun.size() - 1).getAltitude()));
         //highest elevation
-        textViewHighestElevation.setText(String.format("Highest elevation: %03f meter", highestElevation));
+        textViewHighestElevation.setText(String.format("Highest elevation: %.3f meter", highestElevation));
         //Total elevation
-        textViewTotalElevation.setText(String.format("Total elevation: %03f meter", totalElevation));
+        textViewTotalElevation.setText(String.format("Total elevation: %.3f meter", totalElevation));
         //Movement time
         textViewMovementTime.setText(String.format("Total movement time: %s", totalMovementTime));
     }
@@ -314,6 +314,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 setData();
 
                 calcElevation();
+                calcMovementTime();
 
                 //second graph
                 renderDataTimeSpeed();
