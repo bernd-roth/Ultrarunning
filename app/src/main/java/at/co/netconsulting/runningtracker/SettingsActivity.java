@@ -480,27 +480,25 @@ public class SettingsActivity extends BaseActivity {
     private void scheduleDatabaseBackup() {
         int scheduledDays = Integer.parseInt(editTextNumber.getText().toString())*24;
 
-        if(scheduledDays == 0) {
-            scheduledDays = 1;
+        if(scheduledDays > 0) {
+            Long time;
+            ArrayList scheduledAlarms = new ArrayList();
+
+            Intent intentAlarm = new Intent(this, AlarmReceiver.class);
+
+            for (int i = 1; i <= 1000; i++) {
+                time = new GregorianCalendar().getTimeInMillis() + scheduledDays * i * 60 * 60 * 1000;
+                scheduledAlarms.add(time);
+            }
+            intentAlarm.putExtra("scheduled_alarm", scheduledAlarms);
+
+            pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT |
+                    PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
+
+            AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+            time = (Long) scheduledAlarms.get(0);
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent);
         }
-
-        Long time;
-        ArrayList scheduledAlarms = new ArrayList();
-
-        Intent intentAlarm = new Intent(this, AlarmReceiver.class);
-
-        for(int i = 1; i<=1000; i++) {
-            time = new GregorianCalendar().getTimeInMillis()+scheduledDays*i*60*60*1000;
-            scheduledAlarms.add(time);
-        }
-        intentAlarm.putExtra("scheduled_alarm", scheduledAlarms);
-
-        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT |
-                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
-
-        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        time = (Long) scheduledAlarms.get(0);
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent);
     }
     public void delete(View view) {
         Button buttonDelete = (Button)view;
