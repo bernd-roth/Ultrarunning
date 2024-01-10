@@ -635,15 +635,40 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     });
                 }
             });
-            builderSingle.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            builderSingle.setPositiveButton("Update", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+                    builder.setCancelable(true);
+
                     String numberOfRun = arrayAdapter.getItem(whichItemChecked[0]);
                     String[] splittedString = numberOfRun.split(":");
                     int intNumberOfRun = Integer.parseInt(splittedString[0]);
+                    List<Run> run = db.getLastCommentEntryOfSelectedRun(intNumberOfRun);
 
-                    db.deleteSingleEntry(intNumberOfRun);
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.single_entry_deleted), Toast.LENGTH_LONG).show();
+                    final EditText edittext = new EditText(MapsActivity.this);
+                    edittext.setHint(run.get(0).getComment());
+
+                    builder.setTitle("Enter your new comment here");
+                    builder.setView(edittext);
+                    builder.setPositiveButton(
+                            "Update",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    db.updateCommentById(intNumberOfRun, edittext.getText().toString());
+                                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.update_entry), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                    builder.setNegativeButton(
+                            "Delete",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    db.deleteSingleEntry(intNumberOfRun);
+                                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.single_entry_deleted), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
             });
         } else {

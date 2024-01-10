@@ -119,6 +119,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " SELECT MAX(" + KEY_NUMBER_OF_RUN + ") FROM "
                 + TABLE_RUNS + ")");
     }
+    public void updateCommentById(int id, String comment) {
+        ContentValues cv = new ContentValues();
+        cv.put(KEY_COMMENT, comment);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE " + TABLE_RUNS + " SET " + KEY_COMMENT
+                + " = \"" + comment + "\" WHERE " + KEY_NUMBER_OF_RUN
+                + " = " + id);
+    }
 
     public List<Run> getAllEntriesGroupedByRun() {
         List<Run> allEntryList = new ArrayList<Run>();
@@ -265,6 +274,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setLat(cursor.getDouble(0));
                 run.setLng(cursor.getDouble(1));
                 run.setSpeed(cursor.getFloat(2));
+                allEntryList.add(run);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return allEntryList;
+    }
+    public List<Run> getLastCommentEntryOfSelectedRun(int numberOfRun) {
+        List<Run> allEntryList = new ArrayList<Run>();
+
+        // Select All Query
+        String selectQuery = "SELECT "
+                + KEY_COMMENT
+                + " FROM " + TABLE_RUNS + " WHERE " + KEY_NUMBER_OF_RUN + " = " + numberOfRun;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Run run = new Run();
+                run.setComment(cursor.getString(0));
                 allEntryList.add(run);
             } while (cursor.moveToNext());
         }
