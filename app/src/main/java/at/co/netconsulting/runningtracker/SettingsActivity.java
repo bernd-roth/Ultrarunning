@@ -498,6 +498,14 @@ public class SettingsActivity extends BaseActivity {
             AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
             time = (Long) scheduledAlarms.get(0);
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent);
+        } else {
+            Intent intentAlarm = new Intent(this, AlarmReceiver.class);
+
+            pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT |
+                    PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
+
+            AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(pendingIntent);
         }
     }
     public void delete(View view) {
