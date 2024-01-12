@@ -5,6 +5,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,16 +21,23 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +46,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.FrameMetricsAggregator;
+
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -104,6 +114,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private TextView textViewFast, textViewSlow;
     private MapScaleView scaleView;
     private CameraPosition camPos;
+    private Dialog dialog_data;
+    private ArrayAdapter<String> arrayAdapter = null;
+    private int positionOfTrack;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -527,7 +541,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         }
     }
 
-    private void showAlertDialogWithTracks() {
+    /*private void showAlertDialogWithTracks() {
         DatabaseHandler db = new DatabaseHandler(this);
         List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
         int checkedItem = 0;
@@ -688,6 +702,76 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             }
         });
         setAlertDialogWithSpecificHeight(builderSingle);
+    }*/
+
+    private void showAlertDialogWithTracks(){
+        DatabaseHandler db = new DatabaseHandler(this);
+        List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
+        int checkedItem = 0;
+        final int[] whichItemChecked = new int[1];
+
+        dialog_data = new Dialog(MapsActivity.this);
+
+        dialog_data.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog_data.getWindow().setGravity(Gravity.CENTER);
+        dialog_data.setContentView(R.layout.custom_list);
+
+        WindowManager.LayoutParams lp_number_picker = new WindowManager.LayoutParams();
+        Window window = dialog_data.getWindow();
+        lp_number_picker.copyFrom(window.getAttributes());
+
+        lp_number_picker.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp_number_picker.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        window.setGravity(Gravity.CENTER);
+        window.setAttributes(lp_number_picker);
+
+        EditText filterText = (EditText) dialog_data.findViewById(R.id.alertdialog_edittext);
+        ListView alertdialog_Listview = (ListView) dialog_data.findViewById(R.id.alertdialog_Listview);
+        alertdialog_Listview.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
+        if(mPolylinePoints.size()>0) {
+            mPolylinePoints.clear();
+        }
+
+
+        arrayAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.custom_text_view);
+        for(int i = 0; i<allEntries.size(); i++) {
+            int count = db.countDataOfRun(allEntries.get(i).getNumber_of_run());
+            arrayAdapter.add(allEntries.get(i).getNumber_of_run() + ": " + allEntries.get(i).getDateTime() + "\n"
+                    + count + " points to load" + "\nComment: " + allEntries.get(i).getComment());
+        }
+
+        alertdialog_Listview.setAdapter(arrayAdapter);
+        alertdialog_Listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> a, View v, int position, long id) {
+                String numberOfRun = ( (TextView) v ).getText().toString();
+                String[] splittedString = numberOfRun.split(":");
+                int intNumberOfRun = Integer.parseInt(splittedString[0]);
+                positionOfTrack = intNumberOfRun;
+            }
+        });
+
+        filterText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("Trackname", s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Log.d("Filter", s.toString());
+                arrayAdapter.getFilter().filter(s);
+            }
+        });
+        dialog_data.show();
     }
 
     private void setAlertDialogWithSpecificHeight(AlertDialog.Builder builderSingle) {
@@ -833,5 +917,139 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     public void onCameraIdle() {
         camPos = mMap.getCameraPosition();
         scaleView.update(camPos.zoom, camPos.target.latitude);
+    }
+
+    public void showTrack(View view) {
+        String fullName = getResources().getResourceName(view.getId());
+        String name = fullName.substring(fullName.lastIndexOf("/") + 1);
+
+        if (name.equals("defaulttrack")) {
+            DatabaseHandler db = new DatabaseHandler(this);
+            List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
+            int numberOfRun = 0;
+            for(int i = 0; i<allEntries.size(); i++) {
+                if(allEntries.get(i).getNumber_of_run() == positionOfTrack) {
+                    numberOfRun = allEntries.get(i).getNumber_of_run();
+                }
+            }
+
+            final LatLng[] latLng = new LatLng[1];
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Handler handler = new Handler(Looper.getMainLooper());
+            int finalNumberOfRun = numberOfRun;
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    //Background work here
+                    List<Run> allEntries = db.getSingleEntryOrderedByDateTime(finalNumberOfRun);
+                    for (int i = 0; i < allEntries.size(); i++) {
+                        latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
+                        mPolylinePoints.add(latLng[0]);
+                    }
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            //UI Thread work here
+                            mMap.clear();
+                            drawView.setVisibility(View.INVISIBLE);
+                            textViewSlow.setVisibility(View.INVISIBLE);
+                            textViewFast.setVisibility(View.INVISIBLE);
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude))
+                                    .title(getString(R.string.starting_position)));
+                            polyline = mMap.addPolyline(new PolylineOptions().addAll(mPolylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+                            createCheckerFlag(mPolylinePoints);
+                            dialog_data.cancel();
+                        }
+                    });
+                }
+            });
+        } else if(name.equals("colouredtrack")) {
+            DatabaseHandler db = new DatabaseHandler(this);
+            List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
+            int numberOfRun = 0;
+            for(int i = 0; i<allEntries.size(); i++) {
+                if(allEntries.get(i).getNumber_of_run() == positionOfTrack) {
+                    numberOfRun = allEntries.get(i).getNumber_of_run();
+                }
+            }
+            int finalNumberOfRun = numberOfRun;
+            final LatLng[] latLng = new LatLng[1];
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Handler handler = new Handler(Looper.getMainLooper());
+
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    //Background work here
+                    List<Run> allEntries = db.getSingleEntryOrderedByDateTime(finalNumberOfRun);
+                    List<ColoredPoint> sourcePoints = new ArrayList<>();
+
+                    for(int i = 0; i<allEntries.size(); i++) {
+                        latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
+                        //FIXME make speed adjustable
+                        if(allEntries.get(i).getSpeed()>8) { //running is over 8-10 km/h
+                            sourcePoints.add(new ColoredPoint(latLng[0], Color.GREEN));
+                        } else if(allEntries.get(i).getSpeed()>6 && // jogging is 6-8 km/h
+                                allEntries.get(i).getSpeed()<8){
+                            sourcePoints.add(new ColoredPoint(latLng[0], Color.YELLOW));
+                        } else { // walking is around 5.5-6 km/h
+                            sourcePoints.add(new ColoredPoint(latLng[0], Color.RED));
+                        }
+                        mPolylinePoints.add(latLng[0]);
+                    }
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            //UI Thread work here
+                            showPolyline(sourcePoints);
+                            dialog_data.cancel();
+                        }
+                    });
+                }
+            });
+        } else {
+            DatabaseHandler db = new DatabaseHandler(this);
+            List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
+            int numberOfRun = 0;
+            for(int i = 0; i<allEntries.size(); i++) {
+                if(allEntries.get(i).getNumber_of_run() == positionOfTrack) {
+                    numberOfRun = allEntries.get(i).getNumber_of_run();
+                }
+            }
+
+            int finalNumberOfRun = numberOfRun;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+            builder.setCancelable(true);
+
+            List<Run> run = db.getLastCommentEntryOfSelectedRun(numberOfRun);
+
+            final EditText edittext = new EditText(MapsActivity.this);
+            edittext.setHint(run.get(0).getComment());
+
+            builder.setTitle("Enter your new comment here");
+            builder.setView(edittext);
+            builder.setPositiveButton(
+                    "Update",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            db.updateCommentById(finalNumberOfRun, edittext.getText().toString());
+                            Toast.makeText(getApplicationContext(), getResources().getString(R.string.update_entry), Toast.LENGTH_LONG).show();
+                        }
+                    });
+            builder.setNegativeButton(
+                    "Delete",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            db.deleteSingleEntry(finalNumberOfRun);
+                            Toast.makeText(getApplicationContext(), getResources().getString(R.string.single_entry_deleted), Toast.LENGTH_LONG).show();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
     }
 }
