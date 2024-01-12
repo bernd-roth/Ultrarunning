@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="left|bottom"
                 android:onClick="showTrack"
-                android:text="Show track" />
+                android:text="@string/showtrack" />
 
             <Button
                 android:id="@+id/colouredtrack"
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|bottom"
                 android:onClick="showTrack"
-                android:text="colouredTrack" />
+                android:text="@string/colouredtrack" />
 
             <Button
                 android:id="@+id/updatetrack"
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right|bottom"
                 android:onClick="showTrack"
-                android:text="updateTrack" />
+                android:text="@string/updatetrack" />
 
         </LinearLayout>
 
