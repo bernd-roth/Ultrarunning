@@ -445,7 +445,7 @@ public class StatisticsActivity extends AppCompatActivity {
         linearLayout.addView(mView, params);
 
         viewSeperator = new View(this);
-        viewSeperator.setBackgroundResource(R.color.grey);
+        viewSeperator.setBackgroundResource(R.color.lightgrey);
         viewSeperator.setActivated(true);
         viewSeperator.setMinimumHeight((int) dp);
         linearLayout.addView(viewSeperator);
@@ -457,7 +457,7 @@ public class StatisticsActivity extends AppCompatActivity {
         linearLayout.addView(textView);
 
         viewSeperator1 = new View(this);
-        viewSeperator1.setBackgroundResource(R.color.grey);
+        viewSeperator1.setBackgroundResource(R.color.lightgrey);
         viewSeperator1.setActivated(true);
         viewSeperator1.setMinimumHeight((int) dp);
         linearLayout.addView(viewSeperator1);

@@ -222,6 +222,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/save"
+                    android:background="@drawable/rounded_corner"
                     android:onClick="save"/>
 
                 <View
@@ -240,6 +241,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/button_import"
+                    android:background="@drawable/rounded_corner"
                     android:onClick="importGPX"/>
 
                 <View
@@ -258,6 +260,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/export"
+                    android:background="@drawable/rounded_corner"
                     android:onClick="export"/>
 
                 <View
@@ -276,6 +279,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/delete"
+                    android:background="@drawable/rounded_corner"
                     android:onClick="delete"/>
             </LinearLayout>
         </ScrollView>
