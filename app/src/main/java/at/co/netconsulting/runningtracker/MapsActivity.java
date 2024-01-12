@@ -707,24 +707,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private void showAlertDialogWithTracks(){
         DatabaseHandler db = new DatabaseHandler(this);
         List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
-        int checkedItem = 0;
-        final int[] whichItemChecked = new int[1];
 
         dialog_data = new Dialog(MapsActivity.this);
-
-        dialog_data.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog_data.getWindow().setGravity(Gravity.CENTER);
-        dialog_data.setContentView(R.layout.custom_list);
-
-        WindowManager.LayoutParams lp_number_picker = new WindowManager.LayoutParams();
-        Window window = dialog_data.getWindow();
-        lp_number_picker.copyFrom(window.getAttributes());
-
-        lp_number_picker.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp_number_picker.height = WindowManager.LayoutParams.WRAP_CONTENT;
-
-        window.setGravity(Gravity.CENTER);
-        window.setAttributes(lp_number_picker);
+        setDialogWithSpecificHeight(dialog_data);
 
         EditText filterText = (EditText) dialog_data.findViewById(R.id.alertdialog_edittext);
         ListView alertdialog_Listview = (ListView) dialog_data.findViewById(R.id.alertdialog_Listview);
@@ -788,7 +773,23 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         alertDialog.getWindow().setAttributes(lp);
     }
+    private void setDialogWithSpecificHeight(Dialog dialog) {
+        //set height to 50%
+        int height = 2;
 
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setGravity(Gravity.CENTER);
+        dialog.setContentView(R.layout.custom_list);
+
+        dialog.setContentView(R.layout.custom_list);
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = this.getWindow().getDecorView().getWidth();
+        lp.height = this.getWindow().getDecorView().getHeight()/height;
+        lp.gravity = Gravity.CENTER;
+
+        dialog.getWindow().setAttributes(lp);
+    }
     private void showPolyline(List<ColoredPoint> points) {
         mMap.clear();
         if (points.size() < 2)
