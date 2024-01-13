@@ -37,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -79,6 +80,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -739,27 +741,34 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             }
         });
 
-        filterText.addTextChangedListener(new TextWatcher()
-        {
+        filterText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d("Trackname", s.toString());
             }
-
             @Override
             public void afterTextChanged(Editable s) {
-                Log.d("Filter", s.toString());
-                arrayAdapter.getFilter().filter(s);
+                arrayAdapter.clear();
+                intArray.clear();
+
+                for(int i = 0; i<allEntries.size(); i++) {
+                    String searchableString = allEntries.get(i).getDateTime() + "\n"
+                            + String.format("%.03f", allEntries.get(i).getMeters_covered() / 1000) + " Km\n"
+                            + allEntries.get(i).getComment();
+                    if(searchableString.toLowerCase(Locale.ENGLISH).contains(s)) {
+                        arrayAdapter.add(
+                                allEntries.get(i).getDateTime() + "\n"
+                                        + String.format("%.03f", allEntries.get(i).getMeters_covered() / 1000) + " Km\n"
+                                        + allEntries.get(i).getComment());
+                        intArray.add(allEntries.get(i).getNumber_of_run());
+                    }
+                }
             }
         });
         dialog_data.show();
     }
-
     private void setAlertDialogWithSpecificHeight(AlertDialog.Builder builderSingle) {
         //set height to 50%
         int height = 2;
