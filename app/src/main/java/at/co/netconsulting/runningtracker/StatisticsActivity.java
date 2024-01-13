@@ -62,6 +62,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private LinearLayout linearLayout;
     private View mView, viewSeperator, viewSeperator1;
     private TextView textView;
+    private ArrayList<Integer> intNumberOfRun;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,12 +114,15 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private void callDatabaseForSpinner() {
         ArrayList parsedToStringRun = new ArrayList<String>();
+        intNumberOfRun = new ArrayList<Integer>();
 
         for(Run run : db.getAllEntriesOrderedByRunNumber()) {
             String meters_covered = String.format("%.2f", run.getMeters_covered()/1000);
-            parsedToStringRun.add(run.getNumber_of_run() + ":" + run.getDateTime()
+            parsedToStringRun.add(
+                    "Date: " + run.getDateTime()
                     + "\nDistance: " + meters_covered + " Km"
                     + "\nComment: " + run.getComment());
+            intNumberOfRun.add(run.getNumber_of_run());
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_expandable_list_item_1, parsedToStringRun);
@@ -306,12 +310,11 @@ public class StatisticsActivity extends AppCompatActivity {
         spinnerRunChoose = findViewById(R.id.spinner);
         spinnerRunChoose.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String numberOfRun = spinnerRunChoose.getSelectedItem().toString();
-                String[] splittedString = numberOfRun.split(":");
-                int intNumberOfRun = Integer.parseInt(splittedString[0]);
+                int spinnerPosition = spinnerRunChoose.getSelectedItemPosition();
+                int arrayPosition = intNumberOfRun.get(spinnerPosition);
 
                 listOfRun.clear();
-                listOfRun = db.getSingleEntryForStatistics(intNumberOfRun);
+                listOfRun = db.getSingleEntryForStatistics(arrayPosition);
 
                 //first graph
                 calcAvgSpeedMaxSpeedTotalDistance();

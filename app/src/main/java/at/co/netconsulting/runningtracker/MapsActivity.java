@@ -117,6 +117,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Dialog dialog_data;
     private ArrayAdapter<String> arrayAdapter = null;
     private int positionOfTrack;
+    private List<Integer> intArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -719,24 +720,22 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             mPolylinePoints.clear();
         }
 
-
         arrayAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.custom_text_view);
+        intArray = new ArrayList<>();
+
         for(int i = 0; i<allEntries.size(); i++) {
-            arrayAdapter.add(" " + allEntries.get(i).getNumber_of_run() + ": "
-                    + allEntries.get(i).getDateTime() + "\n "
-                    + String.format("%.3f", allEntries.get(i).getMeters_covered()/1000) + " Km\n "
-                    + allEntries.get(i).getComment());
+            arrayAdapter.add(
+                allEntries.get(i).getDateTime() + "\n"
+                + String.format("%.03f", allEntries.get(i).getMeters_covered()/1000) + " Km\n"
+                + allEntries.get(i).getComment());
+            intArray.add(allEntries.get(i).getNumber_of_run());
         }
 
         alertdialog_Listview.setAdapter(arrayAdapter);
         alertdialog_Listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-                String numberOfRun = ( (TextView) v ).getText().toString();
-                numberOfRun = numberOfRun.replaceFirst(" ", "");
-                String[] splittedString = numberOfRun.split(":");
-                int intNumberOfRun = Integer.parseInt(splittedString[0]);
-                positionOfTrack = intNumberOfRun;
+                positionOfTrack = intArray.get(position);
             }
         });
 
