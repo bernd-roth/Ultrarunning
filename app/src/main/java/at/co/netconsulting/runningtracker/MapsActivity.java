@@ -118,7 +118,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private CameraPosition camPos;
     private Dialog dialog_data;
     private ArrayAdapter<String> arrayAdapter = null;
-    private int positionOfTrack;
+    private int positionOfTrack = -1;
     private List<Integer> intArray;
 
     @Override
@@ -754,10 +754,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 intArray.clear();
 
                 for(int i = 0; i<allEntries.size(); i++) {
+                    String search = s.toString().toLowerCase(Locale.ENGLISH);
                     String searchableString = allEntries.get(i).getDateTime() + "\n"
                             + String.format("%.03f", allEntries.get(i).getMeters_covered() / 1000) + " Km\n"
                             + allEntries.get(i).getComment();
-                    if(searchableString.toLowerCase(Locale.ENGLISH).contains(s)) {
+                    if(searchableString.toLowerCase(Locale.ENGLISH).contains(search)) {
                         arrayAdapter.add(
                                 allEntries.get(i).getDateTime() + "\n"
                                         + String.format("%.03f", allEntries.get(i).getMeters_covered() / 1000) + " Km\n"
@@ -934,7 +935,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         String fullName = getResources().getResourceName(view.getId());
         String name = fullName.substring(fullName.lastIndexOf("/") + 1);
 
-        if (name.equals("defaulttrack")) {
+        if (positionOfTrack!=-1 && name.equals("defaulttrack")) {
             DatabaseHandler db = new DatabaseHandler(this);
             List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
             int numberOfRun = 0;
@@ -974,9 +975,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             dialog_data.cancel();
                         }
                     });
+                    positionOfTrack=-1;
                 }
             });
-        } else if(name.equals("colouredtrack")) {
+        } else if(positionOfTrack!=-1 && name.equals("colouredtrack")) {
             DatabaseHandler db = new DatabaseHandler(this);
             List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
             int numberOfRun = 0;
@@ -990,7 +992,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Handler handler = new Handler(Looper.getMainLooper());
-
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -1019,9 +1020,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             dialog_data.cancel();
                         }
                     });
+                    positionOfTrack=-1;
                 }
             });
-        } else {
+        } else if(positionOfTrack!=-1 && name.equals("updatetrack")) {
             DatabaseHandler db = new DatabaseHandler(this);
             List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
             int numberOfRun = 0;
@@ -1061,6 +1063,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     });
             AlertDialog alert = builder.create();
             alert.show();
+            positionOfTrack=-1;
         }
     }
 }
