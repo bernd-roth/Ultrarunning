@@ -722,9 +722,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         arrayAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.custom_text_view);
         for(int i = 0; i<allEntries.size(); i++) {
-            int count = db.countDataOfRun(allEntries.get(i).getNumber_of_run());
-            arrayAdapter.add(allEntries.get(i).getNumber_of_run() + ": " + allEntries.get(i).getDateTime() + "\n"
-                    + count + " points to load" + "\nComment: " + allEntries.get(i).getComment());
+            arrayAdapter.add(" " + allEntries.get(i).getNumber_of_run() + ": "
+                    + allEntries.get(i).getDateTime() + "\n "
+                    + String.format("%.3f", allEntries.get(i).getMeters_covered()/1000) + " Km\n "
+                    + allEntries.get(i).getComment());
         }
 
         alertdialog_Listview.setAdapter(arrayAdapter);
@@ -732,6 +733,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             @Override
             public void onItemClick(AdapterView<?> a, View v, int position, long id) {
                 String numberOfRun = ( (TextView) v ).getText().toString();
+                numberOfRun = numberOfRun.replaceFirst(" ", "");
                 String[] splittedString = numberOfRun.split(":");
                 int intNumberOfRun = Integer.parseInt(splittedString[0]);
                 positionOfTrack = intNumberOfRun;
