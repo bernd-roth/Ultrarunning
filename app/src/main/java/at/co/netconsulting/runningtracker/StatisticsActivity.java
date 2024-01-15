@@ -479,28 +479,13 @@ public class StatisticsActivity extends AppCompatActivity {
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.enableGridDashedLine(10f, 10f, 0f);
-//        xAxis.setAxisMaximum(10f);
         xAxis.setAxisMinimum(0f);
-//        xAxis.setAxisMaximum(totalDistance);
         xAxis.setDrawLimitLinesBehindData(true);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-
-//        LimitLine ll1 = new LimitLine(215f, "Maximum Limit");
-//        ll1.setLineWidth(4f);
-//        ll1.enableDashedLine(10f, 10f, 0f);
-//        ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
-//        ll1.setTextSize(10f);
-//
-//        LimitLine ll2 = new LimitLine(70f, "Minimum Limit");
-//        ll2.setLineWidth(4f);
-//        ll2.enableDashedLine(10f, 10f, 0f);
-//        ll2.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_BOTTOM);
-//        ll2.setTextSize(10f);
+        xAxis.setAxisMaximum(listOfRun.size());
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.removeAllLimitLines();
-//        leftAxis.addLimitLine(ll1);
-//        leftAxis.addLimitLine(ll2);
         leftAxis.setAxisMaximum(maxSpeed);
         leftAxis.setAxisMinimum(0);
         leftAxis.enableGridDashedLine(10f, 10f, 0f);
@@ -545,12 +530,17 @@ public class StatisticsActivity extends AppCompatActivity {
     private void setData() {
         ArrayList<Entry> values = new ArrayList<>();
         int sizeOfList = listOfRun.size();
+        int i = 0;
 
         if(sizeOfList!=0) {
             for (Run run : listOfRun) {
-                float coveredMeter = (float) run.getMeters_covered();
-                float speed = run.getSpeed();
-                values.add(new Entry(coveredMeter, speed));
+                if(i%60==0) {
+                    float coveredMeter = (float) run.getMeters_covered();
+                    float speed = run.getSpeed();
+                    values.add(new Entry(coveredMeter, speed));
+                    i++;
+                }
+                i++;
             }
         }
 
