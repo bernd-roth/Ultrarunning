@@ -120,6 +120,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private ArrayAdapter<String> arrayAdapter = null;
     private int positionOfTrack = -1;
     private List<Integer> intArray;
+    private ListView alertdialog_Listview;
+    private AlertDialog alert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -543,170 +545,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             alert.show();
         }
     }
-
-    /*private void showAlertDialogWithTracks() {
-        DatabaseHandler db = new DatabaseHandler(this);
-        List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
-        int checkedItem = 0;
-        final int[] whichItemChecked = new int[1];
-
-        if(mPolylinePoints.size()>0) {
-            mPolylinePoints.clear();
-        }
-
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MapsActivity.this);
-
-        if(allEntries.size() == 0) {
-            builderSingle.setTitle(getResources().getString(R.string.no_run_available));
-        } else {
-            builderSingle.setTitle(getResources().getString(R.string.select_one_run));
-        }
-        builderSingle.setIcon(R.drawable.icon_notification);
-
-        // prevents closing alertdialog when clicking outside of it
-        builderSingle.setCancelable(true);
-
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapsActivity.this, android.R.layout.select_dialog_singlechoice);
-        for(int i = 0; i<allEntries.size(); i++) {
-            int count = db.countDataOfRun(allEntries.get(i).getNumber_of_run());
-            arrayAdapter.add(allEntries.get(i).getNumber_of_run() + ": " + allEntries.get(i).getDateTime() + "\n"
-            + count + " points to load");
-        }
-        if(allEntries.size()>0) {
-            builderSingle.setNegativeButton(getResources().getString(R.string.buttonWithoutColoring), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    int numberOfRun = allEntries.get(whichItemChecked[0]).getNumber_of_run();
-
-                    final LatLng[] latLng = new LatLng[1];
-
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    Handler handler = new Handler(Looper.getMainLooper());
-
-                    executor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            //Background work here
-                            List<Run> allEntries = db.getSingleEntryOrderedByDateTime(numberOfRun);
-                            for (int i = 0; i < allEntries.size(); i++) {
-                                latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
-                                mPolylinePoints.add(latLng[0]);
-                            }
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //UI Thread work here
-                                    mMap.clear();
-                                    drawView.setVisibility(View.INVISIBLE);
-                                    textViewSlow.setVisibility(View.INVISIBLE);
-                                    textViewFast.setVisibility(View.INVISIBLE);
-                                    mMap.addMarker(new MarkerOptions()
-                                            .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude))
-                                            .title(getString(R.string.starting_position)));
-                                    polyline = mMap.addPolyline(new PolylineOptions().addAll(mPolylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-                                    createCheckerFlag(mPolylinePoints);
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-            builderSingle.setNeutralButton("Show", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    int numberOfRun = allEntries.get(whichItemChecked[0]).getNumber_of_run();
-
-                    final LatLng[] latLng = new LatLng[1];
-
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    Handler handler = new Handler(Looper.getMainLooper());
-
-                    executor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            //Background work here
-                            List<Run> allEntries = db.getSingleEntryOrderedByDateTime(numberOfRun);
-                            List<ColoredPoint> sourcePoints = new ArrayList<>();
-
-                            for(int i = 0; i<allEntries.size(); i++) {
-                                latLng[0] = new LatLng(allEntries.get(i).getLat(), allEntries.get(i).getLng());
-                                //FIXME make speed adjustable
-                                if(allEntries.get(i).getSpeed()>8) { //running is over 8-10 km/h
-                                    sourcePoints.add(new ColoredPoint(latLng[0], Color.GREEN));
-                                } else if(allEntries.get(i).getSpeed()>6 && // jogging is 6-8 km/h
-                                        allEntries.get(i).getSpeed()<8){
-                                    sourcePoints.add(new ColoredPoint(latLng[0], Color.YELLOW));
-                                } else { // walking is around 5.5-6 km/h
-                                    sourcePoints.add(new ColoredPoint(latLng[0], Color.RED));
-                                }
-                                mPolylinePoints.add(latLng[0]);
-                            }
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //UI Thread work here
-                                    showPolyline(sourcePoints);
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-            builderSingle.setPositiveButton("Update", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-                    builder.setCancelable(true);
-
-                    String numberOfRun = arrayAdapter.getItem(whichItemChecked[0]);
-                    String[] splittedString = numberOfRun.split(":");
-                    int intNumberOfRun = Integer.parseInt(splittedString[0]);
-                    List<Run> run = db.getLastCommentEntryOfSelectedRun(intNumberOfRun);
-
-                    final EditText edittext = new EditText(MapsActivity.this);
-                    edittext.setHint(run.get(0).getComment());
-
-                    builder.setTitle("Enter your new comment here");
-                    builder.setView(edittext);
-                    builder.setPositiveButton(
-                            "Update",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    db.updateCommentById(intNumberOfRun, edittext.getText().toString());
-                                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.update_entry), Toast.LENGTH_LONG).show();
-                                }
-                            });
-                    builder.setNegativeButton(
-                            "Delete",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    db.deleteSingleEntry(intNumberOfRun);
-                                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.single_entry_deleted), Toast.LENGTH_LONG).show();
-                                }
-                            });
-                    AlertDialog alert = builder.create();
-                    alert.show();
-                }
-            });
-        } else {
-            builderSingle.setNegativeButton(getResources().getString(R.string.buttonCloseDialog), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-        }
-
-        builderSingle.setSingleChoiceItems(arrayAdapter, checkedItem, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // user checked an item
-                whichItemChecked[0] = which;
-            }
-        });
-        setAlertDialogWithSpecificHeight(builderSingle);
-    }*/
-
     private void showAlertDialogWithTracks(){
         DatabaseHandler db = new DatabaseHandler(this);
         List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
@@ -715,7 +553,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         setDialogWithSpecificHeight(dialog_data);
 
         EditText filterText = (EditText) dialog_data.findViewById(R.id.alertdialog_edittext);
-        ListView alertdialog_Listview = (ListView) dialog_data.findViewById(R.id.alertdialog_Listview);
+        alertdialog_Listview = (ListView) dialog_data.findViewById(R.id.alertdialog_Listview);
         alertdialog_Listview.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         if(mPolylinePoints.size()>0) {
@@ -1041,7 +879,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             List<Run> run = db.getLastCommentEntryOfSelectedRun(numberOfRun);
 
             final EditText edittext = new EditText(MapsActivity.this);
-            edittext.setHint(run.get(0).getComment());
+            edittext.setText(run.get(0).getComment());
 
             builder.setTitle("Enter your new comment here");
             builder.setView(edittext);
@@ -1050,6 +888,22 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             db.updateCommentById(finalNumberOfRun, edittext.getText().toString());
+
+                            arrayAdapter.clear();
+                            alert.dismiss();
+                            intArray = new ArrayList<>();
+
+                            List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
+
+                            for(int i = 0; i<allEntries.size(); i++) {
+                                arrayAdapter.add(
+                                        allEntries.get(i).getDateTime() + "\n"
+                                                + String.format("%.03f", allEntries.get(i).getMeters_covered()/1000) + " Km\n"
+                                                + allEntries.get(i).getComment());
+                                intArray.add(allEntries.get(i).getNumber_of_run());
+                            }
+                            alertdialog_Listview.clearChoices();
+                            alertdialog_Listview.setAdapter(arrayAdapter);
                             Toast.makeText(getApplicationContext(), getResources().getString(R.string.update_entry), Toast.LENGTH_LONG).show();
                         }
                     });
@@ -1061,7 +915,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             Toast.makeText(getApplicationContext(), getResources().getString(R.string.single_entry_deleted), Toast.LENGTH_LONG).show();
                         }
                     });
-            AlertDialog alert = builder.create();
+            alert = builder.create();
             alert.show();
             positionOfTrack=-1;
         }
