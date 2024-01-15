@@ -217,6 +217,27 @@
                     android:ems="10"
                     android:inputType="number" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
+
+                <TextView
+                    android:id="@+id/textViewVoiceMessageEveryHour"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/voiceMessage" />
+
+                <Switch
+                    android:id="@+id/switchVoiceMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
+
                 <Button
                     android:id="@+id/buttonSave"
                     android:layout_width="match_parent"

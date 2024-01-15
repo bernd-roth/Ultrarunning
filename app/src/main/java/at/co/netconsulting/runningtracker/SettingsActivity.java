@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
@@ -67,8 +68,8 @@ public class SettingsActivity extends BaseActivity {
     private DatabaseHandler db;
     private ProgressDialog progressDialog;
     private String person;
-    private boolean isBatteryOptimization, isDayNightModus, isTrafficEnabled;
-    private Switch switchBatteryOptimization, switchDayNightModus, switchEnableTraffic;
+    private boolean isBatteryOptimization, isDayNightModus, isTrafficEnabled, isVoiceMessage;
+    private Switch switchBatteryOptimization, switchDayNightModus, switchEnableTraffic, switchVoiceMessage;
     PendingIntent pendingIntent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,7 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_DAY_NIGHT_MODUS);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -173,6 +175,11 @@ public class SettingsActivity extends BaseActivity {
                 numberInDays = sh.getInt(sharedPrefKey, 1);
                 editTextNumber.setText("" + numberInDays);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isVoiceMessage = sh.getBoolean(sharedPrefKey, false);
+                switchVoiceMessage.setChecked(isVoiceMessage);
+                break;
         }
     }
 
@@ -224,6 +231,13 @@ public class SettingsActivity extends BaseActivity {
 
         switchDayNightModus = findViewById(R.id.switchDayNightModus);
         switchEnableTraffic = findViewById(R.id.switchShowTraffic);
+        switchVoiceMessage = findViewById(R.id.switchVoiceMessage);
+        switchVoiceMessage.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
+            }
+        });
 
         db = new DatabaseHandler(this);
     }
@@ -343,6 +357,13 @@ public class SettingsActivity extends BaseActivity {
 
             int numberInDays = Integer.parseInt(editTextNumber.getText().toString());
             editor.putInt(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE, numberInDays);
+            editor.commit();
+        }  else if(sharedPreference.equals("VOICE_MESSAGE")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            boolean isVoiceMessage = switchVoiceMessage.isChecked();
+            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE, isVoiceMessage);
             editor.commit();
         }
     }
@@ -464,6 +485,7 @@ public class SettingsActivity extends BaseActivity {
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
+        saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
         scheduleDatabaseBackup();
         Toast.makeText(getApplicationContext(), R.string.save_settings_map_type_rec_profil_runners_name, Toast.LENGTH_LONG).show();
     }
@@ -471,7 +493,7 @@ public class SettingsActivity extends BaseActivity {
         int scheduledDays = Integer.parseInt(editTextNumber.getText().toString());
 
         if(scheduledDays > 0) {
-            Long time = new GregorianCalendar().getTimeInMillis() + (scheduledDays * 60 * 60 * 1000);
+            Long time = new GregorianCalendar().getTimeInMillis() + (scheduledDays * StaticFields.ONE_DAY_IN_MILLISECONDS);
 
             Bundle bundle = new Bundle();
             bundle.putLong("scheduled_alarm", time);

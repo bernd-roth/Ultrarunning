@@ -12,4 +12,5 @@ public class SharedPref {
     public static final String STATIC_SHARED_PREF_DAY_NIGHT_MODUS = "DAY_NIGHT_MODUS";
     public static final String STATIC_SHARED_PREF_ENABLE_TRAFFIC = "ENABLE_TRAFFIC";
     public static final String STATIC_SHARED_PREF_SCHEDULE_SAVE = "SCHEDULE_SAVE";
+    public static final String STATIC_SHARED_PREF_VOICE_MESSAGE = "VOICE_MESSAGE";
 }

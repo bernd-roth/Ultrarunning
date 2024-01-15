@@ -101,7 +101,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private ActivityMapsBinding binding;
     private Polyline polyline;
     private List<LatLng> mPolylinePoints, mPolylinePointsTemp;
-    private boolean isDisableZoomCamera, isDayNightModusActive, isTrafficEnabled;
+    private boolean isDisableZoomCamera, isDayNightModusActive, isTrafficEnabled, isRecording;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks;
     private String mapType;
     private SupportMapFragment mapFragment;
@@ -490,6 +490,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 mMap.clear();
 
                 fadingButtons(R.id.fabRecording);
+                fabStartRecording.setEnabled(false);
+                fabStopRecording.setEnabled(true);
                 break;
             case R.id.fabStopRecording:
                 stopService(new Intent(this, ForegroundService.class));
@@ -499,6 +501,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 createCheckerFlag(mPolylinePointsTemp);
                 showAlertDialogWithComment();
                 startingPoint=true;
+                isRecording = false;
+                fabStopRecording.setEnabled(false);
+                fabStartRecording.setEnabled(true);
                 break;
             case R.id.fabStatistics:
                 Intent intentStatistics = new Intent(MapsActivity.this, StatisticsActivity.class);

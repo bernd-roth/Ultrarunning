@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
+import at.co.netconsulting.runningtracker.general.StaticFields;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private DatabaseHandler db;
@@ -35,7 +36,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             Bundle bundle = new Bundle();
             bundle.putInt("scheduled_days", scheduledDays);
 
-            Long time = new GregorianCalendar().getTimeInMillis() + (scheduledDays * 60 * 60 * 1000);
+            Long time = new GregorianCalendar().getTimeInMillis() + (scheduledDays * StaticFields.ONE_DAY_IN_MILLISECONDS);
             bundle.putLong("scheduled_alarm", time);
 
             Intent intentAlarm = new Intent(context, AlarmReceiver.class);

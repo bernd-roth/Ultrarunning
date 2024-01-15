@@ -114,4 +114,5 @@
     <string name="showtrack">Show track</string>
     <string name="colouredtrack">Colour track</string>
     <string name="updatetrack">Update track</string>
+    <string name="voiceMessage">Voice message</string>
 </resources>

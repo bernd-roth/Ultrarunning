@@ -21,6 +21,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.speech.tts.TextToSpeech;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -33,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 import at.co.netconsulting.runningtracker.MapsActivity;
@@ -63,7 +66,7 @@ public class ForegroundService extends Service implements LocationListener {
     private LocalDateTime dateObj;
     private long currentMilliseconds, oldCurrentMilliseconds = 0, currentSeconds, minTimeMs;
     private Timer timer;
-    private boolean isFirstEntry, hasEnoughTimePassed;
+    private boolean isFirstEntry, hasEnoughTimePassed, isVoiceMessage;
     private int laps, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
     private float lapCounter, coveredDistance, accuracy, currentSpeed;
     private String notificationService;
@@ -73,7 +76,8 @@ public class ForegroundService extends Service implements LocationListener {
     protected WatchDogRunner mWatchdogRunner;
     protected Thread mWatchdogThread = null;
     private Location mLocation;
-    Instant starts, ends;
+    private Instant starts, ends;
+    private TextToSpeech tts;
 
     @Override
     public void onCreate() {
@@ -91,6 +95,7 @@ public class ForegroundService extends Service implements LocationListener {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_MIN_TIME_MS);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
     }
 
     private void initializeWatchdog() {
@@ -127,6 +132,14 @@ public class ForegroundService extends Service implements LocationListener {
         lapCounter=0;
         db = new DatabaseHandler(this);
         locationManager = getLocationManager();
+        tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    tts.setLanguage(Locale.UK);
+                }
+            }
+        });
     }
     private void saveToDatabase(double latitude, double longitude) {
         //format date and time
@@ -274,6 +287,10 @@ public class ForegroundService extends Service implements LocationListener {
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 person = sh.getString(sharedPrefKey, StaticFields.STATIC_STRING_PERSON);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isVoiceMessage = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE, false);
+                break;
         }
     }
 
@@ -314,6 +331,10 @@ public class ForegroundService extends Service implements LocationListener {
                     if(mLocation!=null) {
                         hasEnoughTimePassed = hasEnoughTimePassed();
                         if(hasEnoughTimePassed) {
+                            int alreadyCoveredDistance = (int) (coveredDistance / 1000) % 10;
+                            if(isVoiceMessage && (int) (coveredDistance / 1000) > 0 && alreadyCoveredDistance == 0) {
+                                tts.speak(alreadyCoveredDistance + " Kilometers have already passed by!",TextToSpeech.QUEUE_FLUSH,null,null);
+                            }
                             latLngs.add(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
                             saveToDatabase(mLocation.getLatitude(), mLocation.getLongitude());
                             EventBus.getDefault().post(new LocationChangeEvent(latLngs));
