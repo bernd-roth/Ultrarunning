@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -16,8 +17,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getExtras() != null) {
-            ArrayList scheduledAlarms = intent.getExtras().getSerializable("scheduled_alarm", ArrayList.class);
-            scheduledAlarms.remove(0);
+            Bundle extras = intent.getExtras();
             new Thread(new Runnable() {
                 public void run() {
                     try {
@@ -29,16 +29,22 @@ public class AlarmReceiver extends BroadcastReceiver {
                 }
             }).start();
 
-            Long scheduledAlarm = (Long) scheduledAlarms.get(0);
+            Long scheduledAlarm = extras.getLong("scheduled_alarm");
+            Integer scheduledDays = extras.getInt("scheduled_days");
+
+            Bundle bundle = new Bundle();
+            bundle.putInt("scheduled_days", scheduledDays);
+
+            Long time = new GregorianCalendar().getTimeInMillis() + (scheduledDays * 60 * 60 * 1000);
+            bundle.putLong("scheduled_alarm", time);
 
             Intent intentAlarm = new Intent(context, AlarmReceiver.class);
-            intentAlarm.putExtra("scheduled_alarm", scheduledAlarms);
+            intentAlarm.putExtra("alarmmanager", bundle);
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT |
                     PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
 
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            Long time = scheduledAlarm;
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent);
         }
     }

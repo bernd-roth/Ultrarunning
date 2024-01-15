@@ -61,7 +61,6 @@ public class SettingsActivity extends BaseActivity {
             radioButtonNormalBattery,
             radioButtonSavingBattery,
             radioButtonMaximumSavingBattery,
-//            radioButtonFast,
             radioButtonIndividual;
     private int minDistanceMeter, numberInDays;
     private long minTimeMs;
@@ -70,10 +69,7 @@ public class SettingsActivity extends BaseActivity {
     private String person;
     private boolean isBatteryOptimization, isDayNightModus, isTrafficEnabled;
     private Switch switchBatteryOptimization, switchDayNightModus, switchEnableTraffic;
-    private ActivityResultLauncher<Intent> launcher; // Initialise this object in Activity.onCreate()
-    private Uri baseDocumentTreeUri;
     PendingIntent pendingIntent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -358,7 +354,6 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Exact");
-//                buttonSave.setEnabled(false);
                 editTextNumberSignedMinimumTimeMs.setEnabled(false);
                 editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
@@ -368,7 +363,6 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Normal");
-//                buttonSave.setEnabled(false);
                 editTextNumberSignedMinimumTimeMs.setEnabled(false);
                 editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
@@ -378,7 +372,6 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Saving_Battery");
-//                buttonSave.setEnabled(false);
                 editTextNumberSignedMinimumTimeMs.setEnabled(false);
                 editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
@@ -388,7 +381,6 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Maximum_Saving_Battery");
-//                buttonSave.setEnabled(false);
                 editTextNumberSignedMinimumTimeMs.setEnabled(false);
                 editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
@@ -398,7 +390,6 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Fast");
-//                buttonSave.setEnabled(false);
                 editTextNumberSignedMinimumTimeMs.setEnabled(false);
                 editTextNumberSignedMinimumDistanceMeter.setEnabled(false);
                 break;
@@ -408,7 +399,6 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences("MIN_DISTANCE_METER");
                 saveSharedPreferences("MIN_TIME_MS");
                 saveSharedPreferences("Individual");
-//                buttonSave.setEnabled(true);
                 editTextNumberSignedMinimumTimeMs.setEnabled(true);
                 editTextNumberSignedMinimumDistanceMeter.setEnabled(true);
                 break;
@@ -478,25 +468,22 @@ public class SettingsActivity extends BaseActivity {
         Toast.makeText(getApplicationContext(), R.string.save_settings_map_type_rec_profil_runners_name, Toast.LENGTH_LONG).show();
     }
     private void scheduleDatabaseBackup() {
-        int scheduledDays = Integer.parseInt(editTextNumber.getText().toString())*24;
+        int scheduledDays = Integer.parseInt(editTextNumber.getText().toString());
 
         if(scheduledDays > 0) {
-            Long time;
-            ArrayList scheduledAlarms = new ArrayList();
+            Long time = new GregorianCalendar().getTimeInMillis() + (scheduledDays * 60 * 60 * 1000);
+
+            Bundle bundle = new Bundle();
+            bundle.putLong("scheduled_alarm", time);
+            bundle.putInt("scheduled_days", scheduledDays);
 
             Intent intentAlarm = new Intent(this, AlarmReceiver.class);
-
-            for (int i = 1; i <= 1000; i++) {
-                time = new GregorianCalendar().getTimeInMillis() + scheduledDays * i * 60 * 60 * 1000;
-                scheduledAlarms.add(time);
-            }
-            intentAlarm.putExtra("scheduled_alarm", scheduledAlarms);
+            intentAlarm.putExtra("alarmmanager", bundle);
 
             pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT |
                     PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
 
             AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-            time = (Long) scheduledAlarms.get(0);
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent);
         } else {
             Intent intentAlarm = new Intent(this, AlarmReceiver.class);
