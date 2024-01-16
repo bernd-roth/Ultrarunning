@@ -26,7 +26,7 @@
     <!-- AlertDialog messages -->
     <string name="no_run_available">Currently, there is no run available!</string>
     <string name="select_one_run">Select one run</string>
-    <string name="buttonCancel">Cancel</string>
+    <string name="button_cancel">Cancel</string>
     <string name="buttonOk">Okay</string>
     <string name="save_exercise">Save exercise and comment it?</string>
     <string name="comment_exercise">Comment on your last exercise</string>
@@ -115,4 +115,7 @@
     <string name="colouredtrack">Colour track</string>
     <string name="updatetrack">Update track</string>
     <string name="voiceMessage">Voice message</string>
+    <string name="update_comment">Describe your last run</string>
+    <string name="button_delete">Delete</string>
+    <string name="button_update">Update</string>
 </resources>

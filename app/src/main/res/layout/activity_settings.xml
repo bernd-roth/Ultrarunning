@@ -157,6 +157,17 @@
                     android:layout_height="2dp"
                     android:background="#c0c0c0"/>
 
+                <Switch
+                    android:id="@+id/switchVoiceMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Voice message every 10 kilometers"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0"/>
+
                 <TextView
                     android:id="@+id/textViewMinDistanceMeter"
                     android:layout_width="match_parent"
@@ -216,22 +227,6 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="number" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#c0c0c0"/>
-
-                <TextView
-                    android:id="@+id/textViewVoiceMessageEveryHour"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/voiceMessage" />
-
-                <Switch
-                    android:id="@+id/switchVoiceMessage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
 
                 <View
                     android:layout_width="match_parent"

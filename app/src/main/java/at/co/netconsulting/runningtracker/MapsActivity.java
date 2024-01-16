@@ -35,9 +35,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -47,7 +45,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.FrameMetricsAggregator;
 
 import com.github.pengrad.mapscaleview.MapScaleView;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -74,8 +71,6 @@ import org.shredzone.commons.suncalc.SunTimes;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoLocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -84,6 +79,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
@@ -290,7 +286,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             MapsActivity.this.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                         }
                     })
-                    .setNegativeButton(getResources().getString(R.string.buttonCancel),null)
+                    .setNegativeButton(getResources().getString(R.string.button_cancel),null)
                     .show();
         }
     }
@@ -539,7 +535,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     });
 
             builder.setNegativeButton(
-                    getResources().getString(R.string.buttonCancel),
+                    getResources().getString(R.string.button_cancel),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
@@ -878,18 +874,16 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
             int finalNumberOfRun = numberOfRun;
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-            builder.setCancelable(true);
-
             List<Run> run = db.getLastCommentEntryOfSelectedRun(numberOfRun);
 
             final EditText edittext = new EditText(MapsActivity.this);
             edittext.setText(run.get(0).getComment());
 
-            builder.setTitle("Enter your new comment here");
+            AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+            builder.setTitle(getResources().getString(R.string.update_comment));
             builder.setView(edittext);
             builder.setPositiveButton(
-                    "Update",
+                    getResources().getString(R.string.button_update),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             db.updateCommentById(finalNumberOfRun, edittext.getText().toString());
@@ -898,31 +892,52 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             alert.dismiss();
                             intArray = new ArrayList<>();
 
-                            List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
-
-                            for(int i = 0; i<allEntries.size(); i++) {
-                                arrayAdapter.add(
-                                        allEntries.get(i).getDateTime() + "\n"
-                                                + String.format("%.03f", allEntries.get(i).getMeters_covered()/1000) + " Km\n"
-                                                + allEntries.get(i).getComment());
-                                intArray.add(allEntries.get(i).getNumber_of_run());
-                            }
-                            alertdialog_Listview.clearChoices();
-                            alertdialog_Listview.setAdapter(arrayAdapter);
+                            refresh_list_view();
                             Toast.makeText(getApplicationContext(), getResources().getString(R.string.update_entry), Toast.LENGTH_LONG).show();
                         }
                     });
             builder.setNegativeButton(
-                    "Delete",
+                    getResources().getString(R.string.button_delete),
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             db.deleteSingleEntry(finalNumberOfRun);
+
+                            arrayAdapter.clear();
+                            alert.dismiss();
+                            intArray = new ArrayList<>();
+
+                            refresh_list_view();
                             Toast.makeText(getApplicationContext(), getResources().getString(R.string.single_entry_deleted), Toast.LENGTH_LONG).show();
+                        }
+                    });
+            builder.setNeutralButton(
+                    getResources().getString(R.string.button_cancel),
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            refresh_list_view();
                         }
                     });
             alert = builder.create();
             alert.show();
             positionOfTrack=-1;
         }
+    }
+    public void refresh_list_view() {
+        DatabaseHandler db = new DatabaseHandler(this);
+
+        alert.dismiss();
+        alertdialog_Listview.clearChoices();
+        intArray = new ArrayList<>();
+
+        List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
+        for(int i = 0; i<allEntries.size(); i++) {
+            arrayAdapter.add(
+                    allEntries.get(i).getDateTime() + "\n"
+                            + String.format("%.03f", allEntries.get(i).getMeters_covered()/1000) + " Km\n"
+                            + allEntries.get(i).getComment());
+            intArray.add(allEntries.get(i).getNumber_of_run());
+        }
+        alertdialog_Listview.clearChoices();
+        alertdialog_Listview.setAdapter(arrayAdapter);
     }
 }
