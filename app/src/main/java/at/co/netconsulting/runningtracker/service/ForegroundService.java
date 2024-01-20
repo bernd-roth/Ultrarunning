@@ -66,7 +66,7 @@ public class ForegroundService extends Service implements LocationListener {
     private LocalDateTime dateObj;
     private long currentMilliseconds, oldCurrentMilliseconds = 0, currentSeconds, minTimeMs;
     private Timer timer;
-    private boolean isFirstEntry, hasEnoughTimePassed, isVoiceMessage;
+    private boolean isFirstEntry, hasEnoughTimePassed, isVoiceMessage, isSpoken;
     private int laps, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
     private float lapCounter, coveredDistance, accuracy, currentSpeed;
     private String notificationService;
@@ -78,6 +78,7 @@ public class ForegroundService extends Service implements LocationListener {
     private Location mLocation;
     private Instant starts, ends;
     private TextToSpeech tts;
+    private List<Integer> listOfKm;
 
     @Override
     public void onCreate() {
@@ -140,6 +141,7 @@ public class ForegroundService extends Service implements LocationListener {
                 }
             }
         });
+        listOfKm = new ArrayList<>();
     }
     private void saveToDatabase(double latitude, double longitude) {
         //format date and time
@@ -332,8 +334,9 @@ public class ForegroundService extends Service implements LocationListener {
                         hasEnoughTimePassed = hasEnoughTimePassed();
                         if(hasEnoughTimePassed) {
                             int alreadyCoveredDistance = (int) (coveredDistance / 1000) % 10;
-                            if(isVoiceMessage && (int) (coveredDistance / 1000) > 0 && alreadyCoveredDistance == 0) {
+                            if(isVoiceMessage && (int) (coveredDistance / 1000) > 0 && alreadyCoveredDistance == 0 && !listOfKm.contains((int) (coveredDistance / 1000))) {
                                 tts.speak(alreadyCoveredDistance + " Kilometers have already passed by!",TextToSpeech.QUEUE_FLUSH,null,null);
+                                listOfKm.add((int) (coveredDistance / 1000));
                             }
                             latLngs.add(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
                             saveToDatabase(mLocation.getLatitude(), mLocation.getLongitude());

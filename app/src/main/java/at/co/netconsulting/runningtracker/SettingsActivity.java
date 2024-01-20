@@ -20,13 +20,11 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.preference.PreferenceFragmentCompat;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,7 +32,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.GregorianCalendar;
 import java.util.List;
-
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
@@ -494,7 +491,6 @@ public class SettingsActivity extends BaseActivity {
 
             Bundle bundle = new Bundle();
             bundle.putLong("scheduled_alarm", time);
-            bundle.putInt("scheduled_days", scheduledDays);
 
             Intent intentAlarm = new Intent(this, AlarmReceiver.class);
             intentAlarm.putExtra("alarmmanager", bundle);

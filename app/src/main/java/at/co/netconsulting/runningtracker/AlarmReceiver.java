@@ -5,20 +5,22 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
+import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private DatabaseHandler db;
+    private SharedPreferences sh;
+    private int scheduledDays;
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getExtras() != null) {
-            Bundle extras = intent.getExtras();
             new Thread(new Runnable() {
                 public void run() {
                     try {
@@ -30,11 +32,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                 }
             }).start();
 
-            Long scheduledAlarm = extras.getLong("scheduled_alarm");
-            Integer scheduledDays = extras.getInt("scheduled_days");
-
+            loadSharedPreferences(context, SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
             Bundle bundle = new Bundle();
-            bundle.putInt("scheduled_days", scheduledDays);
 
             Long time = new GregorianCalendar().getTimeInMillis() + (scheduledDays * StaticFields.ONE_DAY_IN_MILLISECONDS);
             bundle.putLong("scheduled_alarm", time);
@@ -48,5 +47,10 @@ public class AlarmReceiver extends BroadcastReceiver {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent);
         }
+    }
+
+    private void loadSharedPreferences(Context context, String sharedPrefKey) {
+        sh = context.getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+        scheduledDays = sh.getInt(sharedPrefKey, 1);
     }
 }
