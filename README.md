@@ -12,11 +12,11 @@ you can install the RunningTracker.apk which is always the latest build.
 Start the app, and point to settings button. 
 It is the second button from above on the right side.
 
-## APIs
+## API
 
 EventBus
 Google Maps
-Charts (mphil)
+MPAndroidCharts
 
 ## Vid
 
