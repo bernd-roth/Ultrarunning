@@ -11,6 +11,16 @@ you can install the RunningTracker.apk which is always the latest build.
 
 Start the app, and point to settings button. 
 It is the second button from above on the right side.
+Choose your settings - these are the preferred settings so far:
+
+  * Google map type: Normal
+  * Recording profil:Exact
+  * Turn off battery optimization
+  * Enable traffic
+  * Runner`s name: <Your name>
+  * Backup database every x day: 1
+
+Eventually, click the save button!
 
 ## API
 

@@ -335,6 +335,7 @@ public class ForegroundService extends Service implements LocationListener {
                         if(hasEnoughTimePassed) {
                             int alreadyCoveredDistance = (int) (coveredDistance / 1000) % 10;
                             if(isVoiceMessage && (int) (coveredDistance / 1000) > 0 && alreadyCoveredDistance == 0 && !listOfKm.contains((int) (coveredDistance / 1000))) {
+                                tts.setSpeechRate((float) 0.8);
                                 tts.speak(((int) coveredDistance / 1000) + " Kilometers have already passed by!",TextToSpeech.QUEUE_FLUSH,null,null);
                                 listOfKm.add((int) (coveredDistance / 1000));
                             }
