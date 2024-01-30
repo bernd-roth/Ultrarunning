@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -14,7 +13,6 @@ import com.opencsv.CSVWriter;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -385,11 +383,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             File data = Environment.getDataDirectory();
             final File[] databases = new File(context.getFilesDir().getParentFile().getPath() + "/databases").listFiles();
 
+            String resultDate = formatCurrentDate();
+
             for (File databaseFile : databases) {
                 if (download_folder.canWrite()) {
                     if (databaseFile.getName().startsWith("DATABASE_RUN")) {
                         String currentDBPath = "//data//" + context.getPackageName() + "//databases//DATABASE_RUN";
-                        String backupDBPath = databaseFile.getName() + "_" + System.currentTimeMillis();
+                        String backupDBPath = databaseFile.getName() + "_" + resultDate;
                         File currentDB = new File(data, currentDBPath);
                         File backupDB = new File(download_folder, backupDBPath);
 
@@ -408,6 +408,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             Timber.e("DatabaseHandler: Exception: " + e.getMessage());
         }
     }
+
+    private static String formatCurrentDate() {
+        long milliSeconds = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd_MM_yyyy_HH_mm");
+        Date resultdate = new Date(milliSeconds);
+        return sdf.format(resultdate);
+    }
+
     public List<Run> getAllEntriesForYearCalculation() {
         List<Run> allEntryList = new ArrayList<Run>();
 
