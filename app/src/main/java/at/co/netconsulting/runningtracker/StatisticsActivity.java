@@ -530,17 +530,17 @@ public class StatisticsActivity extends AppCompatActivity {
     private void setData() {
         ArrayList<Entry> values = new ArrayList<>();
         int sizeOfList = listOfRun.size();
-        int i = 0;
+        //int i = 0;
 
         if(sizeOfList!=0) {
             for (Run run : listOfRun) {
-                if(i%60==0) {
+                //if(i%60==0) {
                     float coveredMeter = (float) run.getMeters_covered();
                     float speed = run.getSpeed();
                     values.add(new Entry(coveredMeter, speed));
-                    i++;
-                }
-                i++;
+                //    i++;
+                //}
+                //i++;
             }
         }
 
@@ -579,6 +579,7 @@ public class StatisticsActivity extends AppCompatActivity {
             dataSets.add(set1);
             LineData data = new LineData(dataSets);
             mChart.setData(data);
+            mChart.setVisibleXRangeMaximum(50);
         }
     }
 
@@ -589,12 +590,12 @@ public class StatisticsActivity extends AppCompatActivity {
 
         if(sizeOfList!=0) {
             for (Run run : listOfRun) {
-                if(i%60==0) {
+                //if(i%60==0) {
                     //float coveredMeter = (float) run.getMeters_covered();
                     long time = i;
                     float speed = run.getSpeed();
                     values.add(new Entry(time, speed));
-                }
+                //}
                 i++;
             }
         }
@@ -634,6 +635,7 @@ public class StatisticsActivity extends AppCompatActivity {
             dataSets.add(set1);
             LineData data = new LineData(dataSets);
             mChartTimeSpeed.setData(data);
+            mChartTimeSpeed.setVisibleXRangeMaximum(50);
         }
     }
 
