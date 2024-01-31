@@ -238,9 +238,11 @@ public class StatisticsActivity extends AppCompatActivity {
         int size = fastestSlowestLap.size();
         int slowestLap = fastestSlowestLap.lastEntry().getValue();
 
-        if(slowestLap==size) {
+        if((slowestLap==size) && size != 1) {
             size -= 2;
             slowestLap = fastestSlowestLap.entrySet().stream().skip(size).findFirst().get().getValue();
+        } else {
+            slowestLap = fastestSlowestLap.entrySet().stream().skip(0).findFirst().get().getValue();
         }
         return slowestLap;
     }
@@ -249,8 +251,10 @@ public class StatisticsActivity extends AppCompatActivity {
         int size = fastestSlowestLap.size();
         int fastestLap = fastestSlowestLap.entrySet().stream().skip(0).findFirst().get().getValue();
 
-        if(fastestLap==size) {
+        if((fastestLap==size) && size != 1) {
             fastestLap = fastestSlowestLap.entrySet().stream().skip(1).findFirst().get().getValue();
+        } else {
+            fastestLap = fastestSlowestLap.entrySet().stream().skip(0).findFirst().get().getValue();
         }
         return fastestLap;
     }

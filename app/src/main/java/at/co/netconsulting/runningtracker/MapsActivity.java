@@ -701,9 +701,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
                     fabStopRecording.startAnimation(fadeInAnimation);
                     fabStartRecording.startAnimation(fadeOutAnimation);
-                    fabStatistics.startAnimation(fadeOutAnimation);
-                    fabSettings.startAnimation(fadeOutAnimation);
-                    fabTracks.startAnimation(fadeOutAnimation);
+                    //fabStatistics.startAnimation(fadeOutAnimation);
+                    //fabSettings.startAnimation(fadeOutAnimation);
+                    //fabTracks.startAnimation(fadeOutAnimation);
 
                     Bundle bundle = new Bundle();
                     bundle.putBoolean("StopButtonIsVisible", true);
@@ -730,9 +730,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
                     fabStopRecording.startAnimation(fadeOutAnimation);
                     fabStartRecording.startAnimation(fadeInAnimation);
-                    fabStatistics.startAnimation(fadeInAnimation);
-                    fabSettings.startAnimation(fadeInAnimation);
-                    fabTracks.startAnimation(fadeInAnimation);
+                    //fabStatistics.startAnimation(fadeInAnimation);
+                    //fabSettings.startAnimation(fadeInAnimation);
+                    //fabTracks.startAnimation(fadeInAnimation);
                 }
             }, 500);// set time as per your requirement
         }
