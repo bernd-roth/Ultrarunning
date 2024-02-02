@@ -530,6 +530,8 @@ public class SettingsActivity extends BaseActivity {
 
             AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
             alarmManager.cancel(pendingIntent);
+
+            textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled));
         }
     }
 
@@ -543,7 +545,7 @@ public class SettingsActivity extends BaseActivity {
         int minute = dateTime.getMinuteOfHour();
         int seconds = dateTime.getSecondOfMinute();
 
-        return String.format("%d:%d:%d %d-%d-%d", hour, minute, seconds, day, month, year);
+        return String.format("%02d:%02d:%02d %02d-%02d-%d", hour, minute, seconds, day, month, year);
     }
 
     public void delete(View view) {
