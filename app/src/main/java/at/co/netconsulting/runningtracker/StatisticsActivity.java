@@ -95,6 +95,12 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void calcElevation() {
+        lastElevationPoint = 0;
+        sumElevation = 0;
+        totalElevation = 0;
+        lastElevationPoint = 0;
+        highestElevation = 0;
+
         if(listOfRun.size()>0) {
             for (int i = 0; i < listOfRun.size(); i++) {
                 if(i==0) {
@@ -242,7 +248,7 @@ public class StatisticsActivity extends AppCompatActivity {
             size -= 2;
             slowestLap = fastestSlowestLap.entrySet().stream().skip(size).findFirst().get().getValue();
         } else {
-            slowestLap = fastestSlowestLap.entrySet().stream().skip(0).findFirst().get().getValue();
+            slowestLap = fastestSlowestLap.descendingMap().entrySet().stream().skip(0).findFirst().get().getValue();
         }
         return slowestLap;
     }

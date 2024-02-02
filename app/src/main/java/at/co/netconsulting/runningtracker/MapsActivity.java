@@ -97,14 +97,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private ActivityMapsBinding binding;
     private Polyline polyline;
     private List<LatLng> mPolylinePoints, mPolylinePointsTemp;
-    private boolean isDisableZoomCamera, isDayNightModusActive, isTrafficEnabled, isRecording;
+    private boolean isDisableZoomCamera, isDayNightModusActive, isTrafficEnabled, isRecording,
+            gps_enabled, startingPoint;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks;
     private String mapType;
     private SupportMapFragment mapFragment;
     private String[] permissions;
     private LocationManager locationManager;
-    private boolean gps_enabled;
-    private boolean startingPoint;
     private DrawView drawView;
     private View mapView;
     private Marker marker;
