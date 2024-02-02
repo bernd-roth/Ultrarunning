@@ -19,12 +19,15 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.preference.PreferenceFragmentCompat;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -37,7 +40,6 @@ import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
-
 public class SettingsActivity extends BaseActivity {
     private SharedPreferences sharedpreferences;
     private EditText editTextNumberSignedMinimumDistanceMeter, editTextPerson,
@@ -64,7 +66,9 @@ public class SettingsActivity extends BaseActivity {
     private String person;
     private boolean isBatteryOptimization, isDayNightModus, isTrafficEnabled, isVoiceMessage;
     private Switch switchBatteryOptimization, switchDayNightModus, switchEnableTraffic, switchVoiceMessage;
-    PendingIntent pendingIntent;
+    private PendingIntent pendingIntent;
+    private TextView textViewExportDatabaseScheduled;
+    private Long nextBackInMilliseconds;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +87,7 @@ public class SettingsActivity extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_NEXT_BACKUP);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -174,6 +179,11 @@ public class SettingsActivity extends BaseActivity {
                 isVoiceMessage = sh.getBoolean(sharedPrefKey, false);
                 switchVoiceMessage.setChecked(isVoiceMessage);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_NEXT_BACKUP:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                nextBackInMilliseconds = sh.getLong(sharedPrefKey, 0);
+                textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled) + "\nNext backup at: " + calculateNextBackupDate(nextBackInMilliseconds) + " UTC");
+                break;
         }
     }
 
@@ -232,6 +242,9 @@ public class SettingsActivity extends BaseActivity {
                 saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
             }
         });
+
+        textViewExportDatabaseScheduled = findViewById(R.id.textViewExportDatabaseScheduled);
+        textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled) + "\nNext update ");
 
         db = new DatabaseHandler(this);
     }
@@ -359,6 +372,12 @@ public class SettingsActivity extends BaseActivity {
             boolean isVoiceMessage = switchVoiceMessage.isChecked();
             editor.putBoolean(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE, isVoiceMessage);
             editor.commit();
+        }  else if(sharedPreference.equals("NEXT_BACKUP")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_NEXT_BACKUP, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            editor.putLong(SharedPref.STATIC_SHARED_PREF_NEXT_BACKUP, nextBackInMilliseconds);
+            editor.commit();
         }
     }
     public void onClickRadioButtonBatteryGroup(View view) {
@@ -481,16 +500,19 @@ public class SettingsActivity extends BaseActivity {
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
         scheduleDatabaseBackup();
+        saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_NEXT_BACKUP);
         Toast.makeText(getApplicationContext(), R.string.save_settings_map_type_rec_profil_runners_name, Toast.LENGTH_LONG).show();
     }
     private void scheduleDatabaseBackup() {
         int scheduledDays = Integer.parseInt(editTextNumber.getText().toString());
 
         if(scheduledDays > 0) {
-            Long time = new GregorianCalendar().getTimeInMillis() + (scheduledDays * StaticFields.ONE_DAY_IN_MILLISECONDS);
+            nextBackInMilliseconds = new GregorianCalendar().getTimeInMillis() + (scheduledDays * StaticFields.ONE_DAY_IN_MILLISECONDS);
+
+            textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled) + "\nNext backup at: " + calculateNextBackupDate(nextBackInMilliseconds) + " UTC");
 
             Bundle bundle = new Bundle();
-            bundle.putLong("scheduled_alarm", time);
+            bundle.putLong("scheduled_alarm", nextBackInMilliseconds);
 
             Intent intentAlarm = new Intent(this, AlarmReceiver.class);
             intentAlarm.putExtra("alarmmanager", bundle);
@@ -499,7 +521,7 @@ public class SettingsActivity extends BaseActivity {
                     PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
 
             AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent);
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextBackInMilliseconds, pendingIntent);
         } else {
             Intent intentAlarm = new Intent(this, AlarmReceiver.class);
 
@@ -510,6 +532,20 @@ public class SettingsActivity extends BaseActivity {
             alarmManager.cancel(pendingIntent);
         }
     }
+
+    private String calculateNextBackupDate(Long milliseconds) {
+        DateTime dateTime = new DateTime( milliseconds, DateTimeZone.UTC );
+        int day = dateTime.getDayOfMonth();
+        int month = dateTime.getMonthOfYear();
+        int year = dateTime.getYear();
+        //time
+        int hour = dateTime.getHourOfDay();
+        int minute = dateTime.getMinuteOfHour();
+        int seconds = dateTime.getSecondOfMinute();
+
+        return String.format("%d:%d:%d %d-%d-%d", hour, minute, seconds, day, month, year);
+    }
+
     public void delete(View view) {
         Button buttonDelete = (Button)view;
         String buttonText = buttonDelete.getText().toString();
