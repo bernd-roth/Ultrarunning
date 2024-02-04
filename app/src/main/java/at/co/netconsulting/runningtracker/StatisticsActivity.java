@@ -49,9 +49,9 @@ public class StatisticsActivity extends AppCompatActivity {
     private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed,
             textViewSlowestLap, textViewFastestLap, textViewStartingElevation,
             textViewEndingElevation, textViewHighestElevation, textViewTotalElevation,
-            textViewMovementTime;
+            textViewMovementTime, textViewLowestElevation;
     private float maxSpeed, avgSpeed, totalDistance;
-    private double  totalElevation, highestElevation, lastElevationPoint, sumElevation;
+    private double  totalElevation, highestElevation, lastElevationPoint, sumElevation,lowestElevation;
     private String totalMovementTime;
     private List<Float> listSpeed;
     private TableLayout tableSection, tableHeader, tableYearSection, tableHeaderYear;
@@ -100,6 +100,7 @@ public class StatisticsActivity extends AppCompatActivity {
         totalElevation = 0;
         lastElevationPoint = 0;
         highestElevation = 0;
+        lowestElevation = 0;
 
         if(listOfRun.size()>0) {
             for (int i = 0; i < listOfRun.size(); i++) {
@@ -111,13 +112,16 @@ public class StatisticsActivity extends AppCompatActivity {
                     lastElevationPoint = listOfRun.get(i).getAltitude();
                 }
                 //highest elevation
-                if(listOfRun.get(i).getAltitude()>highestElevation) {
+                if(listOfRun.get(i).getAltitude()>=highestElevation) {
                     highestElevation = listOfRun.get(i).getAltitude();
+                }
+                //lowest elevation
+                if(listOfRun.get(i).getAltitude()!=0) {
+                    lowestElevation = listOfRun.get(i).getAltitude();
                 }
             }
         }
     }
-
     private void callDatabaseForSpinner() {
         ArrayList parsedToStringRun = new ArrayList<String>();
         intNumberOfRun = new ArrayList<Integer>();
@@ -282,6 +286,8 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewEndingElevation.setText(String.format("Ending elevation: %.3f meter", listOfRun.get(listOfRun.size() - 1).getAltitude()));
         //highest elevation
         textViewHighestElevation.setText(String.format("Highest elevation: %.3f meter", highestElevation));
+        //Lowest elevation
+        textViewLowestElevation.setText(String.format("Lowest elevation: %.3f meter", lowestElevation));
         //Total elevation
         textViewTotalElevation.setText(String.format("Total elevation: %.3f meter", totalElevation));
         //Movement time
@@ -305,6 +311,7 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewStartingElevation = findViewById(R.id.textViewStartingElevation);
         textViewEndingElevation = findViewById(R.id.textViewEndingElevation);
         textViewHighestElevation = findViewById(R.id.textViewHighestElevation);
+        textViewLowestElevation = findViewById(R.id.textViewLowestElevation);
         textViewTotalElevation = findViewById(R.id.textViewTotalElevation);
         textViewMovementTime = findViewById(R.id.textViewMovementTime);
 

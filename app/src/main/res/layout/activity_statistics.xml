@@ -92,6 +92,12 @@
         android:textSize="16dp" />
 
     <TextView
+        android:id="@+id/textViewLowestElevation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16dp" />
+
+    <TextView
         android:id="@+id/textViewTotalElevation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
