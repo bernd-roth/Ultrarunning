@@ -1,5 +1,6 @@
 package at.co.netconsulting.runningtracker;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -63,6 +65,8 @@ public class StatisticsActivity extends AppCompatActivity {
     private View mView, viewSeperator, viewSeperator1;
     private TextView textView;
     private ArrayList<Integer> intNumberOfRun;
+    private int positionInArray;
+    private Button buttonShowDetailedGraph;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +81,6 @@ public class StatisticsActivity extends AppCompatActivity {
         renderDataTimeSpeed();
         setData();
         setDataRenderDataTimeSpeed();
-        //setTextView();
     }
 
     private void calcMovementTime() {
@@ -298,7 +301,6 @@ public class StatisticsActivity extends AppCompatActivity {
         mChart = findViewById(R.id.chart);
         mChart.setTouchEnabled(true);
         mChart.setPinchZoom(true);
-
         mChartTimeSpeed = findViewById(R.id.chartTimeSpeed);
         mChartTimeSpeed.setTouchEnabled(true);
         mChartTimeSpeed.setPinchZoom(true);
@@ -329,6 +331,7 @@ public class StatisticsActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 int spinnerPosition = spinnerRunChoose.getSelectedItemPosition();
                 int arrayPosition = intNumberOfRun.get(spinnerPosition);
+                positionInArray = arrayPosition;
 
                 listOfRun.clear();
                 listOfRun = db.getSingleEntryForStatistics(arrayPosition);
@@ -376,6 +379,8 @@ public class StatisticsActivity extends AppCompatActivity {
         });
 
         linearLayout = findViewById(R.id.ll);
+
+        buttonShowDetailedGraph = findViewById(R.id.buttonShowDetailedGraph);
 
         db = new DatabaseHandler(this);
     }
@@ -681,5 +686,10 @@ public class StatisticsActivity extends AppCompatActivity {
             totalDistance = 25195;
             totalDistance/=1000;
         }
+    }
+    public void sohwDetailedGraph(View view) {
+        Intent detailedDistanceSpeedChart = new Intent(StatisticsActivity.this, DetailedGraphActivity.class);
+        detailedDistanceSpeedChart.putExtra("numberOfRun", positionInArray);
+        StatisticsActivity.this.startActivity(detailedDistanceSpeedChart);
     }
 }

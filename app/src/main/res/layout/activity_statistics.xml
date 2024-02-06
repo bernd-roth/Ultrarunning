@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fillViewport="false">
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
     android:id="@+id/ll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,12 +15,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_dropdown"
-        android:spinnerMode="dropdown"/>
+        android:spinnerMode="dropdown" />
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
         android:layout_width="350dp"
         android:layout_height="214dp" />
+
+    <Button
+        android:id="@+id/buttonShowDetailedGraph"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show detailed graph"
+        android:onClick="sohwDetailedGraph"/>
 
     <View
         android:layout_width="match_parent"
