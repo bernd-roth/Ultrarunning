@@ -4,10 +4,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,6 +42,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -167,6 +172,7 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
                 double y = e.getY();
                 double speed = 0;
                 double distance = 0;
+                long time = 0;
 
                 for(int i = 0; i<run.size(); i++) {
                     if((run.get(i).getMeters_covered() == x) &&
@@ -174,6 +180,7 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
                         latLng = new LatLng(run.get(i).getLat(), run.get(i).getLng());
                         speed = run.get(i).getSpeed();
                         distance = run.get(i).getMeters_covered() / 1000;
+                        time = run.get(i).getDateTimeInMs();
                     }
                 }
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -183,11 +190,14 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
                     marker.remove();
                     marker = null;
                 }
+                Duration duration = Duration.ofMillis(time);
 
+                String sTime = String.format("%02d:%02d:%02d", duration.toHours() % 24,
+                        duration.toMinutes() % 60, duration.getSeconds() % 60);
                 String sSpeed = String.format("Speed: %.2f km/h", speed);
                 String sDistance = String.format("Distance: %.2f Km", distance);
 
-                marker = mMap.addMarker(new MarkerOptions().position(latLng).title(sDistance).snippet(sSpeed));
+                marker = mMap.addMarker(new MarkerOptions().position(latLng).title(sTime).snippet(sDistance + "\n" + sSpeed));
                 marker.showInfoWindow();
             }
 
@@ -219,6 +229,36 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
         //if map is moved around, automatic camera movement is disabled
         mMap.setOnCameraMoveListener(this);
         mMap.setMapType(mMap.MAP_TYPE_NORMAL);
+
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+
+                LinearLayout info = new LinearLayout(getApplicationContext());
+                info.setOrientation(LinearLayout.VERTICAL);
+
+                TextView title = new TextView(getApplicationContext());
+                title.setTextColor(Color.BLACK);
+                title.setGravity(Gravity.CENTER);
+                title.setTypeface(null, Typeface.BOLD);
+                title.setText(marker.getTitle());
+
+                TextView snippet = new TextView(getApplicationContext());
+                snippet.setTextColor(Color.GRAY);
+                snippet.setText(marker.getSnippet());
+
+                info.addView(title);
+                info.addView(snippet);
+
+                return info;
+            }
+        });
 
         // Get map views
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().
