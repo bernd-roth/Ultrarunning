@@ -232,7 +232,7 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
         // position on right bottom
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-        layoutParams.setMargins(0, 50, 5, 0);
+        layoutParams.setMargins(0, 5, 5, 255);
 
         //adjust location button layout params above the zoom layout
         RelativeLayout.LayoutParams location_layout = (RelativeLayout.LayoutParams) location_button.getLayoutParams();
@@ -245,7 +245,7 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
         }
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setPadding(0, 50, 0, 0);
+        mMap.setPadding(0, 0, 0, 90);
         mMap.getUiSettings().setMapToolbarEnabled(true);
         mMap.setMapStyle(null);
 

@@ -27,6 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Show detailed graph"
+        android:background="@drawable/rounded_corner"
         android:onClick="sohwDetailedGraph"/>
 
     <View
