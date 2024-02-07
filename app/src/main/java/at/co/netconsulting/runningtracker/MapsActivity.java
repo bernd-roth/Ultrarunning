@@ -73,6 +73,7 @@ import java.time.ZonedDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -407,13 +408,40 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         return ChronoLocalDateTime.from(zdtNow).isAfter(minusDayRise) && ChronoLocalDateTime.from(zdtNow).isBefore(minusDaySet);
     }
-    private void createCheckerFlag(List<LatLng> polylinePoints) {
+    private void createCheckerFlag(List<LatLng> polylinePoints, boolean isColouredTrack, List<Run> allEntries) {
         int height = 100;
         int width = 100;
+        boolean isStart = true;
+        HashSet<Integer> hashArray = new HashSet<Integer>();
+        List<Marker> lMarker = new ArrayList<>();
 
         Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable. checkerflag);
         Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
         BitmapDescriptor checkerFlag = BitmapDescriptorFactory.fromBitmap(smallMarker);
+
+        if(allEntries != null && allEntries.size() > 0) {
+            for(int i = 0; i<allEntries.size(); i++) {
+                double meters_covered = allEntries.get(i).getMeters_covered() / 1000;
+                int alreadyCovered = (int) meters_covered;
+
+                if (alreadyCovered > 0 && ! hashArray.contains(alreadyCovered)) {
+                    marker = mMap.addMarker(new MarkerOptions().position(
+                            new LatLng(polylinePoints.get(i).latitude,
+                                    polylinePoints.get(i).longitude)).title("Kilometer: " + alreadyCovered));
+                    //marker.setTitle(getResources().getString(R.string.finish));
+                    marker.showInfoWindow();
+                    lMarker.add(marker);
+                    hashArray.add(alreadyCovered);
+                } else if (isStart) {
+                    marker = mMap.addMarker(new MarkerOptions().position(
+                            new LatLng(polylinePoints.get(i).latitude,
+                                    polylinePoints.get(i).longitude)));
+                    marker.showInfoWindow();
+                    lMarker.add(marker);
+                    isStart = false;
+                }
+            }
+        }
 
         if(polylinePoints.size()>1){
             marker = mMap.addMarker(new MarkerOptions().position(
@@ -421,6 +449,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             polylinePoints.get(polylinePoints.size()-1).longitude)).icon(checkerFlag));
             marker.setTitle(getResources().getString(R.string.finish));
             marker.showInfoWindow();
+            lMarker.add(marker);
 
             //move to last location when drawing the route
             double lat = polylinePoints.get(polylinePoints.size()-1).latitude;
@@ -495,7 +524,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
                 fadingButtons(R.id.fabStopRecording);
 
-                createCheckerFlag(mPolylinePointsTemp);
+                createCheckerFlag(mPolylinePointsTemp, false, null);
                 showAlertDialogWithComment();
                 startingPoint=true;
                 isRecording = false;
@@ -641,7 +670,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         dialog.getWindow().setAttributes(lp);
     }
-    private void showPolyline(List<ColoredPoint> points) {
+    private void showPolyline(List<ColoredPoint> points, List<Run> allEntries) {
         mMap.clear();
         if (points.size() < 2)
             return;
@@ -655,7 +684,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         if(ix==0) {
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude))
-                    .title(getString(R.string.starting_position)));
+                    .title(getString(R.string.starting_position))).showInfoWindow();
         }
 
         ix++;
@@ -680,7 +709,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         textViewSlow.setVisibility(View.VISIBLE);
         textViewFast.setVisibility(View.VISIBLE);
         polyline = mMap.addPolyline(new PolylineOptions().addAll(currentSegment).color(currentColor).jointType(JointType.ROUND).width(15.0f));
-        createCheckerFlag(mPolylinePoints);
+        createCheckerFlag(mPolylinePoints, true, allEntries);
     }
 
     private void fadingButtons(int fabButton) {
@@ -811,7 +840,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                                     .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude))
                                     .title(getString(R.string.starting_position)));
                             polyline = mMap.addPolyline(new PolylineOptions().addAll(mPolylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-                            createCheckerFlag(mPolylinePoints);
+                            createCheckerFlag(mPolylinePoints, false, null);
                             dialog_data.cancel();
                         }
                     });
@@ -856,7 +885,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                         @Override
                         public void run() {
                             //UI Thread work here
-                            showPolyline(sourcePoints);
+                            showPolyline(sourcePoints, allEntries);
                             dialog_data.cancel();
                         }
                     });
