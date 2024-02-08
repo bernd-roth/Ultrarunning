@@ -42,7 +42,11 @@ import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -59,10 +63,10 @@ public class StatisticsActivity extends AppCompatActivity {
     private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed,
             textViewSlowestLap, textViewFastestLap, textViewStartingElevation,
             textViewEndingElevation, textViewHighestElevation, textViewTotalElevation,
-            textViewMovementTime, textViewLowestElevation;
+            textViewMovementTime, textViewLowestElevation, textViewStartTime;
     private float maxSpeed, avgSpeed, totalDistance;
     private double  totalElevation, highestElevation, lastElevationPoint, sumElevation,lowestElevation;
-    private String totalMovementTime;
+    private String totalMovementTime, startTime;
     private List<Float> listSpeed;
     private TableLayout tableSection, tableHeader, tableYearSection, tableHeaderYear;
     private TextView txtGeneric, txtGenericYear;
@@ -85,10 +89,28 @@ public class StatisticsActivity extends AppCompatActivity {
         calcAvgSpeedMaxSpeedTotalDistance();
         calcElevation();
         calcMovementTime();
+        calcStartTime();
         renderData();
-        renderDataTimeSpeed();
+        //renderDataTimeSpeed();
         setData();
-        setDataRenderDataTimeSpeed();
+        //setDataRenderDataTimeSpeed();
+    }
+    private void calcStartTime() {
+        if(listOfRun.size()>0) {
+            long firstElement = listOfRun.get(0).getDateTimeInMs();
+
+            Date date = new Date(firstElement);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH) + 1;
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
+            int seconds = calendar.get(Calendar.SECOND);
+
+            startTime = String.format("%02d-%02d-%02d %02d:%02d:%02d", day, month, year, hour, minute, seconds);
+        }
     }
 
     private void calcMovementTime() {
@@ -303,15 +325,17 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewTotalElevation.setText(String.format("Total elevation: %.3f meter", totalElevation));
         //Movement time
         textViewMovementTime.setText(String.format("Total movement time: %s", totalMovementTime));
+        //StartTime
+        textViewStartTime.setText(String.format("Start time: %s", startTime));
     }
 
     private void initializeObjects() {
         mChart = findViewById(R.id.chart);
         mChart.setTouchEnabled(true);
         mChart.setPinchZoom(true);
-        mChartTimeSpeed = findViewById(R.id.chartTimeSpeed);
-        mChartTimeSpeed.setTouchEnabled(true);
-        mChartTimeSpeed.setPinchZoom(true);
+        //mChartTimeSpeed = findViewById(R.id.chartTimeSpeed);
+        //mChartTimeSpeed.setTouchEnabled(true);
+        //mChartTimeSpeed.setPinchZoom(true);
 
         textViewMaxSpeed = findViewById(R.id.textViewMaxSpeed);
         textViewDistance = findViewById(R.id.textViewDistance);
@@ -324,6 +348,7 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewLowestElevation = findViewById(R.id.textViewLowestElevation);
         textViewTotalElevation = findViewById(R.id.textViewTotalElevation);
         textViewMovementTime = findViewById(R.id.textViewMovementTime);
+        textViewStartTime = findViewById(R.id.textViewStartTime);
 
         tableHeader = (TableLayout)findViewById(R.id.tableHeader);
         tableSection = (TableLayout)findViewById(R.id.tableSection);
@@ -351,10 +376,11 @@ public class StatisticsActivity extends AppCompatActivity {
 
                 calcElevation();
                 calcMovementTime();
+                calcStartTime();
 
                 //second graph
-                renderDataTimeSpeed();
-                setDataRenderDataTimeSpeed();
+                //renderDataTimeSpeed();
+                //setDataRenderDataTimeSpeed();
                 List<Long> groupedSectionList = calculateSections();
                 List<Integer> fastestSlowestLap = showTableLayout(groupedSectionList);
                 setTextView(fastestSlowestLap);
@@ -377,8 +403,8 @@ public class StatisticsActivity extends AppCompatActivity {
                 mChart.notifyDataSetChanged();
                 mChart.invalidate();
                 //Time/Speed chart
-                mChartTimeSpeed.notifyDataSetChanged();
-                mChartTimeSpeed.invalidate();
+                //mChartTimeSpeed.notifyDataSetChanged();
+                //mChartTimeSpeed.invalidate();
             }
 
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -522,7 +548,8 @@ public class StatisticsActivity extends AppCompatActivity {
         leftAxis.setDrawZeroLine(false);
         leftAxis.setDrawLimitLinesBehindData(false);
 
-        mChart.getXAxis().setDrawLabels(false);
+        //show labels underneath chart
+        mChart.getXAxis().setDrawLabels(true);
         mChart.getAxisRight().setEnabled(false);
     }
 
@@ -547,7 +574,8 @@ public class StatisticsActivity extends AppCompatActivity {
         leftAxis.setDrawZeroLine(false);
         leftAxis.setDrawLimitLinesBehindData(false);
 
-        mChartTimeSpeed.getXAxis().setDrawLabels(false);
+        //show labels underneath chart
+        mChartTimeSpeed.getXAxis().setDrawLabels(true);
         mChartTimeSpeed.getAxisRight().setEnabled(false);
     }
 
@@ -618,19 +646,19 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setDataRenderDataTimeSpeed() {
-        ArrayList<Entry> values = new ArrayList<>();
+        List<Entry> values = new ArrayList<>();
         int sizeOfList = listOfRun.size();
-        int i = 0;
+        //int i = 0;
 
         if(sizeOfList!=0) {
             for (Run run : listOfRun) {
                 //if(i%60==0) {
-                    //float coveredMeter = (float) run.getMeters_covered();
-                    long time = i;
-                    float speed = run.getSpeed();
-                    values.add(new Entry(time, speed));
+                float coveredMeter = (float) run.getDateTimeInMs();
+                float speed = run.getSpeed();
+                values.add(new Entry(coveredMeter, speed));
+                //    i++;
                 //}
-                i++;
+                //i++;
             }
         }
 
@@ -668,8 +696,10 @@ public class StatisticsActivity extends AppCompatActivity {
             ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(set1);
             LineData data = new LineData(dataSets);
+            mChartTimeSpeed.setVisibleXRangeMaximum(1000);
             mChartTimeSpeed.setData(data);
-            //mChartTimeSpeed.setVisibleXRangeMaximum(50);
+            mChartTimeSpeed.notifyDataSetChanged();
+            mChartTimeSpeed.invalidate();
         }
     }
 

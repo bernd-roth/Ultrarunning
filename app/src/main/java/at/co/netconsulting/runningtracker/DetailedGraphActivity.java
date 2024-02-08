@@ -152,7 +152,8 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
         leftAxis.setDrawZeroLine(false);
         leftAxis.setDrawLimitLinesBehindData(false);
 
-        mChart.getXAxis().setDrawLabels(false);
+        //show labels underneath chart
+        mChart.getXAxis().setDrawLabels(true);
         mChart.getAxisRight().setEnabled(false);
     }
 
