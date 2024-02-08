@@ -21,12 +21,20 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.BubbleEntry;
+import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.data.RadarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
 
@@ -504,16 +512,17 @@ public class StatisticsActivity extends AppCompatActivity {
         xAxis.setAxisMinimum(0f);
         xAxis.setDrawLimitLinesBehindData(true);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setAxisMaximum(listOfRun.size());
+        //xAxis.setAxisMaximum(listOfRun.size());
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.removeAllLimitLines();
-        leftAxis.setAxisMaximum(maxSpeed);
+        //leftAxis.setAxisMaximum(maxSpeed);
         leftAxis.setAxisMinimum(0);
         leftAxis.enableGridDashedLine(10f, 10f, 0f);
         leftAxis.setDrawZeroLine(false);
         leftAxis.setDrawLimitLinesBehindData(false);
 
+        mChart.getXAxis().setDrawLabels(false);
         mChart.getAxisRight().setEnabled(false);
     }
 
@@ -532,12 +541,13 @@ public class StatisticsActivity extends AppCompatActivity {
 
         YAxis leftAxis = mChartTimeSpeed.getAxisLeft();
         leftAxis.removeAllLimitLines();
-        leftAxis.setAxisMaximum(maxSpeed);
+        //leftAxis.setAxisMaximum(maxSpeed);
         leftAxis.setAxisMinimum(0);
         leftAxis.enableGridDashedLine(10f, 10f, 0f);
         leftAxis.setDrawZeroLine(false);
         leftAxis.setDrawLimitLinesBehindData(false);
 
+        mChartTimeSpeed.getXAxis().setDrawLabels(false);
         mChartTimeSpeed.getAxisRight().setEnabled(false);
     }
 
@@ -550,7 +560,7 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void setData() {
-        ArrayList<Entry> values = new ArrayList<>();
+        List<Entry> values = new ArrayList<>();
         int sizeOfList = listOfRun.size();
         //int i = 0;
 
@@ -600,8 +610,10 @@ public class StatisticsActivity extends AppCompatActivity {
             ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(set1);
             LineData data = new LineData(dataSets);
+            //mChart.setVisibleXRangeMaximum(50);
             mChart.setData(data);
-            mChart.setVisibleXRangeMaximum(50);
+            mChart.notifyDataSetChanged();
+            mChart.invalidate();
         }
     }
 
@@ -657,7 +669,7 @@ public class StatisticsActivity extends AppCompatActivity {
             dataSets.add(set1);
             LineData data = new LineData(dataSets);
             mChartTimeSpeed.setData(data);
-            mChartTimeSpeed.setVisibleXRangeMaximum(50);
+            //mChartTimeSpeed.setVisibleXRangeMaximum(50);
         }
     }
 

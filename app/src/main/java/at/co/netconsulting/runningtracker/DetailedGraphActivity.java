@@ -119,11 +119,13 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
             } else {
                 set1.setFillColor(Color.DKGRAY);
             }
-            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-            dataSets.add(set1);
-            LineData data = new LineData(dataSets);
-            mChart.setData(data);
-            mChart.setVisibleXRangeMaximum(50);
+            LineData lineData = new LineData(set1);
+            //ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+            //dataSets.add(set1);
+            //LineData data = new LineData(dataSets);
+            mChart.setData(lineData);
+            mChart.notifyDataSetChanged();
+            mChart.invalidate();
         }
     }
 
@@ -139,17 +141,18 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
         xAxis.setAxisMinimum(0f);
         xAxis.setDrawLimitLinesBehindData(true);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setAxisMaximum(run.size());
+        //xAxis.setAxisMaximum(run.size());
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.removeAllLimitLines();
-        Run maxSpeed = run.stream().max(Comparator.comparing(v -> v.getSpeed())).get();
-        leftAxis.setAxisMaximum(maxSpeed.getSpeed());
+        //Run maxSpeed = run.stream().max(Comparator.comparing(v -> v.getSpeed())).get();
+        //leftAxis.setAxisMaximum(maxSpeed.getSpeed());
         leftAxis.setAxisMinimum(0);
         leftAxis.enableGridDashedLine(10f, 10f, 0f);
         leftAxis.setDrawZeroLine(false);
         leftAxis.setDrawLimitLinesBehindData(false);
 
+        mChart.getXAxis().setDrawLabels(false);
         mChart.getAxisRight().setEnabled(false);
     }
 
