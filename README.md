@@ -38,6 +38,11 @@ MPAndroidCharts
 ![Screenshot_20240130-131915](https://github.com/bernd-roth/Ultrarunning/assets/1835491/c7df8024-3fe5-42ad-bc83-3862d9ae66b3)
 ![Screenshot_20240130-132030](https://github.com/bernd-roth/Ultrarunning/assets/1835491/24ea4fca-6dae-43b8-b03b-bc5c06f308d9)
 
+## Not implented yet
+
+* Automatic database backup after mobile phone was restarted
+* Pause recording, when user halts
+* Extend statistic overview: how many kilometers per week were covered
 
 ## Contributing
 
