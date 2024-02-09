@@ -43,10 +43,13 @@ public class StatisticsActivity extends AppCompatActivity {
     private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed,
             textViewSlowestLap, textViewFastestLap, textViewStartingElevation,
             textViewEndingElevation, textViewHighestElevation, textViewTotalElevation,
-            textViewMovementTime, textViewLowestElevation, textViewStartTime, textViewEndTime;
+            textViewMovementTime, textViewLowestElevation, textViewStartTime, textViewEndTime,
+            textViewPace;
     private float maxSpeed, avgSpeed, totalDistance;
-    private double totalElevation, highestElevation, lastElevationPoint, sumElevation,lowestElevation;
-    private String totalMovementTime, startTime, endTime;
+    private double totalElevation, highestElevation, lastElevationPoint,
+            sumElevation,lowestElevation;
+
+    private String totalMovementTime, startTime, endTime, sPace;
     private List<Float> listSpeed;
     private TableLayout tableSection, tableHeader, tableYearSection, tableHeaderYear;
     private TextView txtGeneric, txtGenericYear, textView;
@@ -69,10 +72,28 @@ public class StatisticsActivity extends AppCompatActivity {
         calcMovementTime();
         calcStartTime();
         calcEndTime();
+        calcPace();
         renderData();
         //renderDataTimeSpeed();
         setData();
         //setDataRenderDataTimeSpeed();
+    }
+
+    private void calcPace() {
+        if(listOfRun.size()>0) {
+            long firstElement = listOfRun.get(0).getDateTimeInMs();
+            long lastElement = listOfRun.get(listOfRun.size()-1).getDateTimeInMs();
+
+            long calcResult = lastElement-firstElement;
+
+            Duration duration = Duration.ofMillis(calcResult);
+            double tPace = duration.toMinutes() / totalDistance;
+            long iPart = (long) tPace; //iPart stands for integer part
+            double fPart = tPace - iPart; //fPart stands for fractional part
+            fPart *= 60;
+
+            sPace = String.format("%2d:%02d min/km", iPart, (int) fPart);
+        }
     }
 
     private void calcEndTime() {
@@ -327,6 +348,8 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewStartTime.setText(String.format("Start time: %s", startTime));
         //EndTime
         textViewEndTime.setText(String.format("End time: %s", endTime));
+        //Pace
+        textViewPace.setText(String.format("Pace: %s", sPace));
     }
 
     private void initializeObjects() {
@@ -357,6 +380,7 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewMovementTime = findViewById(R.id.textViewMovementTime);
         textViewStartTime = findViewById(R.id.textViewStartTime);
         textViewEndTime = findViewById(R.id.textViewEndTime);
+        textViewPace = findViewById(R.id.textViewPace);
 
         tableHeader = (TableLayout)findViewById(R.id.tableHeader);
         tableSection = (TableLayout)findViewById(R.id.tableSection);
@@ -386,6 +410,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 calcMovementTime();
                 calcStartTime();
                 calcEndTime();
+                calcPace();
 
                 //second graph
                 //renderDataTimeSpeed();
