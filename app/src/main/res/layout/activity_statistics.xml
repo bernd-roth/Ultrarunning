@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fillViewport="false">
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
     android:id="@+id/ll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_dropdown"
-        android:spinnerMode="dropdown"/>
+        android:spinnerMode="dropdown" />
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
@@ -27,15 +27,27 @@
         android:layout_height="2dp"
         android:background="#c0c0c0"/>
 
-    <com.github.mikephil.charting.charts.LineChart
+<!--    <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chartTimeSpeed"
         android:layout_width="350dp"
         android:layout_height="214dp" />
-
+-->
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="#c0c0c0"/>
+
+    <TextView
+        android:id="@+id/textViewStartTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/textViewEndTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16dp" />
 
     <TextView
         android:id="@+id/textViewMovementTime"
@@ -57,6 +69,12 @@
 
     <TextView
         android:id="@+id/textViewMaxSpeed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/textViewPace"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16dp" />

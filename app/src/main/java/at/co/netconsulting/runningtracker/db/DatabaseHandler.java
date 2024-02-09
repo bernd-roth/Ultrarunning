@@ -259,7 +259,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String selectQuery = "SELECT "
                 + KEY_LAT + ", "
                 + KEY_LNG + ", "
-                + KEY_SPEED
+                + KEY_SPEED + ", "
+                + KEY_METERS_COVERED
                 + " FROM " + TABLE_RUNS + " WHERE " + KEY_NUMBER_OF_RUN + " = " + numberOfRun;
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -272,6 +273,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 run.setLat(cursor.getDouble(0));
                 run.setLng(cursor.getDouble(1));
                 run.setSpeed(cursor.getFloat(2));
+                run.setMeters_covered(cursor.getDouble(3));
                 allEntryList.add(run);
             } while (cursor.moveToNext());
         }
