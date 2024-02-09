@@ -5,15 +5,11 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -21,36 +17,20 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.BubbleEntry;
-import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.data.RadarEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
-
-import org.w3c.dom.Text;
-
-import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
@@ -63,22 +43,20 @@ public class StatisticsActivity extends AppCompatActivity {
     private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed,
             textViewSlowestLap, textViewFastestLap, textViewStartingElevation,
             textViewEndingElevation, textViewHighestElevation, textViewTotalElevation,
-            textViewMovementTime, textViewLowestElevation, textViewStartTime;
+            textViewMovementTime, textViewLowestElevation, textViewStartTime, textViewEndTime;
     private float maxSpeed, avgSpeed, totalDistance;
-    private double  totalElevation, highestElevation, lastElevationPoint, sumElevation,lowestElevation;
-    private String totalMovementTime, startTime;
+    private double totalElevation, highestElevation, lastElevationPoint, sumElevation,lowestElevation;
+    private String totalMovementTime, startTime, endTime;
     private List<Float> listSpeed;
     private TableLayout tableSection, tableHeader, tableYearSection, tableHeaderYear;
-    private TextView txtGeneric, txtGenericYear;
+    private TextView txtGeneric, txtGenericYear, textView;
     private TableRow tr, trYear;
     private long HH, MM, SS;
     private Spinner spinnerRunChoose;
     private LinearLayout linearLayout;
     private View mView, viewSeperator, viewSeperator1;
-    private TextView textView;
     private ArrayList<Integer> intNumberOfRun;
     private int positionInArray;
-    private Button buttonShowDetailedGraph;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,11 +68,31 @@ public class StatisticsActivity extends AppCompatActivity {
         calcElevation();
         calcMovementTime();
         calcStartTime();
+        calcEndTime();
         renderData();
         //renderDataTimeSpeed();
         setData();
         //setDataRenderDataTimeSpeed();
     }
+
+    private void calcEndTime() {
+        if(listOfRun.size()>0) {
+            long lastElement = listOfRun.get(listOfRun.size()-1).getDateTimeInMs();
+
+            Date date = new Date(lastElement);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH) + 1;
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
+            int seconds = calendar.get(Calendar.SECOND);
+
+            endTime = String.format("%02d-%02d-%02d %02d:%02d:%02d", day, month, year, hour, minute, seconds);
+        }
+    }
+
     private void calcStartTime() {
         if(listOfRun.size()>0) {
             long firstElement = listOfRun.get(0).getDateTimeInMs();
@@ -327,12 +325,21 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewMovementTime.setText(String.format("Total movement time: %s", totalMovementTime));
         //StartTime
         textViewStartTime.setText(String.format("Start time: %s", startTime));
+        //EndTime
+        textViewEndTime.setText(String.format("End time: %s", endTime));
     }
 
     private void initializeObjects() {
         mChart = findViewById(R.id.chart);
         mChart.setTouchEnabled(true);
-        mChart.setPinchZoom(true);
+        mChart.setPinchZoom(false);
+        mChart.setScaleEnabled(false);
+        mChart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sohwDetailedGraph(view);
+            }
+        });
         //mChartTimeSpeed = findViewById(R.id.chartTimeSpeed);
         //mChartTimeSpeed.setTouchEnabled(true);
         //mChartTimeSpeed.setPinchZoom(true);
@@ -349,6 +356,7 @@ public class StatisticsActivity extends AppCompatActivity {
         textViewTotalElevation = findViewById(R.id.textViewTotalElevation);
         textViewMovementTime = findViewById(R.id.textViewMovementTime);
         textViewStartTime = findViewById(R.id.textViewStartTime);
+        textViewEndTime = findViewById(R.id.textViewEndTime);
 
         tableHeader = (TableLayout)findViewById(R.id.tableHeader);
         tableSection = (TableLayout)findViewById(R.id.tableSection);
@@ -377,6 +385,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 calcElevation();
                 calcMovementTime();
                 calcStartTime();
+                calcEndTime();
 
                 //second graph
                 //renderDataTimeSpeed();
@@ -413,9 +422,6 @@ public class StatisticsActivity extends AppCompatActivity {
         });
 
         linearLayout = findViewById(R.id.ll);
-
-        buttonShowDetailedGraph = findViewById(R.id.buttonShowDetailedGraph);
-
         db = new DatabaseHandler(this);
     }
 

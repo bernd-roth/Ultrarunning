@@ -22,14 +22,6 @@
         android:layout_width="350dp"
         android:layout_height="214dp" />
 
-    <Button
-        android:id="@+id/buttonShowDetailedGraph"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Show detailed graph"
-        android:background="@drawable/rounded_corner"
-        android:onClick="sohwDetailedGraph"/>
-
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
@@ -47,6 +39,12 @@
 
     <TextView
         android:id="@+id/textViewStartTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/textViewEndTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16dp" />
