@@ -100,7 +100,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private List<LatLng> mPolylinePoints, mPolylinePointsTemp;
     private boolean isDisableZoomCamera, isDayNightModusActive, isTrafficEnabled, isRecording,
             gps_enabled, startingPoint;
-    private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks;
+    private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks, fabResetMap;
     private String mapType;
     private SupportMapFragment mapFragment;
     private String[] permissions;
@@ -251,6 +251,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         fabSettings.setVisibility(View.VISIBLE);
         fabTracks = findViewById(R.id.fabTracks);
         fabTracks.setVisibility(View.VISIBLE);
+        fabResetMap = findViewById(R.id.fabResetMap);
+        fabResetMap.setVisibility(View.INVISIBLE);
         textViewFast = findViewById(R.id.textViewFast);
         textViewFast.setVisibility(View.INVISIBLE);
         textViewSlow = findViewById(R.id.textViewSlow);
@@ -843,6 +845,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             polyline = mMap.addPolyline(new PolylineOptions().addAll(mPolylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
                             createCheckerFlag(mPolylinePoints, false, null);
                             dialog_data.cancel();
+                            fabResetMap.setVisibility(View.VISIBLE);
                         }
                     });
                     positionOfTrack=-1;
@@ -865,7 +868,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    //Background work here
                     List<Run> allEntries = db.getSingleEntryOrderedByDateTime(finalNumberOfRun);
                     List<ColoredPoint> sourcePoints = new ArrayList<>();
 
@@ -885,9 +887,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            //UI Thread work here
                             showPolyline(sourcePoints, allEntries);
                             dialog_data.cancel();
+                            fabResetMap.setVisibility(View.VISIBLE);
                         }
                     });
                     positionOfTrack=-1;
@@ -970,5 +972,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         }
         alertdialog_Listview.clearChoices();
         alertdialog_Listview.setAdapter(arrayAdapter);
+    }
+    public void onClickResetMap(View view) {
+        mMap.clear();
+        fabResetMap.setVisibility(View.INVISIBLE);
     }
 }
