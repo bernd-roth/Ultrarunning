@@ -334,6 +334,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         }
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setTiltGesturesEnabled(true);
         mMap.setPadding(0, 0, 0, 90);
         mMap.getUiSettings().setMapToolbarEnabled(true);
         if(isTrafficEnabled) {
