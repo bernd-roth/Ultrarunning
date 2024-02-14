@@ -141,7 +141,7 @@
         android:id="@+id/textViewSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/cycle_time"
+        android:text="@string/pace_time"
         android:gravity="center"/>
 
     <TableLayout

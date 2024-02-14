@@ -489,7 +489,7 @@ public class StatisticsActivity extends BaseActivity {
         //EndTime
         textViewEndTime.setText(String.format("End time: %s", endTime));
         //Pace
-        textViewPace.setText(String.format("Pace: %s", sPace));
+        textViewPace.setText(String.format("Total pace: %s", sPace));
     }
 
     private void initializeObjects() {
