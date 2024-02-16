@@ -71,5 +71,4 @@ dependencies {
     implementation 'com.github.pengrad:mapscaleview:1.6.0'
     //sunrise/sunset calculation
     implementation 'org.shredzone.commons:commons-suncalc:3.7'
-    implementation 'com.github.ticofab:android-gpx-parser:2.3.1'
 }
