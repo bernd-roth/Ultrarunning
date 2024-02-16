@@ -66,7 +66,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.2.2')
     implementation 'com.google.firebase:firebase-analytics'
     implementation group: 'com.google.maps.android', name: 'android-maps-utils', version: '3.8.0'
-//    implementation 'joda-time:joda-time:2.12.5'
+    implementation 'joda-time:joda-time:2.12.5'
     implementation 'org.greenrobot:eventbus:3.2.0'
     implementation 'com.github.pengrad:mapscaleview:1.6.0'
     //sunrise/sunset calculation
