@@ -1,15 +1,26 @@
 package at.co.netconsulting.runningtracker;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -25,18 +36,22 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
+import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
-public class StatisticsActivity extends AppCompatActivity {
+public class StatisticsActivity extends BaseActivity {
     private LineChart mChart, mChartTimeSpeed;
     private DatabaseHandler db;
     private List<Run> listOfRun;
@@ -59,24 +74,149 @@ public class StatisticsActivity extends AppCompatActivity {
     private LinearLayout linearLayout;
     private View mView, viewSeperator, viewSeperator1;
     private ArrayList<Integer> intNumberOfRun;
-    private int positionInArray;
+    private int positionInArray, positionOfTrack = -1;
+    private Dialog dialog_data;
+    private FloatingActionButton fabStatistics;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
         initializeObjects();
-        callDatabaseForSpinner();
-        callDatabase();
-        calcAvgSpeedMaxSpeedTotalDistance();
-        calcElevation();
-        calcMovementTime();
-        calcStartTime();
-        calcEndTime();
-        calcPace();
-        renderData();
+        showAlertDialogWithTracks();
+        //callDatabaseForSpinner();
+        //callDatabase();
+        //calcAvgSpeedMaxSpeedTotalDistance();
+        //calcElevation();
+        //calcMovementTime();
+        //calcStartTime();
+        //calcEndTime();
+        //calcPace();
+        //renderData();
         //renderDataTimeSpeed();
-        setData();
+        //setData();
         //setDataRenderDataTimeSpeed();
+    }
+    private void showAlertDialogWithTracks(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                DatabaseHandler db = new DatabaseHandler(StatisticsActivity.this);
+                List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
+
+                dialog_data = new Dialog(StatisticsActivity.this);
+                setDialogWithSpecificHeight(dialog_data);
+
+                EditText filterText = (EditText) dialog_data.findViewById(R.id.alertdialog_edittext);
+                ListView alertdialog_Listview = (ListView) dialog_data.findViewById(R.id.alertdialog_Listview);
+                alertdialog_Listview.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.custom_text_view);
+                List<Integer> intArray = new ArrayList<>();
+
+                for (int i = 0; i < allEntries.size(); i++) {
+                    arrayAdapter.add(
+                            allEntries.get(i).getDateTime() + "\n"
+                                    + String.format("%.03f", allEntries.get(i).getMeters_covered() / 1000) + " Km\n"
+                                    + allEntries.get(i).getComment());
+                    intArray.add(allEntries.get(i).getNumber_of_run());
+                }
+
+                alertdialog_Listview.setAdapter(arrayAdapter);
+                alertdialog_Listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> a, View v, int position, long id) {
+                        positionOfTrack = intArray.get(position);
+                        //int arrayPosition = intNumberOfRun.get(positionOfTrack);
+                        positionInArray = positionOfTrack;
+                        callDatabase();
+                        calcAvgSpeedMaxSpeedTotalDistance();
+                        calcElevation();
+                        calcMovementTime();
+                        calcStartTime();
+                        calcEndTime();
+                        calcPace();
+                        renderData();
+                        //renderDataTimeSpeed();
+                        setData();
+                        //setDataRenderDataTimeSpeed();
+
+                        List<Long> groupedSectionList = calculateSections();
+                        List<Integer> fastestSlowestLap = showTableLayout(groupedSectionList);
+                        setTextView(fastestSlowestLap);
+
+                        if(textView == null) {
+                            float dp = convertDpToPx(2);
+                            createViewSeparator(dp);
+                        } else if(textView.getVisibility() == TextView.VISIBLE){
+                            linearLayout.removeView(textView);
+                            linearLayout.removeView(viewSeperator);
+                            linearLayout.removeView(viewSeperator1);
+                            float dp = convertDpToPx(2);
+                            createViewSeparator(dp);
+                        }
+
+                        //table section year
+                        TreeMap<Integer, Double> year = calculateSectionsYear();
+                        showTableLayoutYear(year);
+
+                        mChart.notifyDataSetChanged();
+                        mChart.invalidate();
+                        //Time/Speed chart
+                        //mChartTimeSpeed.notifyDataSetChanged();
+                        //mChartTimeSpeed.invalidate();
+
+                        dialog_data.dismiss();
+                    }
+                });
+
+                filterText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        arrayAdapter.clear();
+                        intArray.clear();
+
+                        for (int i = 0; i < allEntries.size(); i++) {
+                            String search = s.toString().toLowerCase(Locale.ENGLISH);
+                            String searchableString = allEntries.get(i).getDateTime() + "\n"
+                                    + String.format("%.03f", allEntries.get(i).getMeters_covered() / 1000) + " Km\n"
+                                    + allEntries.get(i).getComment();
+                            if (searchableString.toLowerCase(Locale.ENGLISH).contains(search)) {
+                                arrayAdapter.add(
+                                        allEntries.get(i).getDateTime() + "\n"
+                                                + String.format("%.03f", allEntries.get(i).getMeters_covered() / 1000) + " Km\n"
+                                                + allEntries.get(i).getComment());
+                                intArray.add(allEntries.get(i).getNumber_of_run());
+                            }
+                        }
+                    }
+                });
+                dialog_data.show();
+            }
+        }, 500);
+    }
+    private void setDialogWithSpecificHeight(Dialog dialog) {
+        //set height to 50%
+        int height = 2;
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setGravity(Gravity.CENTER);
+        dialog.setContentView(R.layout.custom_list_statistics);
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = this.getWindow().getDecorView().getWidth();
+        lp.height = this.getWindow().getDecorView().getHeight()/height;
+        lp.gravity = Gravity.CENTER;
+
+        dialog.getWindow().setAttributes(lp);
     }
 
     private void calcPace() {
@@ -349,7 +489,7 @@ public class StatisticsActivity extends AppCompatActivity {
         //EndTime
         textViewEndTime.setText(String.format("End time: %s", endTime));
         //Pace
-        textViewPace.setText(String.format("Pace: %s", sPace));
+        textViewPace.setText(String.format("Total pace: %s", sPace));
     }
 
     private void initializeObjects() {
@@ -391,8 +531,11 @@ public class StatisticsActivity extends AppCompatActivity {
         listOfRun = new ArrayList<>();
         listSpeed = new ArrayList<>();
 
-        spinnerRunChoose = findViewById(R.id.spinner);
-        spinnerRunChoose.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//        fabStatistics = findViewById(R.id.fabStatistics);
+        fabStatistics = new FloatingActionButton(this);
+
+        //spinnerRunChoose = findViewById(R.id.spinner);
+        /*spinnerRunChoose.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 int spinnerPosition = spinnerRunChoose.getSelectedItemPosition();
                 int arrayPosition = intNumberOfRun.get(spinnerPosition);
@@ -444,7 +587,7 @@ public class StatisticsActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> adapterView) {
                 return;
             }
-        });
+        });*/
 
         linearLayout = findViewById(R.id.ll);
         db = new DatabaseHandler(this);
@@ -611,11 +754,11 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void callDatabase() {
-        int intLastEntry = db.getLastEntry();
+        //int intLastEntry = db.getLastEntry();
 
-        if(intLastEntry!=0) {
-            listOfRun = db.getSingleEntryForStatistics(intLastEntry);
-        }
+        //if(intLastEntry!=0) {
+            listOfRun = db.getSingleEntryForStatistics(positionOfTrack);
+        //}
     }
 
     private void setData() {
@@ -764,5 +907,9 @@ public class StatisticsActivity extends AppCompatActivity {
         Intent detailedDistanceSpeedChart = new Intent(StatisticsActivity.this, DetailedGraphActivity.class);
         detailedDistanceSpeedChart.putExtra("numberOfRun", positionInArray);
         StatisticsActivity.this.startActivity(detailedDistanceSpeedChart);
+    }
+
+    public void showTrack(View view) {
+        showAlertDialogWithTracks();
     }
 }

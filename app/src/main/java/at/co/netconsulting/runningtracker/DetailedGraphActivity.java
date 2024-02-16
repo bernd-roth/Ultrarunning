@@ -188,7 +188,7 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
                     }
                 }
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+//                mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
 
                 if(marker != null) {
                     marker.remove();

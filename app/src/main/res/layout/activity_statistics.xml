@@ -9,17 +9,28 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="30dp">
-
+<!--
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_dropdown"
         android:spinnerMode="dropdown" />
+-->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabShowTrack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|right"
+        android:src="@android:drawable/ic_menu_view"
+        android:onClick="showTrack"/>
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
-        android:layout_width="350dp"
+        android:layout_width="370dp"
         android:layout_height="214dp" />
 
     <View
@@ -130,7 +141,7 @@
         android:id="@+id/textViewSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/cycle_time"
+        android:text="@string/pace_time"
         android:gravity="center"/>
 
     <TableLayout
