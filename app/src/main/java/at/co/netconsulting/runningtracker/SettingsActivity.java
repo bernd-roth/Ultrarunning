@@ -97,19 +97,23 @@ public class SettingsActivity extends BaseActivity {
             case SharedPref.STATIC_SHARED_PREF_STRING_MAPTYPE:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 mapType = sh.getString(sharedPrefKey, "MAP_TYPE_NORMAL");
-                if(mapType.equals("MAP_TYPE_NORMAL"))
-                    radioButtonNormal.setChecked(true);
-                else if(mapType.equals("MAP_TYPE_HYBRID"))
-                    radioButtonHybrid.setChecked(true);
-                else if(mapType.equals("MAP_TYPE_NONE"))
-                    radioButtonNone.setChecked(true);
-                else if(mapType.equals("MAP_TYPE_TERRAIN"))
-                    radioButtonTerrain.setChecked(true);
-                else if(mapType.equals("MAP_TYPE_SATELLITE"))
-                    radioButtonSatellite.setChecked(true);
-                else
-                    radioButtonNormal.setChecked(true);
-                break;
+                switch (mapType) {
+                    case "MAP_TYPE_HYBRID":
+                        radioButtonHybrid.setChecked(true);
+                        break;
+                    case "MAP_TYPE_NONE":
+                        radioButtonNone.setChecked(true);
+                        break;
+                    case "MAP_TYPE_TERRAIN":
+                        radioButtonTerrain.setChecked(true);
+                        break;
+                    case "MAP_TYPE_SATELLITE":
+                        radioButtonSatellite.setChecked(true);
+                        break;
+                    default: //defaults to MAP_TYPE_NORMAL
+                        radioButtonNormal.setChecked(true);
+                        break;
+                }
             case SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 minDistanceMeter = sh.getInt(sharedPrefKey, StaticFields.STATIC_INTEGER_MIN_DISTANCE_METER);
