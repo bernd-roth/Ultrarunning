@@ -114,6 +114,7 @@ public class SettingsActivity extends BaseActivity {
                         radioButtonNormal.setChecked(true);
                         break;
                 }
+                break;
             case SharedPref.STATIC_SHARED_PREF_INTEGER_MIN_DISTANCE_METER:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 minDistanceMeter = sh.getInt(sharedPrefKey, StaticFields.STATIC_INTEGER_MIN_DISTANCE_METER);
