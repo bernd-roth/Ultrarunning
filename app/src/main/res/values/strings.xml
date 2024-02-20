@@ -44,7 +44,7 @@
     <string name="google_map_type">Google map type</string>
 
     <!-- Button activity_settings.xml -->
-    <string name="save">Save</string>
+    <string name="save">Save settings</string>
     <string name="export_database">Export database</string>
     <string name="export">Export</string>
     <string name="delete">Delete</string>
@@ -121,5 +121,5 @@
     <string name="finish">Finish</string>
     <string name="title_activity_detailed_graph">Detailed Graph</string>
     <string name="pace_time">Pace / Kilometer</string>
-    <string name="export_to_home_db">Export to home database</string>
+    <string name="export_to_home_directory">Export to home directory</string>
 </resources>

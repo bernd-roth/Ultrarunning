@@ -233,24 +233,6 @@
                     android:layout_height="2dp"
                     android:background="#c0c0c0"/>
 
-                <TextView
-                    android:id="@+id/textViewExportSendCurrentTrackToHomeDatabase"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/export_to_home_db" />
-
-
-                <Switch
-                    android:id="@+id/switchExportToHomeDb"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Export to home db" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#c0c0c0"/>
-
                 <Button
                     android:id="@+id/buttonSave"
                     android:layout_width="match_parent"
