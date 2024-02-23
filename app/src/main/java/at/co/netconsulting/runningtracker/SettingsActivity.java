@@ -33,6 +33,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
@@ -187,7 +189,7 @@ public class SettingsActivity extends BaseActivity {
             case SharedPref.STATIC_SHARED_PREF_NEXT_BACKUP:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 nextBackInMilliseconds = sh.getLong(sharedPrefKey, 0);
-                textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled) + "\nNext backup at: " + calculateNextBackupDate(nextBackInMilliseconds) + " UTC");
+                textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled) + "\nNext backup at: " + calculateNextBackupDate(nextBackInMilliseconds));
                 break;
         }
     }
@@ -514,7 +516,7 @@ public class SettingsActivity extends BaseActivity {
         if(scheduledDays > 0) {
             nextBackInMilliseconds = new GregorianCalendar().getTimeInMillis() + (scheduledDays * StaticFields.ONE_DAY_IN_MILLISECONDS);
 
-            textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled) + "\nNext backup at: " + calculateNextBackupDate(nextBackInMilliseconds) + " UTC");
+            textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled) + "\nNext backup at: " + calculateNextBackupDate(nextBackInMilliseconds));
 
             Bundle bundle = new Bundle();
             bundle.putLong("scheduled_alarm", nextBackInMilliseconds);
@@ -541,14 +543,15 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private String calculateNextBackupDate(Long milliseconds) {
-        DateTime dateTime = new DateTime( milliseconds, DateTimeZone.UTC );
-        int day = dateTime.getDayOfMonth();
-        int month = dateTime.getMonthOfYear();
-        int year = dateTime.getYear();
-        //time
-        int hour = dateTime.getHourOfDay();
-        int minute = dateTime.getMinuteOfHour();
-        int seconds = dateTime.getSecondOfMinute();
+        Date date = new Date(milliseconds);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int seconds = calendar.get(Calendar.SECOND);
 
         return String.format("%02d:%02d:%02d %02d-%02d-%d", hour, minute, seconds, day, month, year);
     }
