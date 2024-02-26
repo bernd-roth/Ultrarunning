@@ -163,6 +163,7 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
         run = db.getSingleEntryForStatistics(intValue);
     }
     private void initializeObjects() {
+        this.getSupportActionBar().hide();
         run = new ArrayList<>();
         db = new DatabaseHandler(this);
 

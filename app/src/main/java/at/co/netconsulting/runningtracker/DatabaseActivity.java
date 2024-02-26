@@ -58,6 +58,8 @@ public class DatabaseActivity extends AppCompatActivity {
     }
 
     private void initObjects() {
+        this.getSupportActionBar().hide();
+
         textViewExportDatabaseScheduled = findViewById(R.id.textViewExportDatabaseScheduled);
         textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled) + "\nNext update ");
 
