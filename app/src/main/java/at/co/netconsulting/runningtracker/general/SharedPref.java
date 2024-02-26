@@ -13,5 +13,4 @@ public class SharedPref {
     public static final String STATIC_SHARED_PREF_ENABLE_TRAFFIC = "ENABLE_TRAFFIC";
     public static final String STATIC_SHARED_PREF_SCHEDULE_SAVE = "SCHEDULE_SAVE";
     public static final String STATIC_SHARED_PREF_VOICE_MESSAGE = "VOICE_MESSAGE";
-    public static final String STATIC_SHARED_PREF_NEXT_BACKUP = "NEXT_BACKUP";
 }

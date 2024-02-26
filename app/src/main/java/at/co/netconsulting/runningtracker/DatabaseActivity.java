@@ -48,26 +48,28 @@ public class DatabaseActivity extends AppCompatActivity {
     private Long nextBackInMilliseconds;
     private ProgressDialog progressDialog;
     private DatabaseHandler db;
+    private EditText editTextNumber;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_database);
         initObjects();
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
-        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_NEXT_BACKUP);
     }
 
     private void initObjects() {
         this.getSupportActionBar().hide();
 
         textViewExportDatabaseScheduled = findViewById(R.id.textViewExportDatabaseScheduled);
-        textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled) + "\nNext update ");
+        textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled));
 
         progressDialog = new ProgressDialog(DatabaseActivity.this);
         progressDialog.setMessage("Exporting..."); // Setting Message
         progressDialog.setTitle("Exporting recorded runs"); // Setting Title
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
         progressDialog.setCancelable(false);
+
+        editTextNumber = new EditText(DatabaseActivity.this);
 
         db = new DatabaseHandler(this);
     }
@@ -78,11 +80,6 @@ public class DatabaseActivity extends AppCompatActivity {
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 numberInDays = sh.getInt(sharedPrefKey, 1);
                 break;
-            case SharedPref.STATIC_SHARED_PREF_NEXT_BACKUP:
-                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
-                nextBackInMilliseconds = sh.getLong(sharedPrefKey, 0);
-                textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled) + "\nNext backup at: " + calculateNextBackupDate(nextBackInMilliseconds));
-                break;
         }
     }
     private void saveSharedPreferences(String sharedPreference) {
@@ -90,30 +87,25 @@ public class DatabaseActivity extends AppCompatActivity {
             sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
 
-            //int numberInDays = Integer.parseInt(editTextNumber.getText().toString());
+            int numberInDays = Integer.parseInt(editTextNumber.getText().toString());
             editor.putInt(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE, numberInDays);
             editor.commit();
         }
     }
     private void scheduleDatabaseBackup() {
-        //int scheduledDays = Integer.parseInt(editTextNumber.getText().toString());
         createAlertDialogDatabaseBackup();
     }
-
     private void createAlertDialogDatabaseBackup() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        final EditText edittext = new EditText(DatabaseActivity.this);
         alert.setMessage("0: no backup at all");
         alert.setTitle("Backup interval in days");
-        alert.setView(edittext);
+        alert.setView(editTextNumber);
         alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                int scheduledDays = Integer.parseInt(edittext.getText().toString());
+                int scheduledDays = Integer.parseInt(editTextNumber.getText().toString());
 
                 if(scheduledDays > 0) {
                     nextBackInMilliseconds = new GregorianCalendar().getTimeInMillis() + (scheduledDays * StaticFields.ONE_DAY_IN_MILLISECONDS);
-
-                    textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled) + "\nNext backup at: " + calculateNextBackupDate(nextBackInMilliseconds));
 
                     Bundle bundle = new Bundle();
                     bundle.putLong("scheduled_alarm", nextBackInMilliseconds);
@@ -126,6 +118,8 @@ public class DatabaseActivity extends AppCompatActivity {
 
                     AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
                     alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextBackInMilliseconds, pendingIntent);
+
+                    saveSharedPreferences("SCHEDULE_SAVE");
                 } else {
                     Intent intentAlarm = new Intent(getApplicationContext(), AlarmReceiver.class);
 
@@ -148,7 +142,6 @@ public class DatabaseActivity extends AppCompatActivity {
 
         alert.show();
     }
-
     public void backup_interval(View view) {
         scheduleDatabaseBackup();
     }
@@ -256,14 +249,12 @@ public class DatabaseActivity extends AppCompatActivity {
         for(int i = 0; i<allEntries.size(); i++) {
             arrayAdapter.add(allEntries.get(i).getNumber_of_run() + "-DateTime: " + allEntries.get(i).getDateTime());
         }
-
         builderSingle.setNegativeButton(getResources().getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
-
         builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

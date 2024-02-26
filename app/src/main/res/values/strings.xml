@@ -115,4 +115,5 @@
     <string name="finish">Finish</string>
     <string name="pace_time">Pace / Kilometer</string>
     <string name="export_to_home_directory">Export to home directory</string>
+    <string name="title_activity_general_settings">GeneralSettingsActivity</string>
 </resources>

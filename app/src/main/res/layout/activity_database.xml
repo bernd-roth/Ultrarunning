@@ -20,7 +20,8 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:gravity="center|center_horizontal"
-            android:text="Backup"
+            android:text="Automatic backup"
+            android:textColor="#4CAF50"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:visibility="visible" />
 
@@ -46,6 +47,23 @@
             android:text="" />
 
         <TextView
+            android:id="@+id/textViewBackup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:gravity="center|center_horizontal"
+            android:text="Backup"
+            android:textColor="#4CAF50"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/textViewEmpty2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+        <TextView
             android:id="@+id/textViewImportGPX"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -55,7 +73,7 @@
             android:text="@string/import_database_file" />
 
         <TextView
-            android:id="@+id/textViewEmpty2"
+            android:id="@+id/textViewEmpty3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
@@ -70,7 +88,7 @@
             android:text="@string/export_database" />
 
         <TextView
-            android:id="@+id/textViewEmpty3"
+            android:id="@+id/textViewEmpty4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
