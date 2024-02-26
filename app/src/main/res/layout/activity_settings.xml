@@ -31,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:onClick="onclick_general_settings"
-                    android:text="General settings" />
+                    android:text="Map type/Recording settings" />
 
                 <TextView
                     android:id="@+id/textViewEmpty0"

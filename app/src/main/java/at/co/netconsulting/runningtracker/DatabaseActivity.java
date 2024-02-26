@@ -100,6 +100,7 @@ public class DatabaseActivity extends AppCompatActivity {
         alert.setMessage("0: no backup at all");
         alert.setTitle("Backup interval in days");
         alert.setView(editTextNumber);
+        alert.setCancelable(false);
         alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 int scheduledDays = Integer.parseInt(editTextNumber.getText().toString());
