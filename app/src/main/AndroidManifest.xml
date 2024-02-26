@@ -44,6 +44,9 @@
         android:theme="@style/Theme.RunningTracker"
         tools:targetApi="33">
         <activity
+            android:name=".DatabaseActivity"
+            android:exported="false" />
+        <activity
             android:name=".DetailedGraphActivity"
             android:exported="false"
             android:label="@string/title_activity_detailed_graph"

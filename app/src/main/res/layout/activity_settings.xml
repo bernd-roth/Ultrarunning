@@ -16,10 +16,24 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
+                <TextView
+                    android:id="@+id/textViewGeneralSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:text="General settings" />
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
                     android:background="#c0c0c0"/>
+
+                <TextView
+                    android:id="@+id/textViewEmpty0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="" />
 
                 <TextView
                     android:id="@+id/textViewMapType"
@@ -215,19 +229,6 @@
                     android:layout_height="2dp"
                     android:background="#c0c0c0"/>
 
-                <TextView
-                    android:id="@+id/textViewExportDatabaseScheduled"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/export_database_scheduled" />
-
-                <EditText
-                    android:id="@+id/editTextNumber"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="number" />
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
@@ -241,24 +242,11 @@
                     android:background="@drawable/rounded_corner"
                     android:onClick="save"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#c0c0c0"/>
-
                 <TextView
-                    android:id="@+id/textViewImportGPX"
+                    android:id="@+id/textViewEmpty1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/import_database_file" />
-
-                <Button
-                    android:id="@+id/buttonImport"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/button_import"
-                    android:background="@drawable/rounded_corner"
-                    android:onClick="importGPX"/>
+                    android:text="" />
 
                 <View
                     android:layout_width="match_parent"
@@ -266,37 +254,27 @@
                     android:background="#c0c0c0"/>
 
                 <TextView
-                    android:id="@+id/textViewExportDatabase"
+                    android:id="@+id/textViewDatabase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/export_database" />
-
-                <Button
-                    android:id="@+id/buttonExport"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/export"
-                    android:background="@drawable/rounded_corner"
-                    android:onClick="export"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#c0c0c0"/>
+                    android:text="Database"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:textAlignment="center"
+                    android:visibility="visible" />
 
                 <TextView
-                    android:id="@+id/textViewDeleteDatabase"
+                    android:id="@+id/textViewDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/delete_all_entries_from_database" />
+                    android:textAlignment="center"
+                    android:onClick="onclick_database"
+                    android:text="Backup interval/Import/Export/Delete database" />
 
-                <Button
-                    android:id="@+id/buttonDelete"
+                <TextView
+                    android:id="@+id/textViewEmpty2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/delete"
-                    android:background="@drawable/rounded_corner"
-                    android:onClick="delete"/>
+                    android:text="" />
             </LinearLayout>
         </ScrollView>
     </FrameLayout>

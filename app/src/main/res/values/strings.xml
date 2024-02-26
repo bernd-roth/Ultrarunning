@@ -109,7 +109,7 @@
     <string name="import_database_file">Import database</string>
     <string name="button_import">Import</string>
     <string name="buttonCloseDialog">Close dialog</string>
-    <string name="export_database_scheduled">Backup database every x day (0 means no backup at all)</string>
+    <string name="export_database_scheduled">Backup interval in days (0 - no backup at all)</string>
     <string name="update_entry">Your entry was successfully updated</string>
     <string name="showtrack">Show track</string>
     <string name="colouredtrack">Colour track</string>
