@@ -30,13 +30,18 @@ MPAndroidCharts
 
 ## Pics
 
-![Screenshot_20240130-132022](https://github.com/bernd-roth/Ultrarunning/assets/1835491/ebf73914-81a4-40b1-8112-6d7638340357)
-![Screenshot_20240130-131959](https://github.com/bernd-roth/Ultrarunning/assets/1835491/efed2152-d0f0-4905-a6de-4b9c6d5fcd8f)
-![Screenshot_20240130-131950](https://github.com/bernd-roth/Ultrarunning/assets/1835491/40df5cf9-14b9-46c9-8f25-c1de824e3285)
-![Screenshot_20240130-131935](https://github.com/bernd-roth/Ultrarunning/assets/1835491/a14650ba-62ea-4d54-a4ef-8d8aecf2ae30)
-![Screenshot_20240130-131924](https://github.com/bernd-roth/Ultrarunning/assets/1835491/d907d5ca-d163-4dc3-bffe-40e660b0bcf8)
-![Screenshot_20240130-131915](https://github.com/bernd-roth/Ultrarunning/assets/1835491/c7df8024-3fe5-42ad-bc83-3862d9ae66b3)
-![Screenshot_20240130-132030](https://github.com/bernd-roth/Ultrarunning/assets/1835491/24ea4fca-6dae-43b8-b03b-bc5c06f308d9)
+![Screenshot_20240227-073711](https://github.com/bernd-roth/Ultrarunning/assets/1835491/ae81044b-7ebf-4f9c-8f23-2981c1634919)
+![Screenshot_20240227-073939](https://github.com/bernd-roth/Ultrarunning/assets/1835491/ca3cc24d-f212-4343-9ca8-7866b30172e8)
+![Screenshot_20240227-073929](https://github.com/bernd-roth/Ultrarunning/assets/1835491/01533667-2f68-4e8d-8c65-bc41eee18b77)
+![Screenshot_20240227-073917](https://github.com/bernd-roth/Ultrarunning/assets/1835491/1b115662-53b5-41a8-8694-22b518e71fe3)
+![Screenshot_20240227-073909](https://github.com/bernd-roth/Ultrarunning/assets/1835491/f9158ee7-8784-4ab7-acd5-11d83b3af09b)
+![Screenshot_20240227-073850](https://github.com/bernd-roth/Ultrarunning/assets/1835491/b1e67305-911e-4436-b59c-829fba093516)
+![Screenshot_20240227-073837](https://github.com/bernd-roth/Ultrarunning/assets/1835491/1202ee91-0e56-42f7-b36b-83fc5aa14815)
+![Screenshot_20240227-073829](https://github.com/bernd-roth/Ultrarunning/assets/1835491/4bf52e9a-34cc-4c8f-9fa2-201c818b0ad0)
+![Screenshot_20240227-073820](https://github.com/bernd-roth/Ultrarunning/assets/1835491/89d4f5a6-5915-47f6-98ea-8fb44cbafade)
+![Screenshot_20240227-073812](https://github.com/bernd-roth/Ultrarunning/assets/1835491/8c05189d-8df3-448f-b545-20d3548eafa5)
+![Screenshot_20240227-073746](https://github.com/bernd-roth/Ultrarunning/assets/1835491/481b1df2-d48a-49e5-bde1-47a6eaaf7b83)
+![Screenshot_20240227-073719](https://github.com/bernd-roth/Ultrarunning/assets/1835491/f2112836-b973-4956-aa76-e8f9fe4a2479)
 
 ## Not implemented yet
 
