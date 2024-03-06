@@ -98,4 +98,6 @@ dependencies {
     implementation 'org.shredzone.commons:commons-suncalc:3.7'
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
+    //volley rest api
+    implementation 'com.android.volley:volley:1.2.1'
 }

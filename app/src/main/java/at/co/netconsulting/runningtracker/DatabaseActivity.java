@@ -19,9 +19,11 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +41,7 @@ import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
+import at.co.netconsulting.runningtracker.view.RestAPI;
 
 public class DatabaseActivity extends AppCompatActivity {
     private int numberInDays;
@@ -48,13 +51,17 @@ public class DatabaseActivity extends AppCompatActivity {
     private Long nextBackInMilliseconds;
     private ProgressDialog progressDialog;
     private DatabaseHandler db;
-    private EditText editTextNumber;
+    private EditText editTextNumber, editTextURL;
+    private String httpUrl;
+    private TextView textViewExportToServer, textViewExportDatabase;
+    private LinearLayout linearlayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_database);
-        initObjects();
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
+        initObjects();
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_URL_SAVE);
     }
 
     private void initObjects() {
@@ -63,6 +70,8 @@ public class DatabaseActivity extends AppCompatActivity {
         textViewExportDatabaseScheduled = findViewById(R.id.textViewExportDatabaseScheduled);
         textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled));
 
+        textViewExportDatabase = findViewById(R.id.textViewExportDatabase);
+
         progressDialog = new ProgressDialog(DatabaseActivity.this);
         progressDialog.setMessage("Exporting..."); // Setting Message
         progressDialog.setTitle("Exporting recorded runs"); // Setting Title
@@ -70,6 +79,10 @@ public class DatabaseActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
 
         editTextNumber = new EditText(DatabaseActivity.this);
+        editTextNumber.setText(String.valueOf(numberInDays));
+        editTextURL = new EditText(DatabaseActivity.this);
+
+        linearlayout = findViewById(R.id.ll);
 
         db = new DatabaseHandler(this);
     }
@@ -79,6 +92,10 @@ public class DatabaseActivity extends AppCompatActivity {
             case SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 numberInDays = sh.getInt(sharedPrefKey, 1);
+                break;
+            case SharedPref.STATIC_SHARED_PREF_URL_SAVE:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                httpUrl = sh.getString(sharedPrefKey, null);
                 break;
         }
     }
@@ -134,13 +151,11 @@ public class DatabaseActivity extends AppCompatActivity {
                 }
             }
         });
-
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 dialog.cancel();
             }
         });
-
         alert.show();
     }
     public void backup_interval(View view) {
@@ -268,5 +283,40 @@ public class DatabaseActivity extends AppCompatActivity {
             }
         });
         builderSingle.show();
+    }
+    public void exportToServer(View v) {
+        if(editTextURL.getParent()!=null) {
+            ((ViewGroup)editTextURL.getParent()).removeView(editTextURL);
+        }
+            AlertDialog.Builder alert = new AlertDialog.Builder(DatabaseActivity.this);
+            alert.setTitle("Please, type your URL");
+            alert.setView(editTextURL);
+            editTextURL.setText(httpUrl);
+
+            alert.setCancelable(false);
+            alert.setPositiveButton("Export", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    String httpUrl = editTextNumber.getText().toString();
+                    RestAPI restAPI = new RestAPI(getApplicationContext(), httpUrl);
+                    restAPI.postRequest();
+                }
+            });
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    dialog.cancel();
+                }
+            });
+            alert.setNeutralButton("Save", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_URL_SAVE, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedpreferences.edit();
+
+                    String httpUrl = editTextURL.getText().toString();
+                    editor.putString(SharedPref.STATIC_SHARED_PREF_URL_SAVE, httpUrl);
+                    editor.commit();
+                }
+            });
+            alert.show();
     }
 }

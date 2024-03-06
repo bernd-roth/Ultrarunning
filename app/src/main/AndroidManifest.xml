@@ -9,31 +9,16 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-    <!--
- Required only if your app needs to access images or photos
-     that other apps created.
-    -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <!--
- Required only if your app needs to access videos
-         that other apps created.
-    -->
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <!--
- Required only if your app needs to access audio files
-         that other apps created.
-    -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <!--
- If your app doesn't need to access media files that other apps created,
-         set the "maxSdkVersion" attribute to "28" instead.
-    -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:label="@string/title_running_tracker"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -45,11 +30,6 @@
         <activity
             android:name=".GeneralSettings"
             android:exported="false" />
-        <activity
-            android:name=".GeneralSettingsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_general_settings"
-            android:theme="@style/Theme.RunningTracker" />
         <activity
             android:name=".DatabaseActivity"
             android:exported="false" />
@@ -102,7 +82,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.INPUT_METHOD_CHANGED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
     </application>
