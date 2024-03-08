@@ -38,7 +38,6 @@
             android:layout_height="wrap_content"
             android:gravity="center|center_horizontal"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:onClick="backup_interval"
             android:text="@string/export_database_scheduled" />
 
         <TextView

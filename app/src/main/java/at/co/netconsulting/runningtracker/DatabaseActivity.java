@@ -55,6 +55,8 @@ public class DatabaseActivity extends AppCompatActivity {
     private String httpUrl;
     private TextView textViewExportToServer, textViewExportDatabase;
     private LinearLayout linearlayout;
+    private AlertDialog.Builder alert;
+    private AlertDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +71,12 @@ public class DatabaseActivity extends AppCompatActivity {
 
         textViewExportDatabaseScheduled = findViewById(R.id.textViewExportDatabaseScheduled);
         textViewExportDatabaseScheduled.setText(getResources().getString(R.string.export_database_scheduled));
+        textViewExportDatabaseScheduled.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createAlertDialogDatabaseBackup();
+            }
+        });
 
         textViewExportDatabase = findViewById(R.id.textViewExportDatabase);
 
@@ -79,7 +87,9 @@ public class DatabaseActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
 
         editTextNumber = new EditText(DatabaseActivity.this);
+        editTextNumber.setSingleLine(true);
         editTextNumber.setText(String.valueOf(numberInDays));
+
         editTextURL = new EditText(DatabaseActivity.this);
 
         linearlayout = findViewById(R.id.ll);
@@ -109,11 +119,8 @@ public class DatabaseActivity extends AppCompatActivity {
             editor.commit();
         }
     }
-    private void scheduleDatabaseBackup() {
-        createAlertDialogDatabaseBackup();
-    }
     private void createAlertDialogDatabaseBackup() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert = new AlertDialog.Builder(this);
         alert.setMessage("0: no backup at all");
         alert.setTitle("Backup interval in days");
         alert.setView(editTextNumber);
@@ -156,10 +163,12 @@ public class DatabaseActivity extends AppCompatActivity {
                 dialog.cancel();
             }
         });
-        alert.show();
-    }
-    public void backup_interval(View view) {
-        scheduleDatabaseBackup();
+        if(dialog==null) {
+            dialog = alert.create();
+            dialog.show();
+        } else {
+            dialog.show();
+        }
     }
     private String calculateNextBackupDate(Long milliseconds) {
         Date date = new Date(milliseconds);
