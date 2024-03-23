@@ -27,6 +27,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -36,12 +41,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Timer;
 
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.view.RestAPI;
+import timber.log.Timber;
 
 public class DatabaseActivity extends AppCompatActivity {
     private int numberInDays;
@@ -63,7 +70,6 @@ public class DatabaseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_database);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
         initObjects();
-        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_URL_SAVE);
     }
 
     private void initObjects() {
@@ -260,7 +266,7 @@ public class DatabaseActivity extends AppCompatActivity {
         List<Run> allEntries = db.getAllEntriesGroupedByRun();
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(DatabaseActivity.this);
-        if(allEntries.size()<=0) {
+        if(allEntries.size() == 0) {
             builderSingle.setTitle(getResources().getString(R.string.no_run_available));
         } else {
             builderSingle.setTitle(getResources().getString(R.string.select_one_run));
@@ -294,6 +300,7 @@ public class DatabaseActivity extends AppCompatActivity {
         builderSingle.show();
     }
     public void exportToServer(View v) {
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_URL_SAVE);
         if(editTextURL.getParent()!=null) {
             ((ViewGroup)editTextURL.getParent()).removeView(editTextURL);
         }
@@ -305,9 +312,17 @@ public class DatabaseActivity extends AppCompatActivity {
             alert.setCancelable(false);
             alert.setPositiveButton("Export", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
+                    Gson gson = new Gson();
                     String httpUrl = editTextNumber.getText().toString();
-                    RestAPI restAPI = new RestAPI(getApplicationContext(), httpUrl);
-                    restAPI.postRequest();
+                    List<Run> allEntries = db.getAllEntries();
+
+                    for(int i = 0; i<allEntries.size(); i++) {
+                        String jsonInString = gson.toJson(allEntries.get(i));
+                        Timber.d("DatabaseActivity: exportToServer: %s", jsonInString);
+                        RestAPI restAPI = new RestAPI(getApplicationContext(), httpUrl);
+                        restAPI.postRequest();
+                    }
+                    allEntries.clear();
                 }
             });
             alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -22,7 +22,7 @@ public class RestAPI {
         pDialog.show();
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(
             Request.Method.POST,
-            httpUrl,
+            this.httpUrl,
             null,
             new Response.Listener<JSONObject>() {
                 @Override

@@ -446,6 +446,48 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return allEntryList;
     }
+
+    public List<Run> getAllEntries() {
+        List<Run> allEntryList = new ArrayList<Run>();
+
+        // Select All Query
+        String selectQuery = "SELECT "
+                + KEY_DATE_TIME + ", "
+                + KEY_LAT + ", "
+                + KEY_LNG + ", "
+                + KEY_METERS_COVERED + ", "
+                + KEY_SPEED + ", "
+                + KEY_COMMENT + ", "
+                + KEY_NUMBER_OF_RUN + ", "
+                + KEY_DATETIME_IN_MS + ", "
+                + KEY_LAPS + ", "
+                + KEY_ALTITUDE + ", "
+                + KEY_PERSON
+                + " FROM " + TABLE_RUNS;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Run run = new Run();
+                run.setDateTime(cursor.getString(0));
+                run.setLat(cursor.getDouble(1));
+                run.setLng(cursor.getDouble(2));
+                run.setMeters_covered(cursor.getDouble(3));
+                run.setSpeed((float) cursor.getDouble(4));
+                run.setComment(cursor.getString(5));
+                run.setNumber_of_run(cursor.getInt(6));
+                run.setDateTimeInMs(cursor.getInt(7));
+                run.setLaps(cursor.getInt(8));
+                run.setAltitude(cursor.getDouble(9));
+                run.setPerson(cursor.getString(10));
+                allEntryList.add(run);
+            } while (cursor.moveToNext());
+        }
+        return allEntryList;
+    }
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_RUNS_TABLE = "CREATE TABLE " + TABLE_RUNS + "("
