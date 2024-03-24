@@ -27,16 +27,22 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -312,17 +318,16 @@ public class DatabaseActivity extends AppCompatActivity {
             alert.setCancelable(false);
             alert.setPositiveButton("Export", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    Gson gson = new Gson();
-                    String httpUrl = editTextNumber.getText().toString();
-                    List<Run> allEntries = db.getAllEntries();
+                    String httpUrl = editTextURL.getText().toString();
+                    List<Run> allEntries = new ArrayList<Run>(db.getAllEntries());
 
-                    for(int i = 0; i<allEntries.size(); i++) {
-                        String jsonInString = gson.toJson(allEntries.get(i));
-                        Timber.d("DatabaseActivity: exportToServer: %s", jsonInString);
-                        RestAPI restAPI = new RestAPI(getApplicationContext(), httpUrl);
-                        restAPI.postRequest();
-                    }
-                    allEntries.clear();
+                    RestAPI restAPI = new RestAPI(getApplicationContext(), httpUrl);
+                    restAPI.postRequest(new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+                        }
+                    }, allEntries.iterator());
                 }
             });
             alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

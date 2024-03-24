@@ -26,7 +26,8 @@
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.RunningTracker"
-        tools:targetApi="33">
+        tools:targetApi="33"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".GeneralSettings"
             android:exported="false" />
