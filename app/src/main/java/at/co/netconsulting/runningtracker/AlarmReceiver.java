@@ -20,7 +20,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private int scheduledDays;
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getExtras() != null) {
+        if (intent.getExtras() != null && intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
             new Thread(new Runnable() {
                 public void run() {
                     try {
