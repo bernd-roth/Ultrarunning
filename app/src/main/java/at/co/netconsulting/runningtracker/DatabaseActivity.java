@@ -1,11 +1,5 @@
 package at.co.netconsulting.runningtracker;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -14,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,31 +20,29 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
-
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
@@ -246,7 +237,7 @@ public class DatabaseActivity extends AppCompatActivity {
                             writer.flush();
                             writer.close();
                         }
-                        writer = new FileWriter(new File(download_folder, curInt.getNumber_of_run() + ".gpx"), false);
+                        writer = createFileName(download_folder, curInt);
                         createHeader(writer, curInt.getDateTime());
                         lastRun = curInt.getNumber_of_run();
                         start = false;
@@ -255,7 +246,7 @@ public class DatabaseActivity extends AppCompatActivity {
                         writer.append(footer);
                         writer.flush();
                         writer.close();
-                        writer = new FileWriter(new File(download_folder, curInt.getNumber_of_run() + ".gpx"), false);
+                        writer = createFileName(download_folder, curInt);
                         createHeader(writer, curInt.getDateTime());
                         lastRun = curInt.getNumber_of_run();
                         start = true;
@@ -265,6 +256,16 @@ public class DatabaseActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @NonNull
+    private static FileWriter createFileName(File download_folder, Run curInt) throws IOException {
+        FileWriter writer;
+        String[] sDateTime = curInt.getDateTime().split(" ");
+        String[] sTime = sDateTime[1].split(":");
+        String fileName = sDateTime[0] + "_" + sTime[0] + "_" + sTime[1] + "_" + sTime[2];
+        writer = new FileWriter(new File(download_folder, "" + fileName + ".gpx"), false);
+        return writer;
     }
 
     private void createBody(FileWriter writer, Run curInt) throws IOException {
