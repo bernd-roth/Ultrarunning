@@ -240,8 +240,14 @@ public class DatabaseActivity extends AppCompatActivity {
 
                 if(currentRun != lastRun) {
                     if(start) {
+                        if(lastRun!=0) {
+                            String footer = "\t\t</trkseg>\n\t</trk>\n</gpx>";
+                            writer.append(footer);
+                            writer.flush();
+                            writer.close();
+                        }
                         writer = new FileWriter(new File(download_folder, curInt.getNumber_of_run() + ".gpx"), false);
-                        createHeader(writer, curInt.getDateTime() + ".gpx");
+                        createHeader(writer, curInt.getDateTime());
                         lastRun = curInt.getNumber_of_run();
                         start = false;
                     } else {
@@ -249,8 +255,8 @@ public class DatabaseActivity extends AppCompatActivity {
                         writer.append(footer);
                         writer.flush();
                         writer.close();
-                        writer = new FileWriter(new File(download_folder, currentRun + ".gpx"), false);
-                        createHeader(writer, curInt.getNumber_of_run() + ".gpx");
+                        writer = new FileWriter(new File(download_folder, curInt.getNumber_of_run() + ".gpx"), false);
+                        createHeader(writer, curInt.getDateTime());
                         lastRun = curInt.getNumber_of_run();
                         start = true;
                     }

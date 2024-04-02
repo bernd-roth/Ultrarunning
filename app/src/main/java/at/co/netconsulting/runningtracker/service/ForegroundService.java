@@ -146,8 +146,6 @@ public class ForegroundService extends Service implements LocationListener {
     private void saveToDatabase(double latitude, double longitude) {
         //format date and time
         dateObj = LocalDateTime.now();
-        currentMilliseconds = Instant.now().toEpochMilli();
-        //currentMilliseconds = System.currentTimeMillis();
 
         run.setDateTime(dateObj.format(formatDateTime));
         run.setLat(latitude);
