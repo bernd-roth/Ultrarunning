@@ -116,11 +116,26 @@
             android:layout_height="wrap_content"
             android:gravity="center|center_horizontal"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:onClick="export"
+            android:onClick="exportDatabase"
             android:text="@string/export_database" />
 
         <TextView
             android:id="@+id/textViewEmpty6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/textViewExportToGPXFile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|center_horizontal"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:onClick="exportGPXFile"
+            android:text="@string/export_to_gpx_file" />
+
+        <TextView
+            android:id="@+id/textViewEmpty7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />

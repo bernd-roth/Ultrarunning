@@ -14,9 +14,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,32 +30,33 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
+import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.view.RestAPI;
-import timber.log.Timber;
 
 public class DatabaseActivity extends AppCompatActivity {
     private int numberInDays;
@@ -195,8 +197,8 @@ public class DatabaseActivity extends AppCompatActivity {
 
         return String.format("%02d:%02d:%02d %02d-%02d-%d", hour, minute, seconds, day, month, year);
     }
-    public void export(View v) {
-        progressDialog.show(); // Display Progress Dialog
+    public void exportDatabase(View v) {
+        progressDialog.show();
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -208,6 +210,96 @@ public class DatabaseActivity extends AppCompatActivity {
             }
         }).start();
     }
+    public void exportGPXFile(View view) {
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    List<Run> run = db.getAllEntries();
+                    generateGfx(run);
+                    Toast.makeText(getApplicationContext(), "GPX files created", Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                progressDialog.dismiss();
+            }
+        }).start();
+    }
+    public void generateGfx(List<Run> run) throws IOException, ParseException {
+        FileWriter writer = null;
+        File download_folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        int lastRun = 0;
+        int currentRun;
+        boolean start = true;
+
+        if(!run.isEmpty()) {
+            ListIterator<Run> iterator = run.listIterator();
+
+            while (iterator.hasNext()) {
+                Run curInt = iterator.next();
+                currentRun = curInt.getNumber_of_run();
+
+                if(currentRun != lastRun) {
+                    if(start) {
+                        writer = new FileWriter(new File(download_folder, curInt.getNumber_of_run() + ".gpx"), false);
+                        createHeader(writer, curInt.getDateTime() + ".gpx");
+                        lastRun = curInt.getNumber_of_run();
+                        start = false;
+                    } else {
+                        String footer = "\t\t</trkseg>\n\t</trk>\n</gpx>";
+                        writer.append(footer);
+                        writer.flush();
+                        writer.close();
+                        writer = new FileWriter(new File(download_folder, currentRun + ".gpx"), false);
+                        createHeader(writer, curInt.getNumber_of_run() + ".gpx");
+                        lastRun = curInt.getNumber_of_run();
+                        start = true;
+                    }
+                } else {
+                    createBody(writer, curInt);
+                }
+            }
+        }
+    }
+
+    private void createBody(FileWriter writer, Run curInt) throws IOException {
+        String segments = "";
+        Date date = new Date(curInt.getDateTimeInMs());
+        String mobileDateTime = getFormatTimeWithTZ(date);
+
+        segments += "\t\t\t<trkpt lat=\"" + curInt.getLat()
+                + "\" lon=\""
+                + curInt.getLng()
+                + "\">\n\t\t\t\t<time>"
+                + mobileDateTime
+                + "</time>\n"
+                + "\t\t\t\t<ele>"
+                + curInt.getAltitude()
+                + "</ele>\n"
+                + "\t\t\t\t<run>"
+                + curInt.getNumber_of_run()
+                + "</run>\n"
+                + "\t\t\t</trkpt>\n";
+        writer.append(segments);
+
+        try {
+            writer.flush();
+        } catch (IOException e) {
+            Log.e("generateGfx", "Error Writting Path", e);
+        }
+    }
+
+    public static String getFormatTimeWithTZ(Date currentTime) {
+        SimpleDateFormat timeZoneDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+        return timeZoneDate.format(currentTime);
+    }
+
+    private void createHeader(FileWriter writer, String name) throws IOException {
+        String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"MapSource 6.15.5\" version=\"1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\">\n\t<trk>\n";
+        writer.append(header);
+        name = "\t\t<name>" + name + "</name>\n\t\t<trkseg>\n";
+        writer.append(name);
+    }
+
     public void importGPX(View view) {
         Intent data = new Intent(Intent.ACTION_GET_CONTENT);
         data.setType("*/*");

@@ -45,6 +45,7 @@
     <string name="export">Export</string>
     <string name="delete">Delete</string>
     <string name="kalmanfilter">Kalman-Filter</string>
+    <string name="export_to_gpx_file">Export to GPX file</string>
 
     <!-- RadioButton activity_settings.xml -->
     <string name="normal">Normal</string>

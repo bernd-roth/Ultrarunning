@@ -329,49 +329,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_RUNS, "number_of_run = ?", new String[]{String.valueOf(number_of_run)});
     }
-
-    public static void generateGfx(File file, String name, List<String> points) throws IOException {
-        FileWriter writer = new FileWriter(file, false);
-        String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"MapSource 6.15.5\" version=\"1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><trk>\n";
-        writer.append(header);
-        name = "<name>" + name + "</name><trkseg>\n";
-        writer.append(name);
-
-        String segments = "";
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-        final Calendar cal = Calendar.getInstance();
-        int counter=1;
-        String lat = "", lon = "", timeInMillis = "", run = "";
-        for (String location : points) {
-            if(counter==4) {
-                cal.setTimeInMillis(Long.parseLong(location));
-                segments += "<trkpt lat=\"" + lat + "\" lon=\"" + lon + "\"><time>" + cal.getTime() + "</time><run>" + run + "</run></trkpt>\n";
-                writer.append(segments);
-                counter=1;
-            } else if(counter==3) {
-                run = location;
-                counter++;
-            } else if(counter==2){
-                lon = location;
-                counter++;
-            } else if(counter==1) {
-                lat = location;
-                counter++;
-            }
-        }
-
-        String footer = "</trkseg></trk></gpx>";
-
-        try {
-            writer.append(footer);
-            writer.flush();
-            writer.close();
-
-        } catch (IOException e) {
-            Log.e("generateGfx", "Error Writting Path", e);
-        }
-    }
-
     public void exportTableContent() {
         try {
             exportAllDatabases(context);
