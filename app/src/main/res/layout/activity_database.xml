@@ -148,5 +148,32 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:onClick="delete"
             android:text="@string/delete_all_entries_from_database" />
+
+        <TextView
+            android:id="@+id/textViewEmpty8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+        <ProgressBar
+            android:id="@+id/determinateBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:progress="25" />
+
+        <TextView
+            android:id="@+id/textViewEmpty9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/textViewPercentage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

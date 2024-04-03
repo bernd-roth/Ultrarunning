@@ -2,12 +2,15 @@ package at.co.netconsulting.runningtracker;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
@@ -26,6 +30,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import java.io.File;
@@ -48,12 +54,11 @@ import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.view.RestAPI;
-
 public class DatabaseActivity extends AppCompatActivity {
     private int numberInDays;
     private SharedPreferences sharedpreferences;
     private PendingIntent pendingIntent;
-    private TextView textViewExportDatabaseScheduled;
+    private TextView textViewExportDatabaseScheduled, textViewPercentage;
     private Long nextBackInMilliseconds;
     private ProgressDialog progressDialog;
     private DatabaseHandler db;
@@ -63,6 +68,8 @@ public class DatabaseActivity extends AppCompatActivity {
     private LinearLayout linearlayout;
     private AlertDialog.Builder alert;
     private AlertDialog dialog;
+    private final int NOTIFICATION_ID = 1;
+    private ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +105,11 @@ public class DatabaseActivity extends AppCompatActivity {
         editTextURL = new EditText(DatabaseActivity.this);
 
         linearlayout = findViewById(R.id.ll);
+
+        progressBar = (ProgressBar) findViewById(R.id.determinateBar);
+
+        textViewPercentage = findViewById(R.id.textViewPercentage);
+        textViewPercentage.setVisibility(View.INVISIBLE);
 
         db = new DatabaseHandler(this);
     }
@@ -202,25 +214,75 @@ public class DatabaseActivity extends AppCompatActivity {
         }).start();
     }
     public void exportGPXFile(View view) {
+        progressBar.setVisibility(ProgressBar.VISIBLE);
+        progressBar.setProgress(0);
+        progressBar.setMax(100);
+        textViewPercentage.setVisibility(View.VISIBLE);
+        textViewPercentage.setText("0%");
         new Thread(new Runnable() {
             public void run() {
                 try {
                     List<Run> run = db.getAllEntries();
-                    generateGfx(run);
-                    Toast.makeText(getApplicationContext(), "GPX files created", Toast.LENGTH_LONG).show();
+                    int countOfRun = db.getCountOfRuns();
+                    createNotification();
+                    generateGfx(run, countOfRun, progressBar);
+                    cancelNotification();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 progressDialog.dismiss();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.GONE);
+                        textViewPercentage.setVisibility(View.GONE);
+                    }
+                });
+            }
+            private void createNotification() {
+                String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.runningtracker";
+                NotificationManager manager = null;
+                NotificationChannel serviceChannel;
+
+                serviceChannel = new NotificationChannel(
+                        NOTIFICATION_CHANNEL_ID,
+                        "Foreground Service Channel",
+                        NotificationManager.IMPORTANCE_DEFAULT
+                );
+
+                manager = getSystemService(NotificationManager.class);
+                manager.createNotificationChannel(serviceChannel);
+
+                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), NOTIFICATION_CHANNEL_ID)
+                        .setContentTitle("Data exporting")
+                        .setContentText("Exporting data to GPX files")
+                        .setOnlyAlertOnce(true)
+                        .setSmallIcon(R.drawable.icon_notification)
+                        //notification cannot be dismissed by user
+                        .setOngoing(true)
+                        //show notification on home screen to everyone
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        //without FOREGROUND_SERVICE_IMMEDIATE, notification can take up to 10 secs to be shown
+                        .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
+
+                notificationBuilder.build();
+
+                manager.notify(NOTIFICATION_ID, notificationBuilder
+                        .setContentTitle("Data exporting")
+                        .setContentText("Exporting data to GPX files")
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_notification))
+                        .build());
             }
         }).start();
     }
-    public void generateGfx(List<Run> run) throws IOException, ParseException {
+    public void generateGfx(List<Run> run, int countOfRun, ProgressBar progressBar) throws IOException, ParseException {
         FileWriter writer = null;
         File download_folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         int lastRun = 0;
         int currentRun;
         boolean start = true;
+        int counter = 0;
+        double result = 0;
 
         if(!run.isEmpty()) {
             ListIterator<Run> iterator = run.listIterator();
@@ -241,6 +303,10 @@ public class DatabaseActivity extends AppCompatActivity {
                         createHeader(writer, curInt.getDateTime());
                         lastRun = curInt.getNumber_of_run();
                         start = false;
+                        counter++;
+                        result = Math.ceil((counter*100)/countOfRun);
+                        progressBar.setProgress((int) result);
+                        textViewPercentage.setText(String.format("%d%%", (int) result));
                     } else {
                         String footer = "\t\t</trkseg>\n\t</trk>\n</gpx>";
                         writer.append(footer);
@@ -250,14 +316,30 @@ public class DatabaseActivity extends AppCompatActivity {
                         createHeader(writer, curInt.getDateTime());
                         lastRun = curInt.getNumber_of_run();
                         start = true;
+                        counter++;
+                        result = Math.ceil((counter*100)/countOfRun);
+                        progressBar.setProgress((int) result);
+                        textViewPercentage.setText(String.format("%d%%", (int) result));
                     }
                 } else {
                     createBody(writer, curInt);
                 }
             }
+            String footer = "\t\t</trkseg>\n\t</trk>\n</gpx>";
+            writer.append(footer);
+            writer.flush();
+            writer.close();
+        } else {
+            progressBar.setVisibility(View.GONE);
+            textViewPercentage.setVisibility(View.GONE);
+            cancelNotification();
         }
     }
-
+    private void cancelNotification() {
+        String notificationService = Context.NOTIFICATION_SERVICE;
+        NotificationManager nMgr = (NotificationManager) getApplicationContext().getSystemService(notificationService);
+        nMgr.cancel(NOTIFICATION_ID);
+    }
     @NonNull
     private static FileWriter createFileName(File download_folder, Run curInt) throws IOException {
         FileWriter writer;

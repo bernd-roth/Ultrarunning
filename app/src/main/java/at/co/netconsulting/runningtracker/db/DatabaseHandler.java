@@ -403,7 +403,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return allEntryList;
     }
+    public int getCountOfRuns() {
+        String selectQuery = "SELECT MAX(" + KEY_NUMBER_OF_RUN + ")"
+                + " FROM " + TABLE_RUNS;
 
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+        return count;
+    }
     public List<Run> getAllEntries() {
         List<Run> allEntryList = new ArrayList<Run>();
 

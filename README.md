@@ -45,8 +45,6 @@ MPAndroidCharts
 
 ## Not implemented yet
 
-* Automatic database backup after mobile phone was restarted
-* Pause recording, when user halts
 * Extend statistic overview: how many kilometers per week were covered
 
 ## Contributing
