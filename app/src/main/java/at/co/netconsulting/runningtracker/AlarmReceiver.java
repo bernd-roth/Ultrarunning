@@ -20,35 +20,32 @@ public class AlarmReceiver extends BroadcastReceiver {
     private int scheduledDays;
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getExtras() != null && intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-            new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        db = new DatabaseHandler(context);
-                        db.exportTableContent();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    db = new DatabaseHandler(context);
+                    db.exportTableContent();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }).start();
+            }
+        }).start();
 
-            loadSharedPreferences(context, SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
-            Bundle bundle = new Bundle();
+        loadSharedPreferences(context, SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
+        Bundle bundle = new Bundle();
 
-            Long time = new GregorianCalendar().getTimeInMillis() + (scheduledDays * StaticFields.ONE_DAY_IN_MILLISECONDS);
-            bundle.putLong("scheduled_alarm", time);
+        Long time = new GregorianCalendar().getTimeInMillis() + (scheduledDays * StaticFields.ONE_DAY_IN_MILLISECONDS);
+        bundle.putLong("scheduled_alarm", time);
 
-            Intent intentAlarm = new Intent(context, AlarmReceiver.class);
-            intentAlarm.putExtra("alarmmanager", bundle);
+        Intent intentAlarm = new Intent(context, AlarmReceiver.class);
+        intentAlarm.putExtra("alarmmanager", bundle);
 
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT |
-                    PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT |
+                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
 
-            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent);
-        }
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent);
     }
-
     private void loadSharedPreferences(Context context, String sharedPrefKey) {
         sh = context.getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
         scheduledDays = sh.getInt(sharedPrefKey, 1);

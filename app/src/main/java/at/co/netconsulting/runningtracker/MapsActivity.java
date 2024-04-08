@@ -975,6 +975,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     }
     public void onClickResetMap(View view) {
         mMap.clear();
+        drawView.setVisibility(View.INVISIBLE);
+        textViewFast.setVisibility(View.INVISIBLE);
+        textViewSlow.setVisibility(View.INVISIBLE);
         fabResetMap.setVisibility(View.INVISIBLE);
     }
 }
