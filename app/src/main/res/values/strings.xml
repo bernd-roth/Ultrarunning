@@ -119,4 +119,7 @@
     <string name="export_to_home_directory">Export to home directory</string>
     <string name="title_activity_general_settings">GeneralSettingsActivity</string>
     <string name="export_to_server">Export to server</string>
+
+    <!-- Toast messages -->
+    <string name="database_export">Next scheduled database export will be at %1$s</string>
 </resources>

@@ -40,6 +40,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -148,6 +149,10 @@ public class DatabaseActivity extends AppCompatActivity {
 
                 if(scheduledDays > 0) {
                     nextBackInMilliseconds = new GregorianCalendar().getTimeInMillis() + (scheduledDays * StaticFields.ONE_DAY_IN_MILLISECONDS);
+                    String pattern = "EEEE dd/MM/yyyy HH:mm:ss";
+                    String message = String.format(getString(R.string.database_export),
+                            new SimpleDateFormat(pattern, new Locale("en", "UK")).format(new Date(nextBackInMilliseconds)));
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 
                     Bundle bundle = new Bundle();
                     bundle.putLong("scheduled_alarm", nextBackInMilliseconds);
