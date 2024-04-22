@@ -54,6 +54,8 @@ import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
+import at.co.netconsulting.runningtracker.service.ForegroundService;
+import at.co.netconsulting.runningtracker.service.GpxForegroundService;
 import at.co.netconsulting.runningtracker.view.RestAPI;
 public class DatabaseActivity extends AppCompatActivity {
     private int numberInDays;
@@ -70,7 +72,6 @@ public class DatabaseActivity extends AppCompatActivity {
     private AlertDialog.Builder alert;
     private AlertDialog dialog;
     private final int NOTIFICATION_ID = 1;
-    private ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,8 +107,6 @@ public class DatabaseActivity extends AppCompatActivity {
         editTextURL = new EditText(DatabaseActivity.this);
 
         linearlayout = findViewById(R.id.ll);
-
-        progressBar = (ProgressBar) findViewById(R.id.determinateBar);
 
         textViewPercentage = findViewById(R.id.textViewPercentage);
         textViewPercentage.setVisibility(View.INVISIBLE);
@@ -219,12 +218,11 @@ public class DatabaseActivity extends AppCompatActivity {
         }).start();
     }
     public void exportGPXFile(View view) {
-        progressBar.setVisibility(ProgressBar.VISIBLE);
-        progressBar.setProgress(0);
-        progressBar.setMax(100);
-        textViewPercentage.setVisibility(View.VISIBLE);
-        textViewPercentage.setText("0%");
-        new Thread(new Runnable() {
+        Context context = getApplicationContext();
+        Intent intentForegroundService = new Intent(getApplicationContext(), GpxForegroundService.class);
+        intentForegroundService.setAction("ACTION_START_GPXFOREGROUNDSERVICE");
+        context.startForegroundService(intentForegroundService);
+        /*new Thread(new Runnable() {
             public void run() {
                 try {
                     List<Run> run = db.getAllEntries();
@@ -278,7 +276,7 @@ public class DatabaseActivity extends AppCompatActivity {
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_notification))
                         .build());
             }
-        }).start();
+        }).start();*/
     }
     public void generateGfx(List<Run> run, int countOfRun, ProgressBar progressBar) throws IOException, ParseException {
         FileWriter writer = null;
@@ -533,5 +531,11 @@ public class DatabaseActivity extends AppCompatActivity {
                 }
             });
             alert.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(this, GpxForegroundService.class));
     }
 }

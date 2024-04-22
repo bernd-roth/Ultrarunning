@@ -371,10 +371,8 @@ public class ForegroundService extends Service implements LocationListener {
         }
 
         private int getExactStopWatch(Instant starts) {
-
             return seconds;
         }
-
         public void stop() {
             running = false;
         }

@@ -155,14 +155,6 @@
             android:layout_height="wrap_content"
             android:text="" />
 
-        <ProgressBar
-            android:id="@+id/determinateBar"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            android:progress="25" />
-
         <TextView
             android:id="@+id/textViewEmpty9"
             android:layout_width="match_parent"
