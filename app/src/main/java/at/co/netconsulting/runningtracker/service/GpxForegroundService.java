@@ -19,6 +19,7 @@ import androidx.core.app.NotificationCompat;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +43,7 @@ public class GpxForegroundService extends Service {
     private WatchDogRunner mWatchdogRunner;
     private String notificationService;
     private NotificationManager nMgr;
+    private SimpleDateFormat sdf;
 
     //own implementations
     private void createNotificationChannel() {
@@ -55,7 +57,6 @@ public class GpxForegroundService extends Service {
             manager.createNotificationChannel(serviceChannel);
         }
     }
-
     //overrides
     @Override
     public void onCreate() {
@@ -66,12 +67,13 @@ public class GpxForegroundService extends Service {
     }
 
     private void initializeObject() {
+        this.sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         this.db = new DatabaseHandler(getApplicationContext());
     }
 
     private void initializeThread() {
         if (mWatchdogThread == null || !mWatchdogThread.isAlive()) {
-            mWatchdogRunner = new WatchDogRunner(getApplicationContext(), this.db);
+            mWatchdogRunner = new WatchDogRunner(getApplicationContext(), this.db, this.sdf);
             mWatchdogThread = new Thread(mWatchdogRunner, "WorkoutWatchdog");
         }
         if (!mWatchdogThread.isAlive()) {
@@ -131,13 +133,15 @@ public class GpxForegroundService extends Service {
 
     class WatchDogRunner implements Runnable {
         private static final int NOTIFICATION_ID = 1;
+        private final SimpleDateFormat sdf;
         private DatabaseHandler db;
         private Context context;
         volatile boolean exporting = true;
 
-        public WatchDogRunner(Context context, DatabaseHandler db) {
+        public WatchDogRunner(Context context, DatabaseHandler db, SimpleDateFormat sdf) {
             this.context = context;
             this.db = db;
+            this.sdf = sdf;
         }
 
         @Override
@@ -162,14 +166,13 @@ public class GpxForegroundService extends Service {
             nMgr.cancel(NOTIFICATION_ID);
         }
 
-        private void generateGfx(List<Run> run, int countOfRun) throws IOException {
+        private void generateGfx(List<Run> run, int countOfRun) throws IOException, ParseException {
             FileWriter writer = null;
             File download_folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             int lastRun = 0;
             int currentRun;
             boolean start = true;
             int counter = 0;
-            double result = 0;
 
             if (!run.isEmpty()) {
                 ListIterator<Run> iterator = run.listIterator();
@@ -198,7 +201,6 @@ public class GpxForegroundService extends Service {
                             lastRun = curInt.getNumber_of_run();
                             start = false;
                             counter++;
-                            result = Math.ceil((counter * 100) / countOfRun);
                         } else {
                             String footer = "\t\t</trkseg>\n\t</trk>\n</gpx>";
                             writer.append(footer);
@@ -209,7 +211,6 @@ public class GpxForegroundService extends Service {
                             lastRun = curInt.getNumber_of_run();
                             start = true;
                             counter++;
-                            result = Math.ceil((counter * 100) / countOfRun);
                         }
                     } else {
                         createBody(writer, curInt);
@@ -233,10 +234,13 @@ public class GpxForegroundService extends Service {
             return writer;
         }
 
-        private void createBody(FileWriter writer, Run curInt) throws IOException {
+        private void createBody(FileWriter writer, Run curInt) throws IOException, ParseException {
             String segments = "";
-            Date date = new Date(curInt.getDateTimeInMs());
-            String mobileDateTime = getFormatTimeWithTZ(date);
+
+            Date date = sdf.parse(curInt.getDateTime());
+            long dateTimeToMilliseconds = date.getTime();
+
+            String mobileDateTime = getFormatTimeWithTZ(new Date(dateTimeToMilliseconds));
 
             segments += "\t\t\t<trkpt lat=\"" + curInt.getLat()
                     + "\" lon=\""
