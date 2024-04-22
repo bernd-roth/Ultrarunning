@@ -183,6 +183,7 @@ public class GpxForegroundService extends Service {
                         writer.append(footer);
                         writer.flush();
                         writer.close();
+                        cancelNotification(getApplicationContext());
                         return;
                     }
                     Run curInt = iterator.next();
