@@ -424,10 +424,10 @@ public class ForegroundService extends Service implements LocationListener {
     private void updateNotification(int hours, int minutes, int seconds) {
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(String.format("%02d:%02d:%02d", hours, minutes, seconds))
-                .setContentText("D: " + String.format("%.2f Km", coveredDistance / 1000)
-                        + " P: " + String.format("%.2f Km/h", currentSpeed)
-                        + " S: " + numberOfsatellitesInUse + "/" + satelliteCount
-                        + " Alt: " + String.format("%.2f Meter", altitude))
+                .setContentText("Distance: " + String.format("%.2f Km", coveredDistance / 1000)
+                        + " Velocity: " + String.format("%.2f Km/h", currentSpeed)
+                        + " Satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
+                        + " Altitude: " + String.format("%.2f Meter", altitude))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
@@ -441,10 +441,10 @@ public class ForegroundService extends Service implements LocationListener {
 
         manager.notify(NOTIFICATION_ID, notificationBuilder
                 .setContentTitle(String.format("%02d:%02d:%02d", hours, minutes, seconds))
-                .setContentText("D: " + String.format("%.2f Km", coveredDistance / 1000)
-                                + " P: " + String.format("%.2f Km/h", currentSpeed)
-                                + " S: " + numberOfsatellitesInUse + "/" + satelliteCount
-                                + " Alt: " + String.format("%.2f Meter", altitude))
+                .setContentText("Distance: " + String.format("%.2f Km", coveredDistance / 1000)
+                                + " Velocity: " + String.format("%.2f Km/h", currentSpeed)
+                                + " Satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
+                                + " Altitude: " + String.format("%.2f Meter", altitude))
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_notification))
                 .build());
     }
