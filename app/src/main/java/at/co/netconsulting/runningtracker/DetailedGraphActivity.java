@@ -12,13 +12,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
@@ -27,12 +24,10 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.JointType;
@@ -41,16 +36,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.pojo.Run;
-
 public class DetailedGraphActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraIdleListener {
     private List<Run> run;
     private DatabaseHandler db;
@@ -60,6 +50,7 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
     private LineChart mChart;
     private LatLng latLng;
     private Marker marker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +67,7 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
         int sizeOfList = run.size();
         //int i = 0;
 
-        if(sizeOfList!=0) {
+        if (sizeOfList != 0) {
             for (Run run : run) {
                 //if(i%60==0) {
                 float coveredMeter = (float) run.getMeters_covered();
@@ -162,6 +153,7 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
         int intValue = mIntent.getIntExtra("numberOfRun", 0);
         run = db.getSingleEntryForStatistics(intValue);
     }
+
     private void initializeObjects() {
         this.getSupportActionBar().hide();
         run = new ArrayList<>();
@@ -179,8 +171,8 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
                 double distance = 0;
                 long time = 0;
 
-                for(int i = 0; i<run.size(); i++) {
-                    if((run.get(i).getMeters_covered() == x) &&
+                for (int i = 0; i < run.size(); i++) {
+                    if ((run.get(i).getMeters_covered() == x) &&
                             (run.get(i).getSpeed() == y)) {
                         latLng = new LatLng(run.get(i).getLat(), run.get(i).getLng());
                         speed = run.get(i).getSpeed();
@@ -191,7 +183,7 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 //                mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
 
-                if(marker != null) {
+                if (marker != null) {
                     marker.remove();
                     marker = null;
                 }
@@ -301,7 +293,7 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
         PolylineOptions lineOptions = new PolylineOptions().width(5).color(Color.RED);
         List<LatLng> polylinePoints = new ArrayList<>();
 
-        for(int i = 0; i<run.size(); i++) {
+        for (int i = 0; i < run.size(); i++) {
             polylinePoints.add(new LatLng(run.get(i).getLat(), run.get(i).getLng()));
         }
         Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
