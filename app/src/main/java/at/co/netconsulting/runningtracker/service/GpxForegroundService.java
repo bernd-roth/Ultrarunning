@@ -65,12 +65,10 @@ public class GpxForegroundService extends Service {
         createNotificationChannel();
         initializeThread();
     }
-
     private void initializeObject() {
         this.sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         this.db = new DatabaseHandler(getApplicationContext());
     }
-
     private void initializeThread() {
         if (mWatchdogThread == null || !mWatchdogThread.isAlive()) {
             mWatchdogRunner = new WatchDogRunner(getApplicationContext(), this.db, this.sdf);
@@ -80,7 +78,6 @@ public class GpxForegroundService extends Service {
             mWatchdogThread.start();
         }
     }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         createPendingIntent();
@@ -118,13 +115,11 @@ public class GpxForegroundService extends Service {
         mWatchdogRunner.stop();
         super.onDestroy();
     }
-
     private void cancelNotification() {
         notificationService = Context.NOTIFICATION_SERVICE;
         nMgr = (NotificationManager) getApplicationContext().getSystemService(notificationService);
         nMgr.cancel(NOTIFICATION_ID);
     }
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -143,7 +138,6 @@ public class GpxForegroundService extends Service {
             this.db = db;
             this.sdf = sdf;
         }
-
         @Override
         public void run() {
             try {
@@ -155,17 +149,14 @@ public class GpxForegroundService extends Service {
                 e.printStackTrace();
             }
         }
-
         public void stop() {
             exporting = false;
         }
-
         private void cancelNotification(Context context) {
             String notificationService = Context.NOTIFICATION_SERVICE;
             NotificationManager nMgr = (NotificationManager) context.getApplicationContext().getSystemService(notificationService);
             nMgr.cancel(NOTIFICATION_ID);
         }
-
         private void generateGfx(List<Run> run, int countOfRun) throws IOException, ParseException {
             FileWriter writer = null;
             File download_folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -192,10 +183,7 @@ public class GpxForegroundService extends Service {
                     if (currentRun != lastRun) {
                         if (start) {
                             if (lastRun != 0) {
-                                String footer = "\t\t</trkseg>\n\t</trk>\n</gpx>";
-                                writer.append(footer);
-                                writer.flush();
-                                writer.close();
+                                writeFooter(writer);
                             }
                             writer = createFileName(download_folder, curInt);
                             createHeader(writer, curInt.getDateTime());
@@ -203,10 +191,7 @@ public class GpxForegroundService extends Service {
                             start = false;
                             counter++;
                         } else {
-                            String footer = "\t\t</trkseg>\n\t</trk>\n</gpx>";
-                            writer.append(footer);
-                            writer.flush();
-                            writer.close();
+                            writeFooter(writer);
                             writer = createFileName(download_folder, curInt);
                             createHeader(writer, curInt.getDateTime());
                             lastRun = curInt.getNumber_of_run();
@@ -217,15 +202,17 @@ public class GpxForegroundService extends Service {
                         createBody(writer, curInt);
                     }
                 }
-                String footer = "\t\t</trkseg>\n\t</trk>\n</gpx>";
-                writer.append(footer);
-                writer.flush();
-                writer.close();
+                writeFooter(writer);
             } else {
                 cancelNotification(context);
             }
         }
-
+        private void writeFooter(FileWriter writer) throws IOException {
+            String footer = "\t\t</trkseg>\n\t</trk>\n</gpx>";
+            writer.append(footer);
+            writer.flush();
+            writer.close();
+        }
         private FileWriter createFileName(File download_folder, Run curInt) throws IOException {
             FileWriter writer;
             String[] sDateTime = curInt.getDateTime().split(" ");
@@ -234,7 +221,6 @@ public class GpxForegroundService extends Service {
             writer = new FileWriter(new File(download_folder, "" + fileName + ".gpx"), false);
             return writer;
         }
-
         private void createBody(FileWriter writer, Run curInt) throws IOException, ParseException {
             String segments = "";
 
@@ -264,19 +250,16 @@ public class GpxForegroundService extends Service {
                 Log.e("generateGfx", "Error Writting Path", e);
             }
         }
-
         private void createHeader(FileWriter writer, String name) throws IOException {
             String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"MapSource 6.15.5\" version=\"1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\">\n\t<trk>\n";
             writer.append(header);
             name = "\t\t<name>" + name + "</name>\n\t\t<trkseg>\n";
             writer.append(name);
         }
-
         public String getFormatTimeWithTZ(Date currentTime) {
             SimpleDateFormat timeZoneDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
             return timeZoneDate.format(currentTime);
         }
-
         private void createNotification(Context context) {
             String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.runningtracker";
             NotificationManager manager = null;
