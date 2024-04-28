@@ -116,6 +116,7 @@ public class GpxForegroundService extends Service {
         super.onDestroy();
     }
     private void cancelNotification() {
+        stopForeground(STOP_FOREGROUND_REMOVE);
         notificationService = Context.NOTIFICATION_SERVICE;
         nMgr = (NotificationManager) getApplicationContext().getSystemService(notificationService);
         nMgr.cancel(NOTIFICATION_ID);
@@ -153,6 +154,7 @@ public class GpxForegroundService extends Service {
             exporting = false;
         }
         private void cancelNotification(Context context) {
+            stopForeground(STOP_FOREGROUND_REMOVE);
             String notificationService = Context.NOTIFICATION_SERVICE;
             NotificationManager nMgr = (NotificationManager) context.getApplicationContext().getSystemService(notificationService);
             nMgr.cancel(NOTIFICATION_ID);
@@ -203,6 +205,7 @@ public class GpxForegroundService extends Service {
                     }
                 }
                 writeFooter(writer);
+                cancelNotification(context);
             } else {
                 cancelNotification(context);
             }
