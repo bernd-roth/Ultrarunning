@@ -14,13 +14,9 @@ import com.opencsv.CSVWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -476,5 +472,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_INDEX_TABLE =
                 "CREATE INDEX idx_number_of_run ON " + TABLE_RUNS + "(" + KEY_NUMBER_OF_RUN +");";
         db.execSQL(CREATE_INDEX_TABLE);
+    }
+
+    public void updateNumberOfRun(long oldNumberOfRun, int newNumberOfRun) {
+        ContentValues cv = new ContentValues();
+        cv.put(KEY_NUMBER_OF_RUN, newNumberOfRun);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE " + TABLE_RUNS + " SET " + KEY_NUMBER_OF_RUN
+                + " = \"" + newNumberOfRun + "\" WHERE " + KEY_NUMBER_OF_RUN
+                + " = " + oldNumberOfRun);
     }
 }

@@ -156,10 +156,30 @@
             android:text="" />
 
         <TextView
+            android:id="@+id/textViewReorg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:gravity="center|center_horizontal"
+            android:text="Reorg"
+            android:textColor="#4CAF50"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:visibility="visible" />
+
+        <TextView
             android:id="@+id/textViewEmpty9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
+
+        <TextView
+            android:id="@+id/textViewReorgDatabase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|center_horizontal"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:onClick="reorgDatabase"
+            android:text="@string/reorg_database" />
 
         <TextView
             android:id="@+id/textViewPercentage"

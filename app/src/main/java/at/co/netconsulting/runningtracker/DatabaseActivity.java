@@ -2,7 +2,6 @@ package at.co.netconsulting.runningtracker;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
@@ -10,7 +9,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,7 +16,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -30,17 +27,15 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,11 +45,13 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
-import at.co.netconsulting.runningtracker.service.ForegroundService;
 import at.co.netconsulting.runningtracker.service.GpxForegroundService;
 import at.co.netconsulting.runningtracker.view.RestAPI;
 public class DatabaseActivity extends AppCompatActivity {
@@ -222,61 +219,6 @@ public class DatabaseActivity extends AppCompatActivity {
         Intent intentForegroundService = new Intent(getApplicationContext(), GpxForegroundService.class);
         intentForegroundService.setAction("ACTION_START_GPXFOREGROUNDSERVICE");
         context.startForegroundService(intentForegroundService);
-        /*new Thread(new Runnable() {
-            public void run() {
-                try {
-                    List<Run> run = db.getAllEntries();
-                    int countOfRun = db.getCountOfRuns();
-                    createNotification();
-                    generateGfx(run, countOfRun, progressBar);
-                    cancelNotification();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                progressDialog.dismiss();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setVisibility(View.GONE);
-                        textViewPercentage.setVisibility(View.GONE);
-                    }
-                });
-            }
-            private void createNotification() {
-                String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.runningtracker";
-                NotificationManager manager = null;
-                NotificationChannel serviceChannel;
-
-                serviceChannel = new NotificationChannel(
-                        NOTIFICATION_CHANNEL_ID,
-                        "Foreground Service Channel",
-                        NotificationManager.IMPORTANCE_DEFAULT
-                );
-
-                manager = getSystemService(NotificationManager.class);
-                manager.createNotificationChannel(serviceChannel);
-
-                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), NOTIFICATION_CHANNEL_ID)
-                        .setContentTitle("Data exporting")
-                        .setContentText("Exporting data to GPX files")
-                        .setOnlyAlertOnce(true)
-                        .setSmallIcon(R.drawable.icon_notification)
-                        //notification cannot be dismissed by user
-                        .setOngoing(true)
-                        //show notification on home screen to everyone
-                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                        //without FOREGROUND_SERVICE_IMMEDIATE, notification can take up to 10 secs to be shown
-                        .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
-
-                notificationBuilder.build();
-
-                manager.notify(NOTIFICATION_ID, notificationBuilder
-                        .setContentTitle("Data exporting")
-                        .setContentText("Exporting data to GPX files")
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_notification))
-                        .build());
-            }
-        }).start();*/
     }
     public void generateGfx(List<Run> run, int countOfRun, ProgressBar progressBar) throws IOException, ParseException {
         FileWriter writer = null;
@@ -425,9 +367,8 @@ public class DatabaseActivity extends AppCompatActivity {
         }
     }
     public void delete(View view) {
-        Button buttonDelete = (Button)view;
-        String buttonText = buttonDelete.getText().toString();
-        if(buttonText.equals("Delete")) {
+        String buttonText = ( (TextView) view ).getText().toString();
+        if(buttonText.startsWith("Delete")) {
             createAlertDialog();
         }
     }
@@ -537,5 +478,30 @@ public class DatabaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(this, GpxForegroundService.class));
+    }
+
+    public void reorgDatabase(View view) throws ParseException {
+        SimpleDateFormat dateformatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        TreeMap<Long, Run> run = new TreeMap<>();
+        List<Run> allEntriesGroupedByRun = db.getAllEntriesGroupedByRun();
+
+        for(int i = 0; i<allEntriesGroupedByRun.size(); i++) {
+            String dateTime = allEntriesGroupedByRun.get(i).getDateTime();
+
+            Date date = dateformatter.parse(dateTime);
+            long msec = date.getTime();
+            run.put(msec, allEntriesGroupedByRun.get(i));
+        }
+
+        int newNumberOfRun = 0;
+        long key = 0;
+        for (Map.Entry<Long, Run> entry : run.entrySet()) {
+            key = entry.getKey();
+
+            int oldNumberOfRun = run.get(key).getNumber_of_run();
+            newNumberOfRun++;
+            db.updateNumberOfRun(oldNumberOfRun, newNumberOfRun);
+        }
+        db.close();
     }
 }
