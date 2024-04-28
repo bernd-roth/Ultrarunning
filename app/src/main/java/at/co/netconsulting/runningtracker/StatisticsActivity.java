@@ -1,8 +1,6 @@
 package at.co.netconsulting.runningtracker;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -17,7 +15,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -25,7 +22,7 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.core.content.ContextCompat;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.LimitLine;
@@ -359,7 +356,7 @@ public class StatisticsActivity extends BaseActivity {
         int rows = groupedSectionList.size();
         int colums  = 1;
         int counter = 1;
-        TreeMap<String, Integer> fastestSlowestLap = new TreeMap<>();
+        TreeMap<Long, Integer> fastestSlowestLap = new TreeMap<>();
         tableHeader.setStretchAllColumns(true);
         tableHeader.bringToFront();
 
@@ -388,7 +385,7 @@ public class StatisticsActivity extends BaseActivity {
         }
 
         for(int i = 0; i < rows; i++){
-            fastestSlowestLap.put(String.valueOf(groupedSectionList.get(i)), counter);
+            fastestSlowestLap.put(groupedSectionList.get(i), counter);
             counter++;
         }
 
@@ -436,7 +433,7 @@ public class StatisticsActivity extends BaseActivity {
         return slowestFastestLap;
     }
 
-    private int chooseSlowestLap(TreeMap<String, Integer> fastestSlowestLap) {
+    private int chooseSlowestLap(TreeMap<Long, Integer> fastestSlowestLap) {
         int size = fastestSlowestLap.size();
         int slowestLap = fastestSlowestLap.lastEntry().getValue();
 
@@ -449,7 +446,7 @@ public class StatisticsActivity extends BaseActivity {
         return slowestLap;
     }
 
-    private int chooseFastestLap(TreeMap<String, Integer> fastestSlowestLap) {
+    private int chooseFastestLap(TreeMap<Long, Integer> fastestSlowestLap) {
         int size = fastestSlowestLap.size();
         int fastestLap = fastestSlowestLap.entrySet().stream().skip(0).findFirst().get().getValue();
 
