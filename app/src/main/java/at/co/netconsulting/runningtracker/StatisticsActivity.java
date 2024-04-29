@@ -35,6 +35,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,6 +43,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
@@ -87,6 +90,10 @@ public class StatisticsActivity extends BaseActivity {
             public void run() {
                 DatabaseHandler db = new DatabaseHandler(StatisticsActivity.this);
                 List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
+                TreeMap<Long, Run> orderedByDate = new TreeMap<>();
+                long millis;
+                Date date = null;
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
                 dialog_data = new Dialog(StatisticsActivity.this);
                 setDialogWithSpecificHeight(dialog_data);
@@ -98,12 +105,26 @@ public class StatisticsActivity extends BaseActivity {
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.custom_text_view);
                 List<Integer> intArray = new ArrayList<>();
 
-                for (int i = 0; i < allEntries.size(); i++) {
+                for(int i = 0; i<allEntries.size(); i++) {
+                    try {
+                        date = sdf.parse(allEntries.get(i).getDateTime());
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                    millis = date.getTime();
+
+                    Run runa = allEntries.get(i);
+                    orderedByDate.put(millis, runa);
+                }
+
+                NavigableMap<Long, Run> reveresedTreeMap = orderedByDate.descendingMap();
+
+                for(Map.Entry<Long, Run> entry : reveresedTreeMap.entrySet()) {
                     arrayAdapter.add(
-                            allEntries.get(i).getDateTime() + "\n"
-                                    + String.format("%.03f", allEntries.get(i).getMeters_covered() / 1000) + " Km\n"
-                                    + allEntries.get(i).getComment());
-                    intArray.add(allEntries.get(i).getNumber_of_run());
+                            (entry.getValue().getDateTime()+ "\n"
+                                    + String.format("%.03f", entry.getValue().getMeters_covered()/1000) + " Km\n"
+                                    + entry.getValue().getComment()));
+                    intArray.add(entry.getValue().getNumber_of_run());
                 }
 
                 alertdialog_Listview.setAdapter(arrayAdapter);

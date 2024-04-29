@@ -591,9 +591,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         TreeMap<Long, Run> orderedByDate = new TreeMap<>();
         long millis;
         Date date = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
         for(int i = 0; i<allEntries.size(); i++) {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             try {
                 date = sdf.parse(allEntries.get(i).getDateTime());
             } catch(Exception e) {
