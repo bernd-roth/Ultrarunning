@@ -30,7 +30,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,6 +42,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,6 +61,13 @@ import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.service.GpxForegroundService;
 import at.co.netconsulting.runningtracker.view.RestAPI;
+import io.ticofab.androidgpxparser.parser.GPXParser;
+import io.ticofab.androidgpxparser.parser.domain.Extensions;
+import io.ticofab.androidgpxparser.parser.domain.Gpx;
+import io.ticofab.androidgpxparser.parser.domain.Track;
+import io.ticofab.androidgpxparser.parser.domain.TrackPoint;
+import io.ticofab.androidgpxparser.parser.domain.TrackSegment;
+
 public class DatabaseActivity extends AppCompatActivity {
     private int numberInDays;
     private SharedPreferences sharedpreferences;
@@ -69,6 +83,10 @@ public class DatabaseActivity extends AppCompatActivity {
     private AlertDialog.Builder alert;
     private AlertDialog dialog;
     private final int NOTIFICATION_ID = 1;
+    private static final String TAG = DatabaseActivity.class.getSimpleName();
+    private static final double r2d = 180.0D / 3.141592653589793D;
+    private static final double d2r = 3.141592653589793D / 180.0D;
+    private static final double d2km = 111189.57696D * r2d;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -436,12 +454,12 @@ public class DatabaseActivity extends AppCompatActivity {
             ((ViewGroup)editTextURL.getParent()).removeView(editTextURL);
         }
             AlertDialog.Builder alert = new AlertDialog.Builder(DatabaseActivity.this);
-            alert.setTitle("Please, type your URL");
+            alert.setTitle(R.string.please_type_your_url);
             alert.setView(editTextURL);
             editTextURL.setText(httpUrl);
 
             alert.setCancelable(false);
-            alert.setPositiveButton("Export", new DialogInterface.OnClickListener() {
+            alert.setPositiveButton(R.string.export_positive_button, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     String httpUrl = editTextURL.getText().toString();
                     List<Run> allEntries = new ArrayList<Run>(db.getAllEntries());
@@ -503,5 +521,89 @@ public class DatabaseActivity extends AppCompatActivity {
             db.updateNumberOfRun(oldNumberOfRun, newNumberOfRun);
         }
         db.close();
+    }
+
+    public void importGPXFile(View view) {
+        Intent data = new Intent(Intent.ACTION_GET_CONTENT);
+        data.setType("*/*");
+        data = Intent.createChooser(data, getString(R.string.choose_a_file));
+        startActivityResultLauncherImportGPXFile.launch(data);
+    }
+
+    ActivityResultLauncher<Intent> startActivityResultLauncherImportGPXFile = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                // Handle the returned Uri
+                Log.d("startActivityResultLauncherImportGPXFile", "FileChooser works");
+
+                Run run = new Run();
+                GPXParser parser = new GPXParser();
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                Instant instant;
+                ZonedDateTime zdt;
+                long millisFromEpoch;
+                double oldLat = 0, oldLng = 0, newLat, newLon, meters_covered = 0;
+                int counter = 0;
+
+                int lastRun = db.getLastEntry();
+                lastRun+=1;
+
+                Gpx parsedGpx = null;
+                try {
+                    InputStream is = getContentResolver().openInputStream(result.getData().getData());
+                    parsedGpx = parser.parse(is); // consider using a background thread
+                } catch (IOException | XmlPullParserException e) {
+                    e.printStackTrace();
+                }
+                if (parsedGpx == null) {
+                    Log.e("GpxParsingError", "Parsing error");
+                } else {
+                    List<Track> tracks = parsedGpx.getTracks();
+                    for (int i = 0; i < tracks.size(); i++) {
+                        Track track = tracks.get(i);
+                        List<TrackSegment> segments = track.getTrackSegments();
+                        for (int j = 0; j < segments.size(); j++) {
+                            TrackSegment segment = segments.get(j);
+                            for (TrackPoint trackPoint : segment.getTrackPoints()) {
+                                String msg = "    point: lat " + trackPoint.getLatitude() + ", lon " + trackPoint.getLongitude() + ", time " + trackPoint.getTime();
+                                Log.d(TAG, msg);
+                                millisFromEpoch = Instant.parse( trackPoint.getTime().toString()).toEpochMilli();
+
+                                Date date=new Date(millisFromEpoch);
+                                String output = sdf.format(date);
+
+                                if(counter==0) {
+                                    oldLat=trackPoint.getLatitude();
+                                    oldLng=trackPoint.getLongitude();
+                                    counter++;
+                                } else {
+                                    newLat=trackPoint.getLatitude();
+                                    newLon=trackPoint.getLongitude();
+                                    meters_covered += calculateDistance(oldLat, oldLng, newLat, newLon);
+                                    oldLat=newLat;
+                                    oldLng=newLon;
+                                    counter++;
+                                }
+                                run.setDateTime(output);
+                                run.setLat(trackPoint.getLatitude());
+                                run.setLng(trackPoint.getLongitude());
+                                run.setMeters_covered(meters_covered);
+                                run.setAltitude(trackPoint.getElevation());
+                                run.setDateTimeInMs(millisFromEpoch);
+                                run.setNumber_of_run(lastRun);
+                                db.addRun(run);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    );
+    private double calculateDistance(double oldLat, double oldLng, double newLat, double newLon) {
+        double x = oldLat * d2r;
+        double y = newLat * d2r;
+        return Math.acos( Math.sin(x) * Math.sin(y) + Math.cos(x) * Math.cos(y) * Math.cos(d2r * (oldLng - newLon))) * d2km;
     }
 }
