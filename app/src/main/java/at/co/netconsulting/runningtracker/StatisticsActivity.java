@@ -550,7 +550,6 @@ public class StatisticsActivity extends BaseActivity {
             }
             tableHeaderYear.addView(trYear);
         }
-
         // remove previous tablelayout if necessary
         if(tableYearSection.getChildCount()>0) {
             tableYearSection.removeViews(0, Math.max(0, tableYearSection.getChildCount()));
@@ -603,8 +602,6 @@ public class StatisticsActivity extends BaseActivity {
         List<Run> listOfRun = db.getAllEntriesForYearCalculation();
         double meters = 0;
         String yearTemp = "0";
-
-
 
         for(int i = 0; i<listOfRun.size(); i++) {
             String[] dateSplit= listOfRun.get(i).getDateTime().split("-");

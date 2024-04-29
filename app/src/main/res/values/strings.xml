@@ -125,4 +125,8 @@
 
     <!-- Toast messages -->
     <string name="database_export">Next scheduled database export will be at %1$s</string>
+    <string name="import_gpx_file">Import GPX file</string>
+    <string name="please_type_your_url">Please, type your URL</string>
+    <string name="export_positive_button">Export</string>
+    <string name="choose_a_file">Choose a file</string>
 </resources>
