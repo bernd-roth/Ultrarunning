@@ -56,7 +56,7 @@ public class StatisticsActivity extends BaseActivity {
             textViewSlowestLap, textViewFastestLap, textViewStartingElevation,
             textViewEndingElevation, textViewHighestElevation, textViewTotalElevation,
             textViewMovementTime, textViewLowestElevation, textViewStartTime, textViewEndTime,
-            textViewPace, textViewOverview;
+            textViewPace;
     private float maxSpeed, avgSpeed, totalDistance;
     private double totalElevation, highestElevation, lastElevationPoint,
             sumElevation,lowestElevation;
@@ -503,7 +503,6 @@ public class StatisticsActivity extends BaseActivity {
         textViewStartTime = findViewById(R.id.textViewStartTime);
         textViewEndTime = findViewById(R.id.textViewEndTime);
         textViewPace = findViewById(R.id.textViewPace);
-//        textViewOverview = findViewById(R.id.textViewOverview);
 
         tableHeader = (TableLayout)findViewById(R.id.tableHeader);
         tableSection = (TableLayout)findViewById(R.id.tableSection);
@@ -575,10 +574,28 @@ public class StatisticsActivity extends BaseActivity {
             }
             tableYearSection.addView(trYear);
         }
+
+        int pixels = calculateViewHeight();
+
+        View view = new View(this);
+        view.setMinimumHeight(pixels);
+
+        int parseColor = Color.parseColor("#c0c0c0");
+        view.setBackgroundColor(parseColor);
+
         textViewOverview.setTextSize(18);
         String sTotalKm = String.format("%.2f", totalKm);
         textViewOverview.setText("\t\t\t\tTotal:" + "\t\t\t\t\t\t\t\t\t" + sTotalKm);
+
+        tableYearSection.addView(view);
         tableYearSection.addView(textViewOverview);
+    }
+
+    private int calculateViewHeight() {
+        final float scale = getApplicationContext().getResources().getDisplayMetrics().density;
+        int dp = 2;
+        int pixels = (int) (dp * scale + 0.5f);
+        return pixels;
     }
 
     private TreeMap<Integer, Double> calculateSectionsYear() {
