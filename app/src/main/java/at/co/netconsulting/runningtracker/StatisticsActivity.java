@@ -628,12 +628,13 @@ public class StatisticsActivity extends BaseActivity {
             String[] dateSplit= listOfRun.get(i).getDateTime().split("-");
             String[] yearSplit = dateSplit[2].split(" ");
             String year = yearSplit[0];
-            if(year.equals(yearTemp)) {
+
+            if(groupedTreeMap.containsKey(Integer.valueOf(year))) {
+                meters = groupedTreeMap.get(Integer.valueOf(year));
                 meters += listOfRun.get(i).getMeters_covered();
                 updateTreeMap(groupedTreeMap, year, meters);
             } else {
                 meters = listOfRun.get(i).getMeters_covered();
-                yearTemp = year;
                 groupedTreeMap.put(Integer.valueOf(year), meters);
             }
         }
@@ -668,8 +669,7 @@ public class StatisticsActivity extends BaseActivity {
     }
 
     private void updateTreeMap(TreeMap<Integer, Double> groupedTreeMap, String year, double meters) {
-        int lastKey = groupedTreeMap.lastKey();
-        groupedTreeMap.put(lastKey, meters);
+        groupedTreeMap.put(Integer.valueOf(year), meters);
     }
     public void renderData() {
         LimitLine llXAxis = new LimitLine(10f, "Index 10");
