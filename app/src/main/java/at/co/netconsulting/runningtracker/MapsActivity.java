@@ -68,16 +68,22 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.shredzone.commons.suncalc.SunTimes;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoLocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -579,9 +585,25 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             alert.show();
         }
     }
-    private void showAlertDialogWithTracks(){
+    private void showAlertDialogWithTracks() {
         DatabaseHandler db = new DatabaseHandler(this);
         List<Run> allEntries = db.getAllEntriesOrderedByRunNumber();
+        TreeMap<Long, Run> orderedByDate = new TreeMap<>();
+        long millis;
+        Date date = null;
+
+        for(int i = 0; i<allEntries.size(); i++) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            try {
+                date = sdf.parse(allEntries.get(i).getDateTime());
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            millis = date.getTime();
+
+            Run runa = allEntries.get(i);
+            orderedByDate.put(millis, runa);
+        }
 
         dialog_data = new Dialog(MapsActivity.this);
         setDialogWithSpecificHeight(dialog_data);
@@ -597,12 +619,14 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         arrayAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.custom_text_view);
         intArray = new ArrayList<>();
 
-        for(int i = 0; i<allEntries.size(); i++) {
+        NavigableMap<Long, Run> reveresedTreeMap = orderedByDate.descendingMap();
+
+        for(Map.Entry<Long, Run> entry : reveresedTreeMap.entrySet()) {
             arrayAdapter.add(
-                allEntries.get(i).getDateTime() + "\n"
-                + String.format("%.03f", allEntries.get(i).getMeters_covered()/1000) + " Km\n"
-                + allEntries.get(i).getComment());
-            intArray.add(allEntries.get(i).getNumber_of_run());
+                (entry.getValue().getDateTime()+ "\n"
+                + String.format("%.03f", entry.getValue().getMeters_covered()/1000) + " Km\n"
+                + entry.getValue().getComment()));
+            intArray.add(entry.getValue().getNumber_of_run());
         }
 
         alertdialog_Listview.setAdapter(arrayAdapter);
