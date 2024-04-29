@@ -9,14 +9,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="30dp">
-<!--
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:drawable/btn_dropdown"
-        android:spinnerMode="dropdown" />
--->
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabShowTrack"
         android:layout_width="wrap_content"
@@ -38,11 +31,6 @@
         android:layout_height="2dp"
         android:background="#c0c0c0"/>
 
-<!--    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chartTimeSpeed"
-        android:layout_width="350dp"
-        android:layout_height="214dp" />
--->
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"

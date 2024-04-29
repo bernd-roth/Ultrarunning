@@ -56,7 +56,7 @@ public class StatisticsActivity extends BaseActivity {
             textViewSlowestLap, textViewFastestLap, textViewStartingElevation,
             textViewEndingElevation, textViewHighestElevation, textViewTotalElevation,
             textViewMovementTime, textViewLowestElevation, textViewStartTime, textViewEndTime,
-            textViewPace;
+            textViewPace, textViewOverview;
     private float maxSpeed, avgSpeed, totalDistance;
     private double totalElevation, highestElevation, lastElevationPoint,
             sumElevation,lowestElevation;
@@ -80,18 +80,6 @@ public class StatisticsActivity extends BaseActivity {
         setContentView(R.layout.activity_statistics);
         initializeObjects();
         showAlertDialogWithTracks();
-        //callDatabaseForSpinner();
-        //callDatabase();
-        //calcAvgSpeedMaxSpeedTotalDistance();
-        //calcElevation();
-        //calcMovementTime();
-        //calcStartTime();
-        //calcEndTime();
-        //calcPace();
-        //renderData();
-        //renderDataTimeSpeed();
-        //setData();
-        //setDataRenderDataTimeSpeed();
     }
     private void showAlertDialogWithTracks(){
         new Handler().postDelayed(new Runnable() {
@@ -500,9 +488,6 @@ public class StatisticsActivity extends BaseActivity {
                 sohwDetailedGraph(view);
             }
         });
-        //mChartTimeSpeed = findViewById(R.id.chartTimeSpeed);
-        //mChartTimeSpeed.setTouchEnabled(true);
-        //mChartTimeSpeed.setPinchZoom(true);
 
         textViewMaxSpeed = findViewById(R.id.textViewMaxSpeed);
         textViewDistance = findViewById(R.id.textViewDistance);
@@ -518,6 +503,7 @@ public class StatisticsActivity extends BaseActivity {
         textViewStartTime = findViewById(R.id.textViewStartTime);
         textViewEndTime = findViewById(R.id.textViewEndTime);
         textViewPace = findViewById(R.id.textViewPace);
+//        textViewOverview = findViewById(R.id.textViewOverview);
 
         tableHeader = (TableLayout)findViewById(R.id.tableHeader);
         tableSection = (TableLayout)findViewById(R.id.tableSection);
@@ -528,63 +514,7 @@ public class StatisticsActivity extends BaseActivity {
         listOfRun = new ArrayList<>();
         listSpeed = new ArrayList<>();
 
-//        fabStatistics = findViewById(R.id.fabStatistics);
         fabStatistics = new FloatingActionButton(this);
-
-        //spinnerRunChoose = findViewById(R.id.spinner);
-        /*spinnerRunChoose.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                int spinnerPosition = spinnerRunChoose.getSelectedItemPosition();
-                int arrayPosition = intNumberOfRun.get(spinnerPosition);
-                positionInArray = arrayPosition;
-
-                listOfRun.clear();
-                listOfRun = db.getSingleEntryForStatistics(arrayPosition);
-
-                //first graph
-                calcAvgSpeedMaxSpeedTotalDistance();
-                renderData();
-                setData();
-
-                calcElevation();
-                calcMovementTime();
-                calcStartTime();
-                calcEndTime();
-                calcPace();
-
-                //second graph
-                //renderDataTimeSpeed();
-                //setDataRenderDataTimeSpeed();
-                List<Long> groupedSectionList = calculateSections();
-                List<Integer> fastestSlowestLap = showTableLayout(groupedSectionList);
-                setTextView(fastestSlowestLap);
-
-                if(textView == null) {
-                    float dp = convertDpToPx(2);
-                    createViewSeparator(dp);
-                } else if(textView.getVisibility() == TextView.VISIBLE){
-                    linearLayout.removeView(textView);
-                    linearLayout.removeView(viewSeperator);
-                    linearLayout.removeView(viewSeperator1);
-                    float dp = convertDpToPx(2);
-                    createViewSeparator(dp);
-                }
-
-                //table section year
-                TreeMap<Integer, Double> year = calculateSectionsYear();
-                showTableLayoutYear(year);
-
-                mChart.notifyDataSetChanged();
-                mChart.invalidate();
-                //Time/Speed chart
-                //mChartTimeSpeed.notifyDataSetChanged();
-                //mChartTimeSpeed.invalidate();
-            }
-
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                return;
-            }
-        });*/
 
         linearLayout = findViewById(R.id.ll);
         db = new DatabaseHandler(this);
@@ -593,6 +523,7 @@ public class StatisticsActivity extends BaseActivity {
     private void showTableLayoutYear(TreeMap<Integer, Double> year) {
         int colums = 1;
         int rows = year.size();
+        float totalKm = 0;
 
         // Convert keys to a List
         List<Integer> keyList = new ArrayList<>(year.keySet());
@@ -626,9 +557,11 @@ public class StatisticsActivity extends BaseActivity {
             tableYearSection.removeViews(0, Math.max(0, tableYearSection.getChildCount()));
         }
 
+        TextView textViewOverview = null;
         //Content of rows
         for (int i = 0; i < rows; i++) {
             trYear = new TableRow(this);
+            textViewOverview = new TextView(this);
             for (int j = 0; j < colums; j++) {
                 txtGenericYear = new TextView(this);
                 txtGenericYear.setTextSize(18);
@@ -637,9 +570,15 @@ public class StatisticsActivity extends BaseActivity {
                 txtGenericYear.setText("\t\t\t\t" + keyList.get(i) + "\t\t\t\t\t\t\t\t\t\t" + convertedKm);
 
                 trYear.addView(txtGenericYear);
+
+                totalKm += valueList.get(i)/1000;
             }
             tableYearSection.addView(trYear);
         }
+        textViewOverview.setTextSize(18);
+        String sTotalKm = String.format("%.2f", totalKm);
+        textViewOverview.setText("\t\t\t\tTotal:" + "\t\t\t\t\t\t\t\t\t" + sTotalKm);
+        tableYearSection.addView(textViewOverview);
     }
 
     private TreeMap<Integer, Double> calculateSectionsYear() {
