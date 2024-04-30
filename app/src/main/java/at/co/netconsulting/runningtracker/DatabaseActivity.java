@@ -74,7 +74,7 @@ public class DatabaseActivity extends AppCompatActivity {
     private PendingIntent pendingIntent;
     private TextView textViewExportDatabaseScheduled, textViewPercentage;
     private Long nextBackInMilliseconds;
-    private ProgressDialog progressDialog;
+    private ProgressDialog progressDialog, progressDialogImportingGPXFile;
     private DatabaseHandler db;
     private EditText editTextNumber, editTextURL;
     private String httpUrl;
@@ -114,6 +114,12 @@ public class DatabaseActivity extends AppCompatActivity {
         progressDialog.setTitle("Exporting recorded runs"); // Setting Title
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
         progressDialog.setCancelable(false);
+
+        progressDialogImportingGPXFile = new ProgressDialog(DatabaseActivity.this);
+        progressDialogImportingGPXFile.setMessage("Importing GPX file..."); // Setting Message
+        progressDialogImportingGPXFile.setTitle("Importing recorded run"); // Setting Title
+        progressDialogImportingGPXFile.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
+        progressDialogImportingGPXFile.setCancelable(false);
 
         editTextNumber = new EditText(DatabaseActivity.this);
         editTextNumber.setSingleLine(true);
@@ -538,66 +544,74 @@ public class DatabaseActivity extends AppCompatActivity {
                 // Handle the returned Uri
                 Log.d("startActivityResultLauncherImportGPXFile", "FileChooser works");
 
-                Run run = new Run();
-                GPXParser parser = new GPXParser();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                Instant instant;
-                ZonedDateTime zdt;
-                long millisFromEpoch;
-                double oldLat = 0, oldLng = 0, newLat, newLon, meters_covered = 0;
-                int counter = 0;
+                progressDialogImportingGPXFile.show();
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            Run run = new Run();
+                            GPXParser parser = new GPXParser();
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                            long millisFromEpoch;
+                            double oldLat = 0, oldLng = 0, newLat, newLon, meters_covered = 0;
+                            int counter = 0;
 
-                int lastRun = db.getLastEntry();
-                lastRun+=1;
+                            int lastRun = db.getLastEntry();
+                            lastRun+=1;
 
-                Gpx parsedGpx = null;
-                try {
-                    InputStream is = getContentResolver().openInputStream(result.getData().getData());
-                    parsedGpx = parser.parse(is); // consider using a background thread
-                } catch (IOException | XmlPullParserException e) {
-                    e.printStackTrace();
-                }
-                if (parsedGpx == null) {
-                    Log.e("GpxParsingError", "Parsing error");
-                } else {
-                    List<Track> tracks = parsedGpx.getTracks();
-                    for (int i = 0; i < tracks.size(); i++) {
-                        Track track = tracks.get(i);
-                        List<TrackSegment> segments = track.getTrackSegments();
-                        for (int j = 0; j < segments.size(); j++) {
-                            TrackSegment segment = segments.get(j);
-                            for (TrackPoint trackPoint : segment.getTrackPoints()) {
-                                String msg = "    point: lat " + trackPoint.getLatitude() + ", lon " + trackPoint.getLongitude() + ", time " + trackPoint.getTime();
-                                Log.d(TAG, msg);
-                                millisFromEpoch = Instant.parse( trackPoint.getTime().toString()).toEpochMilli();
-
-                                Date date=new Date(millisFromEpoch);
-                                String output = sdf.format(date);
-
-                                if(counter==0) {
-                                    oldLat=trackPoint.getLatitude();
-                                    oldLng=trackPoint.getLongitude();
-                                    counter++;
-                                } else {
-                                    newLat=trackPoint.getLatitude();
-                                    newLon=trackPoint.getLongitude();
-                                    meters_covered += calculateDistance(oldLat, oldLng, newLat, newLon);
-                                    oldLat=newLat;
-                                    oldLng=newLon;
-                                    counter++;
-                                }
-                                run.setDateTime(output);
-                                run.setLat(trackPoint.getLatitude());
-                                run.setLng(trackPoint.getLongitude());
-                                run.setMeters_covered(meters_covered);
-                                run.setAltitude(trackPoint.getElevation());
-                                run.setDateTimeInMs(millisFromEpoch);
-                                run.setNumber_of_run(lastRun);
-                                db.addRun(run);
+                            Gpx parsedGpx = null;
+                            try {
+                                InputStream is = getContentResolver().openInputStream(result.getData().getData());
+                                parsedGpx = parser.parse(is); // consider using a background thread
+                            } catch (IOException | XmlPullParserException e) {
+                                e.printStackTrace();
                             }
+                            if (parsedGpx == null) {
+                                Log.e("GpxParsingError", "Parsing error");
+                            } else {
+                                List<Track> tracks = parsedGpx.getTracks();
+                                for (int i = 0; i < tracks.size(); i++) {
+                                    Track track = tracks.get(i);
+                                    List<TrackSegment> segments = track.getTrackSegments();
+                                    for (int j = 0; j < segments.size(); j++) {
+                                        TrackSegment segment = segments.get(j);
+                                        for (TrackPoint trackPoint : segment.getTrackPoints()) {
+                                            String msg = "    point: lat " + trackPoint.getLatitude() + ", lon " + trackPoint.getLongitude() + ", time " + trackPoint.getTime();
+                                            Log.d(TAG, msg);
+                                            millisFromEpoch = Instant.parse( trackPoint.getTime().toString()).toEpochMilli();
+
+                                            Date date=new Date(millisFromEpoch);
+                                            String output = sdf.format(date);
+
+                                            if(counter==0) {
+                                                oldLat=trackPoint.getLatitude();
+                                                oldLng=trackPoint.getLongitude();
+                                                counter++;
+                                            } else {
+                                                newLat=trackPoint.getLatitude();
+                                                newLon=trackPoint.getLongitude();
+                                                meters_covered += calculateDistance(oldLat, oldLng, newLat, newLon);
+                                                oldLat=newLat;
+                                                oldLng=newLon;
+                                                counter++;
+                                            }
+                                            run.setDateTime(output);
+                                            run.setLat(trackPoint.getLatitude());
+                                            run.setLng(trackPoint.getLongitude());
+                                            run.setMeters_covered(meters_covered);
+                                            run.setAltitude(trackPoint.getElevation());
+                                            run.setDateTimeInMs(millisFromEpoch);
+                                            run.setNumber_of_run(lastRun);
+                                            db.addRun(run);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
+                        progressDialogImportingGPXFile.dismiss();
                     }
-                }
+                }).start();
             }
         }
     );
