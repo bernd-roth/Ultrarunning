@@ -185,7 +185,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="@string/any_number"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberSigned" />
 
                 <TextView
                     android:id="@+id/textViewMinTimeMs"
@@ -199,7 +199,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="@string/any_number"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberSigned" />
 
                 <TextView
                     android:id="@+id/textViewPerson"

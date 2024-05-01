@@ -24,6 +24,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
@@ -37,6 +38,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -47,9 +49,11 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.pojo.Run;
+import at.co.netconsulting.runningtracker.util.StaticVariables;
 
 public class StatisticsActivity extends BaseActivity {
     private LineChart mChart, mChartTimeSpeed;
@@ -541,7 +545,7 @@ public class StatisticsActivity extends BaseActivity {
     }
 
     private void showTableLayoutYear(TreeMap<Integer, Double> year) {
-        int colums = 1;
+        int colums = 2;
         int rows = year.size();
         float totalKm = 0;
 
@@ -564,7 +568,7 @@ public class StatisticsActivity extends BaseActivity {
                     txtGenericYear = new TextView(this);
                     txtGenericYear.setTextSize(18);
 
-                    txtGenericYear.setText("\t\t\t\t" + "Year" + "\t\t\t\t\t\t\t\t\t" + "Total Km");
+                    txtGenericYear.setText("\t\t\t\t" + "Year" + "\t\t\t\t\t\t\t\t\t" + "Total Km" + "\t\t\t\t\t\t\t\t" + "Ø / day");
                     txtGenericYear.setBackgroundColor(Color.LTGRAY);
                     trYear.addView(txtGenericYear);
                 }
@@ -577,16 +581,31 @@ public class StatisticsActivity extends BaseActivity {
         }
 
         TextView textViewOverview = null;
+        int numberOfDayOfCurrentYear = getNumberOfDayOfCurrentYear();
+
         //Content of rows
         for (int i = 0; i < rows; i++) {
             trYear = new TableRow(this);
             textViewOverview = new TextView(this);
-            for (int j = 0; j < colums; j++) {
+            for (int j = 0; j < 1; j++) {
                 txtGenericYear = new TextView(this);
                 txtGenericYear.setTextSize(18);
 
-                String convertedKm = String.format("%.2f", valueList.get(i)/1000);
-                txtGenericYear.setText("\t\t\t\t" + keyList.get(i) + "\t\t\t\t\t\t\t\t\t\t" + convertedKm);
+                if(Year.now().getValue()!=keyList.get(i)) {
+                    String convertedKm = String.format("%.2f", valueList.get(i) / 1000);
+                    String convertedAvg = String.format("%.2f", (valueList.get(i) / 1000)/ StaticVariables.DAYS_PER_YEAR);
+
+                    //TODO how to show comma for each year in one vertical line
+                    if(convertedKm.length()<6) {
+                        txtGenericYear.setText("\t\t\t\t" + keyList.get(i) + "\t\t\t\t\t\t\t\t\t\t\t" + convertedKm + "\t\t\t\t\t\t\t\t\t" + convertedAvg);
+                    } else {
+                        txtGenericYear.setText("\t\t\t\t" + keyList.get(i) + "\t\t\t\t\t\t\t\t\t\t" + convertedKm + "\t\t\t\t\t\t\t\t" + convertedAvg);
+                    }
+                } else {
+                    String convertedKm = String.format("%.2f", valueList.get(i) / 1000);
+                    String convertedAvg = String.format("%.2f", (valueList.get(i) / 1000)/numberOfDayOfCurrentYear);
+                    txtGenericYear.setText("\t\t\t\t" + keyList.get(i) + "\t\t\t\t\t\t\t\t\t\t" + convertedKm + "\t\t\t\t\t\t\t\t" + convertedAvg);
+                }
 
                 trYear.addView(txtGenericYear);
 
@@ -609,6 +628,12 @@ public class StatisticsActivity extends BaseActivity {
 
         tableYearSection.addView(view);
         tableYearSection.addView(textViewOverview);
+    }
+
+    private int getNumberOfDayOfCurrentYear() {
+        Calendar calendar = Calendar.getInstance();
+        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+        return dayOfYear;
     }
 
     private int calculateViewHeight() {
@@ -725,27 +750,18 @@ public class StatisticsActivity extends BaseActivity {
     }
 
     private void callDatabase() {
-        //int intLastEntry = db.getLastEntry();
-
-        //if(intLastEntry!=0) {
-            listOfRun = db.getSingleEntryForStatistics(positionOfTrack);
-        //}
+        listOfRun = db.getSingleEntryForStatistics(positionOfTrack);
     }
 
     private void setData() {
         List<Entry> values = new ArrayList<>();
         int sizeOfList = listOfRun.size();
-        //int i = 0;
 
         if(sizeOfList!=0) {
             for (Run run : listOfRun) {
-                //if(i%60==0) {
-                    float coveredMeter = (float) run.getMeters_covered();
-                    float speed = run.getSpeed();
-                    values.add(new Entry(coveredMeter, speed));
-                //    i++;
-                //}
-                //i++;
+                float coveredMeter = (float) run.getMeters_covered();
+                float speed = run.getSpeed();
+                values.add(new Entry(coveredMeter, speed));
             }
         }
 

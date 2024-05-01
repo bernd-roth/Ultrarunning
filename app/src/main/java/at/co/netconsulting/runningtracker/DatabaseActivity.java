@@ -60,6 +60,7 @@ import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.service.GpxForegroundService;
+import at.co.netconsulting.runningtracker.util.StaticVariables;
 import at.co.netconsulting.runningtracker.view.RestAPI;
 import io.ticofab.androidgpxparser.parser.GPXParser;
 import io.ticofab.androidgpxparser.parser.domain.Extensions;
@@ -83,10 +84,6 @@ public class DatabaseActivity extends AppCompatActivity {
     private AlertDialog.Builder alert;
     private AlertDialog dialog;
     private final int NOTIFICATION_ID = 1;
-    private static final String TAG = DatabaseActivity.class.getSimpleName();
-    private static final double r2d = 180.0D / 3.141592653589793D;
-    private static final double d2r = 3.141592653589793D / 180.0D;
-    private static final double d2km = 111189.57696D * r2d;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -576,7 +573,7 @@ public class DatabaseActivity extends AppCompatActivity {
                                         TrackSegment segment = segments.get(j);
                                         for (TrackPoint trackPoint : segment.getTrackPoints()) {
                                             String msg = "    point: lat " + trackPoint.getLatitude() + ", lon " + trackPoint.getLongitude() + ", time " + trackPoint.getTime();
-                                            Log.d(TAG, msg);
+                                            Log.d(StaticVariables.TAG, msg);
                                             millisFromEpoch = Instant.parse( trackPoint.getTime().toString()).toEpochMilli();
 
                                             Date date=new Date(millisFromEpoch);
@@ -616,8 +613,8 @@ public class DatabaseActivity extends AppCompatActivity {
         }
     );
     private double calculateDistance(double oldLat, double oldLng, double newLat, double newLon) {
-        double x = oldLat * d2r;
-        double y = newLat * d2r;
-        return Math.acos( Math.sin(x) * Math.sin(y) + Math.cos(x) * Math.cos(y) * Math.cos(d2r * (oldLng - newLon))) * d2km;
+        double x = oldLat * StaticVariables.d2r;
+        double y = newLat * StaticVariables.d2r;
+        return Math.acos( Math.sin(x) * Math.sin(y) + Math.cos(x) * Math.cos(y) * Math.cos(StaticVariables.d2r * (oldLng - newLon))) * StaticVariables.d2km;
     }
 }
