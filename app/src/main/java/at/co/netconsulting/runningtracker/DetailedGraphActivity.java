@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.pojo.Run;
+import at.co.netconsulting.runningtracker.util.StaticVariables;
+
 public class DetailedGraphActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraIdleListener {
     private List<Run> run;
     private DatabaseHandler db;
@@ -181,7 +183,7 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
                     }
                 }
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//                mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(StaticVariables.CAMERA_ZOOM));
 
                 if (marker != null) {
                     marker.remove();
