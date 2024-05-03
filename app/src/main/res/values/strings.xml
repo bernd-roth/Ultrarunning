@@ -129,4 +129,5 @@
     <string name="please_type_your_url">Please, type your URL</string>
     <string name="export_positive_button">Export</string>
     <string name="choose_a_file">Choose a file</string>
+    <string name="distance_altitude">Distance (in meter)/altitude</string>
 </resources>

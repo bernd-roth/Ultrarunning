@@ -56,14 +56,14 @@ import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.util.StaticVariables;
 
 public class StatisticsActivity extends BaseActivity {
-    private LineChart mChart, mChartTimeSpeed;
+    private LineChart mChart, mChartTimeSpeed, mAltitudeChart;
     private DatabaseHandler db;
     private List<Run> listOfRun;
     private TextView textViewMaxSpeed, textViewDistance, textViewAvgSpeed,
             textViewSlowestLap, textViewFastestLap, textViewStartingElevation,
             textViewEndingElevation, textViewHighestElevation, textViewTotalElevation,
             textViewMovementTime, textViewLowestElevation, textViewStartTime, textViewEndTime,
-            textViewPace;
+            textViewPace, textViewAltitude;
     private float maxSpeed, avgSpeed, totalDistance;
     private double totalElevation, highestElevation, lastElevationPoint,
             sumElevation,lowestElevation;
@@ -146,8 +146,10 @@ public class StatisticsActivity extends BaseActivity {
                         calcEndTime();
                         calcPace();
                         renderData();
+                        renderDataAltitude();
                         //renderDataTimeSpeed();
                         setData();
+                        setDataAltitude();
                         //setDataRenderDataTimeSpeed();
 
                         List<Long> groupedSectionList = calculateSections();
@@ -171,9 +173,9 @@ public class StatisticsActivity extends BaseActivity {
 
                         mChart.notifyDataSetChanged();
                         mChart.invalidate();
-                        //Time/Speed chart
-                        //mChartTimeSpeed.notifyDataSetChanged();
-                        //mChartTimeSpeed.invalidate();
+
+                        mAltitudeChart.notifyDataSetChanged();
+                        mAltitudeChart.invalidate();
 
                         dialog_data.dismiss();
                     }
@@ -500,6 +502,8 @@ public class StatisticsActivity extends BaseActivity {
         textViewEndTime.setText(String.format("End time: %s", endTime));
         //Pace
         textViewPace.setText(String.format("Total pace: %s", sPace));
+
+        textViewAltitude.setText(String.format("Altitude in meter"));
     }
 
     private void initializeObjects() {
@@ -513,6 +517,17 @@ public class StatisticsActivity extends BaseActivity {
                 sohwDetailedGraph(view);
             }
         });
+
+        mAltitudeChart = findViewById(R.id.altitudeChart);
+        mAltitudeChart.setTouchEnabled(true);
+        mAltitudeChart.setPinchZoom(false);
+        mAltitudeChart.setScaleEnabled(false);
+//        mAltitudeChart.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                sohwDetailedGraph(view);
+//            }
+//        });
 
         textViewMaxSpeed = findViewById(R.id.textViewMaxSpeed);
         textViewDistance = findViewById(R.id.textViewDistance);
@@ -528,6 +543,7 @@ public class StatisticsActivity extends BaseActivity {
         textViewStartTime = findViewById(R.id.textViewStartTime);
         textViewEndTime = findViewById(R.id.textViewEndTime);
         textViewPace = findViewById(R.id.textViewPace);
+        textViewAltitude = findViewById(R.id.textViewAltitude);
 
         tableHeader = (TableLayout)findViewById(R.id.tableHeader);
         tableSection = (TableLayout)findViewById(R.id.tableSection);
@@ -723,6 +739,33 @@ public class StatisticsActivity extends BaseActivity {
         mChart.getAxisRight().setEnabled(false);
     }
 
+    public void renderDataAltitude() {
+        LimitLine llXAxis = new LimitLine(10f, "Index 10");
+        llXAxis.setLineWidth(4f);
+        llXAxis.enableDashedLine(10f, 10f, 0f);
+        llXAxis.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_BOTTOM);
+        llXAxis.setTextSize(10f);
+
+        XAxis xAxis = mAltitudeChart.getXAxis();
+        xAxis.enableGridDashedLine(10f, 10f, 0f);
+        xAxis.setAxisMinimum(0f);
+        xAxis.setDrawLimitLinesBehindData(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        //xAxis.setAxisMaximum(listOfRun.size());
+
+        YAxis leftAxis = mAltitudeChart.getAxisLeft();
+        leftAxis.removeAllLimitLines();
+        //leftAxis.setAxisMaximum(maxSpeed);
+        leftAxis.setAxisMinimum(0);
+        leftAxis.enableGridDashedLine(10f, 10f, 0f);
+        leftAxis.setDrawZeroLine(false);
+        leftAxis.setDrawLimitLinesBehindData(false);
+
+        //show labels underneath chart
+        mAltitudeChart.getXAxis().setDrawLabels(true);
+        mAltitudeChart.getAxisRight().setEnabled(false);
+    }
+
     private void renderDataTimeSpeed() {
         LimitLine llXAxis = new LimitLine(10f, "Index 10");
         llXAxis.setLineWidth(4f);
@@ -803,6 +846,58 @@ public class StatisticsActivity extends BaseActivity {
             mChart.setData(data);
             mChart.notifyDataSetChanged();
             mChart.invalidate();
+        }
+    }
+
+    private void setDataAltitude() {
+        List<Entry> values = new ArrayList<>();
+        int sizeOfList = listOfRun.size();
+
+        if(sizeOfList!=0) {
+            for (Run run : listOfRun) {
+                float coveredMeter = (float) run.getMeters_covered();
+                double altitude = run.getAltitude();
+                values.add(new Entry(coveredMeter, (float) altitude));
+            }
+        }
+
+        LineDataSet set1;
+        mAltitudeChart.getDescription().setEnabled(false);
+
+        if (mAltitudeChart.getData() != null &&
+                mAltitudeChart.getData().getDataSetCount() > 0) {
+            set1 = (LineDataSet) mAltitudeChart.getData().getDataSetByIndex(0);
+            set1.setValues(values);
+            mAltitudeChart.getData().notifyDataChanged();
+            mAltitudeChart.notifyDataSetChanged();
+        } else {
+            set1 = new LineDataSet(values, getString(R.string.distance_altitude));
+            set1.setDrawIcons(false);
+            set1.enableDashedLine(10f, 5f, 0f);
+            set1.enableDashedHighlightLine(10f, 5f, 0f);
+            set1.setColor(Color.DKGRAY);
+            set1.setCircleColor(Color.DKGRAY);
+            set1.setLineWidth(1f);
+            set1.setCircleRadius(3f);
+            set1.setDrawCircleHole(false);
+            set1.setValueTextSize(9f);
+            set1.setDrawFilled(true);
+            set1.setFormLineWidth(1f);
+            set1.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
+            set1.setFormSize(15.f);
+
+            if (Utils.getSDKInt() >= 18) {
+                Drawable drawable = ContextCompat.getDrawable(this, R.drawable.fade_blue);
+                set1.setFillDrawable(drawable);
+            } else {
+                set1.setFillColor(Color.DKGRAY);
+            }
+            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+            dataSets.add(set1);
+            LineData data = new LineData(dataSets);
+            mAltitudeChart.setData(data);
+            mAltitudeChart.notifyDataSetChanged();
+            mAltitudeChart.invalidate();
         }
     }
 

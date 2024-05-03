@@ -23,13 +23,29 @@
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
-        android:layout_width="370dp"
+        android:layout_width="match_parent"
         android:layout_height="214dp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="#c0c0c0"/>
+
+    <TextView
+        android:id="@+id/textViewAltitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#c0c0c0"/>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/altitudeChart"
+        android:layout_width="match_parent"
+        android:layout_height="214dp" />
 
     <View
         android:layout_width="match_parent"
