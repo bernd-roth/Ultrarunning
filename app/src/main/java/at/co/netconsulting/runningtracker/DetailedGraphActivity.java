@@ -79,6 +79,10 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
                 //}
                 //i++;
             }
+        } else {
+            float coveredMeter = 0;
+            float speed = 0;
+            values.add(new Entry(coveredMeter, speed));
         }
 
         LineDataSet set1;
@@ -180,6 +184,8 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
                         speed = run.get(i).getSpeed();
                         distance = run.get(i).getMeters_covered() / 1000;
                         time = run.get(i).getDateTimeInMs();
+                    } else if(latLng==null) {
+                        latLng = new LatLng(run.get(i).getLat(), run.get(i).getLng());
                     }
                 }
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
