@@ -1,8 +1,12 @@
 package at.co.netconsulting.runningtracker.view;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,6 +21,7 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 
+import at.co.netconsulting.runningtracker.R;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import timber.log.Timber;
 
@@ -31,6 +36,7 @@ public class RestAPI {
         this.context = context;
         this.httpUrl = httpUrl;
         this.queue = Volley.newRequestQueue(context);
+        addNotification();
     }
 
     private JSONObject convertToJson(Run run) {
@@ -42,6 +48,7 @@ public class RestAPI {
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+
             return null;
         }
     }
@@ -72,4 +79,21 @@ public class RestAPI {
         queue.add(jsonObjReq);
     }
 
+    private void addNotification() {
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this.context)
+                        .setContentTitle("Notifications Example")
+                        .setSmallIcon(R.drawable.icon_notification)
+                        .setContentText("This is a test notification")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        Intent notificationIntent = new Intent(this.context, RestAPI.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this.context, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+        builder.setContentIntent(contentIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, builder.build());
+    }
 }
