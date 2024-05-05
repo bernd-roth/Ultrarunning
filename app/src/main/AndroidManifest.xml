@@ -39,6 +39,9 @@
             android:name=".DetailedGraphActivity"
             android:exported="false" />
         <activity
+            android:name=".DetailedAltitudeGraphActivity"
+            android:exported="false" />
+        <activity
             android:name=".SettingsActivity"
             android:exported="false">
             <meta-data

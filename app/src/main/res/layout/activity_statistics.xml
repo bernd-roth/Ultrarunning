@@ -35,7 +35,9 @@
         android:id="@+id/textViewAltitude"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16dp" />
+        android:textSize="16dp"
+        android:textAlignment="center"
+        android:text="@string/altitude"/>
 
     <View
         android:layout_width="match_parent"

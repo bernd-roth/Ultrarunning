@@ -63,7 +63,7 @@ public class StatisticsActivity extends BaseActivity {
             textViewSlowestLap, textViewFastestLap, textViewStartingElevation,
             textViewEndingElevation, textViewHighestElevation, textViewTotalElevation,
             textViewMovementTime, textViewLowestElevation, textViewStartTime, textViewEndTime,
-            textViewPace, textViewAltitude;
+            textViewPace;
     private float maxSpeed, avgSpeed, totalDistance;
     private double totalElevation, highestElevation, lastElevationPoint,
             sumElevation,lowestElevation;
@@ -502,8 +502,6 @@ public class StatisticsActivity extends BaseActivity {
         textViewEndTime.setText(String.format("End time: %s", endTime));
         //Pace
         textViewPace.setText(String.format("Total pace: %s", sPace));
-
-        textViewAltitude.setText(String.format("Altitude in meter"));
     }
 
     private void initializeObjects() {
@@ -514,7 +512,7 @@ public class StatisticsActivity extends BaseActivity {
         mChart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sohwDetailedGraph(view);
+                showDetailedGraph(view);
             }
         });
 
@@ -522,12 +520,12 @@ public class StatisticsActivity extends BaseActivity {
         mAltitudeChart.setTouchEnabled(true);
         mAltitudeChart.setPinchZoom(false);
         mAltitudeChart.setScaleEnabled(false);
-//        mAltitudeChart.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                sohwDetailedGraph(view);
-//            }
-//        });
+        mAltitudeChart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDetailedGraph(view);
+            }
+        });
 
         textViewMaxSpeed = findViewById(R.id.textViewMaxSpeed);
         textViewDistance = findViewById(R.id.textViewDistance);
@@ -543,7 +541,6 @@ public class StatisticsActivity extends BaseActivity {
         textViewStartTime = findViewById(R.id.textViewStartTime);
         textViewEndTime = findViewById(R.id.textViewEndTime);
         textViewPace = findViewById(R.id.textViewPace);
-        textViewAltitude = findViewById(R.id.textViewAltitude);
 
         tableHeader = (TableLayout)findViewById(R.id.tableHeader);
         tableSection = (TableLayout)findViewById(R.id.tableSection);
@@ -900,65 +897,6 @@ public class StatisticsActivity extends BaseActivity {
             mAltitudeChart.invalidate();
         }
     }
-
-    private void setDataRenderDataTimeSpeed() {
-        List<Entry> values = new ArrayList<>();
-        int sizeOfList = listOfRun.size();
-        //int i = 0;
-
-        if(sizeOfList!=0) {
-            for (Run run : listOfRun) {
-                //if(i%60==0) {
-                float coveredMeter = (float) run.getDateTimeInMs();
-                float speed = run.getSpeed();
-                values.add(new Entry(coveredMeter, speed));
-                //    i++;
-                //}
-                //i++;
-            }
-        }
-
-        LineDataSet set1;
-        mChartTimeSpeed.getDescription().setEnabled(false);
-
-        if (mChartTimeSpeed.getData() != null &&
-                mChartTimeSpeed.getData().getDataSetCount() > 0) {
-            set1 = (LineDataSet) mChartTimeSpeed.getData().getDataSetByIndex(0);
-            set1.setValues(values);
-            mChartTimeSpeed.getData().notifyDataChanged();
-            mChartTimeSpeed.notifyDataSetChanged();
-        } else {
-            set1 = new LineDataSet(values, getString(R.string.time_speed));
-            set1.setDrawIcons(false);
-            set1.enableDashedLine(10f, 5f, 0f);
-            set1.enableDashedHighlightLine(10f, 5f, 0f);
-            set1.setColor(Color.DKGRAY);
-            set1.setCircleColor(Color.DKGRAY);
-            set1.setLineWidth(1f);
-            set1.setCircleRadius(3f);
-            set1.setDrawCircleHole(false);
-            set1.setValueTextSize(9f);
-            set1.setDrawFilled(true);
-            set1.setFormLineWidth(1f);
-            set1.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
-            set1.setFormSize(15.f);
-
-            if (Utils.getSDKInt() >= 18) {
-                Drawable drawable = ContextCompat.getDrawable(this, R.drawable.fade_blue);
-                set1.setFillDrawable(drawable);
-            } else {
-                set1.setFillColor(Color.DKGRAY);
-            }
-            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-            dataSets.add(set1);
-            LineData data = new LineData(dataSets);
-            mChartTimeSpeed.setVisibleXRangeMaximum(1000);
-            mChartTimeSpeed.setData(data);
-            mChartTimeSpeed.notifyDataSetChanged();
-            mChartTimeSpeed.invalidate();
-        }
-    }
-
     private void calcAvgSpeedMaxSpeedTotalDistance() {
         if(listOfRun.size()>0) {
             for (int i = 0; i < listOfRun.size(); i++) {
@@ -985,12 +923,20 @@ public class StatisticsActivity extends BaseActivity {
             totalDistance/=1000;
         }
     }
-    public void sohwDetailedGraph(View view) {
-        Intent detailedDistanceSpeedChart = new Intent(StatisticsActivity.this, DetailedGraphActivity.class);
-        detailedDistanceSpeedChart.putExtra("numberOfRun", positionInArray);
-        StatisticsActivity.this.startActivity(detailedDistanceSpeedChart);
-    }
+    public void showDetailedGraph(View view) {
+        View viewSpeed = view.findViewById(R.id.chart);
+        View viewAltitude = view.findViewById(R.id.altitudeChart);
 
+        if(viewSpeed == view) {
+            Intent detailedDistanceSpeedChart = new Intent(StatisticsActivity.this, DetailedGraphActivity.class);
+            detailedDistanceSpeedChart.putExtra("numberOfRun", positionInArray);
+            StatisticsActivity.this.startActivity(detailedDistanceSpeedChart);
+        } else if(viewAltitude == view) {
+            Intent detailedAltitudeChart = new Intent(StatisticsActivity.this, DetailedAltitudeGraphActivity.class);
+            detailedAltitudeChart.putExtra("numberOfRun", positionInArray);
+            StatisticsActivity.this.startActivity(detailedAltitudeChart);
+        }
+    }
     public void showTrack(View view) {
         showAlertDialogWithTracks();
     }
