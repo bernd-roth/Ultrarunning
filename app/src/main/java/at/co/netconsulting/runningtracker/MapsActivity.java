@@ -309,6 +309,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                         }
                     })
                     .setNegativeButton(getResources().getString(R.string.button_cancel),null)
+                    .setCancelable(false)
                     .show();
         }
     }
