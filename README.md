@@ -22,6 +22,29 @@ Choose your settings - these are the preferred settings so far:
 
 Eventually, click the save button!
 
+## Implemented functions
+
+ * General settings
+ * * Different map types
+ * * Recording profil
+ * * Battery optimization
+ * * Day/Night modus
+ * * Traffic overview
+ * * Voice message every ... kilometers
+ * * Recording will be done automatically after a delay of 5 seconds
+
+ * Database settings
+ * * Backup intervall
+ * * Export to REST server
+ * * Import database
+ * * Export database
+ * * Import GPX file
+ * * Export to GPX file
+ * * Delete all entries from database
+
+ * Reorg
+ * * Reorg database
+
 ## API
 
 EventBus

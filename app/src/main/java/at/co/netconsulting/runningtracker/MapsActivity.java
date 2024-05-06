@@ -105,7 +105,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Polyline polyline;
     private List<LatLng> mPolylinePoints, mPolylinePointsTemp;
     private boolean isDisableZoomCamera, isDayNightModusActive, isTrafficEnabled, isRecording,
-            gps_enabled, startingPoint;
+            gps_enabled, startingPoint, isAutomatedRecording;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks, fabResetMap;
     private String mapType;
     private SupportMapFragment mapFragment;
@@ -144,6 +144,18 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         initObjects();
         permissionLauncherMultiple.launch(permissions);
         checkIfLocationIsEnabled();
+        startAutomatedRecording();
+    }
+
+    private void startAutomatedRecording() {
+        if(isAutomatedRecording) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    fabStartRecording.performClick();
+                }
+            }, 5000);
+        }
     }
 
     private ActivityResultLauncher<String[]> permissionLauncherMultiple = registerForActivityResult(
@@ -195,6 +207,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
 
         sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC, Context.MODE_PRIVATE);
         isTrafficEnabled = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC, false);
+
+        sh = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_AUTOMATED_RECORDING, Context.MODE_PRIVATE);
+        isAutomatedRecording = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_AUTOMATED_RECORDING, false);
     }
 
     private void createPolypoints(List<LatLng> polylinePoints) {
@@ -277,7 +292,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         RelativeLayout myRelativeLayout = (RelativeLayout) findViewById(R.id.relLayout);
         myRelativeLayout.addView(drawView);
         drawView.setVisibility(View.INVISIBLE);
-//        db = new DatabaseHandler(this);
     }
 
     private void checkIfLocationIsEnabled() {

@@ -44,8 +44,10 @@ public class GeneralSettings extends BaseActivity {
     private DatabaseHandler db;
     private ProgressDialog progressDialog;
     private String person;
-    private boolean isBatteryOptimization, isDayNightModus, isTrafficEnabled, isVoiceMessage;
-    private Switch switchBatteryOptimization, switchDayNightModus, switchEnableTraffic, switchVoiceMessage;
+    private boolean isBatteryOptimization, isDayNightModus, isTrafficEnabled, isVoiceMessage,
+                    isAutomatedRecording;
+    private Switch switchBatteryOptimization, switchDayNightModus, switchEnableTraffic, switchVoiceMessage,
+                    switchAutomatedRecording;
     private PendingIntent pendingIntent;
     private Long nextBackInMilliseconds;
     @Override
@@ -66,6 +68,7 @@ public class GeneralSettings extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_ENABLE_TRAFFIC);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_AUTOMATED_RECORDING);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -157,6 +160,11 @@ public class GeneralSettings extends BaseActivity {
                 isVoiceMessage = sh.getBoolean(sharedPrefKey, false);
                 switchVoiceMessage.setChecked(isVoiceMessage);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_AUTOMATED_RECORDING:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isAutomatedRecording = sh.getBoolean(sharedPrefKey, false);
+                switchAutomatedRecording.setChecked(isAutomatedRecording);
+                break;
         }
     }
 
@@ -199,6 +207,15 @@ public class GeneralSettings extends BaseActivity {
                 saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
             }
         });
+
+        switchAutomatedRecording = findViewById(R.id.switchAutomatedRecording);
+        switchAutomatedRecording.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_AUTOMATED_RECORDING);
+            }
+        });
+
         db = new DatabaseHandler(this);
     }
 
@@ -317,6 +334,13 @@ public class GeneralSettings extends BaseActivity {
 
             boolean isVoiceMessage = switchVoiceMessage.isChecked();
             editor.putBoolean(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE, isVoiceMessage);
+            editor.commit();
+        } else if(sharedPreference.equals("AUTOMATED_RECORDING")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_AUTOMATED_RECORDING, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            boolean isAutomatedRecording = switchAutomatedRecording.isChecked();
+            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_AUTOMATED_RECORDING, isAutomatedRecording);
             editor.commit();
         }
     }
