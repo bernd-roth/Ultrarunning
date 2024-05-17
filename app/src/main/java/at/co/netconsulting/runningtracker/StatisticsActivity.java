@@ -798,7 +798,7 @@ public class StatisticsActivity extends BaseActivity {
         int counter = 0;
 
         if(sizeOfList!=0) {
-            if(sizeOfList>10000) {
+            if(sizeOfList>5000) {
                 for (Run run : listOfRun) {
                     if(counter%100==0) {
                         float coveredMeter = (float) run.getMeters_covered();
@@ -856,7 +856,7 @@ public class StatisticsActivity extends BaseActivity {
         int counter = 0;
 
         if(sizeOfList!=0) {
-            if(sizeOfList>10000) {
+            if(sizeOfList>5000) {
                 for (Run run : listOfRun) {
                     if (counter % 100 == 0) {
                         float coveredMeter = (float) run.getMeters_covered();
