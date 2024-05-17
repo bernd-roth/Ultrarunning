@@ -67,7 +67,6 @@ public class StatisticsActivity extends BaseActivity {
     private float maxSpeed, avgSpeed, totalDistance;
     private double totalElevation, highestElevation, lastElevationPoint,
             sumElevation,lowestElevation;
-
     private String totalMovementTime, startTime, endTime, sPace;
     private List<Float> listSpeed;
     private TableLayout tableSection, tableHeader, tableYearSection, tableHeaderYear;
@@ -796,12 +795,17 @@ public class StatisticsActivity extends BaseActivity {
     private void setData() {
         List<Entry> values = new ArrayList<>();
         int sizeOfList = listOfRun.size();
+        int counter = 0;
 
         if(sizeOfList!=0) {
-            for (Run run : listOfRun) {
-                float coveredMeter = (float) run.getMeters_covered();
-                float speed = run.getSpeed();
-                values.add(new Entry(coveredMeter, speed));
+            if(sizeOfList>10000) {
+                for (Run run : listOfRun) {
+                    if(counter%100==0) {
+                        float coveredMeter = (float) run.getMeters_covered();
+                        float speed = run.getSpeed();
+                        values.add(new Entry(coveredMeter, speed));
+                    }
+                }
             }
         }
 
@@ -849,12 +853,17 @@ public class StatisticsActivity extends BaseActivity {
     private void setDataAltitude() {
         List<Entry> values = new ArrayList<>();
         int sizeOfList = listOfRun.size();
+        int counter = 0;
 
         if(sizeOfList!=0) {
-            for (Run run : listOfRun) {
-                float coveredMeter = (float) run.getMeters_covered();
-                double altitude = run.getAltitude();
-                values.add(new Entry(coveredMeter, (float) altitude));
+            if(sizeOfList>10000) {
+                for (Run run : listOfRun) {
+                    if (counter % 100 == 0) {
+                        float coveredMeter = (float) run.getMeters_covered();
+                        double altitude = run.getAltitude();
+                        values.add(new Entry(coveredMeter, (float) altitude));
+                    }
+                }
             }
         }
 
