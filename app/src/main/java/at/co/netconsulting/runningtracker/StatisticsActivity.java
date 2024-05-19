@@ -798,14 +798,10 @@ public class StatisticsActivity extends BaseActivity {
         int counter = 0;
 
         if(sizeOfList!=0) {
-            if(sizeOfList>5000) {
-                for (Run run : listOfRun) {
-                    if(counter%100==0) {
-                        float coveredMeter = (float) run.getMeters_covered();
-                        float speed = run.getSpeed();
-                        values.add(new Entry(coveredMeter, speed));
-                    }
-                }
+            if(sizeOfList>StaticVariables.DISPLAY_AMOUNT_OF_POINTS_IN_GRAPH) {
+                addCoveredMeterSpeed(values, counter);
+            } else {
+                addCoveredMeterSpeed(values, counter);
             }
         }
 
@@ -850,20 +846,26 @@ public class StatisticsActivity extends BaseActivity {
         }
     }
 
+    private void addCoveredMeterSpeed(List<Entry> values, int counter) {
+        for (Run run : listOfRun) {
+            if(counter %100==0) {
+                float coveredMeter = (float) run.getMeters_covered();
+                float speed = run.getSpeed();
+                values.add(new Entry(coveredMeter, speed));
+            }
+        }
+    }
+
     private void setDataAltitude() {
         List<Entry> values = new ArrayList<>();
         int sizeOfList = listOfRun.size();
         int counter = 0;
 
         if(sizeOfList!=0) {
-            if(sizeOfList>5000) {
-                for (Run run : listOfRun) {
-                    if (counter % 100 == 0) {
-                        float coveredMeter = (float) run.getMeters_covered();
-                        double altitude = run.getAltitude();
-                        values.add(new Entry(coveredMeter, (float) altitude));
-                    }
-                }
+            if(sizeOfList>StaticVariables.DISPLAY_AMOUNT_OF_POINTS_IN_GRAPH) {
+                addCoveredMeterAltitude(values, counter);
+            } else {
+                addCoveredMeterAltitude(values, counter);
             }
         }
 
@@ -906,6 +908,17 @@ public class StatisticsActivity extends BaseActivity {
             mAltitudeChart.invalidate();
         }
     }
+
+    private void addCoveredMeterAltitude(List<Entry> values, int counter) {
+        for (Run run : listOfRun) {
+            if (counter % 100 == 0) {
+                float coveredMeter = (float) run.getMeters_covered();
+                double altitude = run.getAltitude();
+                values.add(new Entry(coveredMeter, (float) altitude));
+            }
+        }
+    }
+
     private void calcAvgSpeedMaxSpeedTotalDistance() {
         if(listOfRun.size()>0) {
             for (int i = 0; i < listOfRun.size(); i++) {
