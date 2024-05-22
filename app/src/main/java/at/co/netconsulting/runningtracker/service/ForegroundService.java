@@ -68,7 +68,7 @@ public class ForegroundService extends Service implements LocationListener {
     private Timer timer;
     private boolean isFirstEntry, hasEnoughTimePassed, isVoiceMessage, isSpoken;
     private int laps, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
-    private float lapCounter, coveredDistance, accuracy, currentSpeed;
+    private float lapCounter, coveredDistance, accuracy, currentSpeed, threshold_speed;
     private String notificationService;
     private NotificationManager nMgr;
     private NotificationChannel serviceChannel;
@@ -97,6 +97,7 @@ public class ForegroundService extends Service implements LocationListener {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED);
     }
 
     private void initializeWatchdog() {
@@ -292,6 +293,10 @@ public class ForegroundService extends Service implements LocationListener {
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 isVoiceMessage = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE, false);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                threshold_speed = sh.getFloat(SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED, StaticFields.STATIC_FLOAT_THRESHOLD_SPEED);
+                break;
         }
     }
 
@@ -335,7 +340,7 @@ public class ForegroundService extends Service implements LocationListener {
                             int alreadyCoveredDistance = (int) (coveredDistance / 1000) % 10;
                             if(isVoiceMessage && (int) (coveredDistance / 1000) > 0 && alreadyCoveredDistance == 0 && !listOfKm.contains((int) (coveredDistance / 1000))) {
                                 tts.setSpeechRate((float) 0.8);
-                                tts.speak(((int) coveredDistance / 1000) + " Kilometers have already passed by!",TextToSpeech.QUEUE_FLUSH,null,null);
+                                tts.speak(((int) coveredDistance / 1000) + " Kilometers have already passed by!", TextToSpeech.QUEUE_FLUSH, null, null);
                                 listOfKm.add((int) (coveredDistance / 1000));
                             }
                             latLngs.add(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
@@ -400,7 +405,7 @@ public class ForegroundService extends Service implements LocationListener {
             //currentSeconds must be checked because requestLocationUpdates is not always exactly 1 second
             //so it might lead to almost doubled entries in database
             if ((currentMilliseconds != oldCurrentMilliseconds) && (currentSeconds>=StaticFields.TIME_INTERVAL)) {
-//                    if(currentSpeed>0) {
+                if(currentSpeed>=threshold_speed) {
                     if (isFirstEntry) {
                         isFirstEntry = false;
                     } else {
@@ -411,7 +416,7 @@ public class ForegroundService extends Service implements LocationListener {
                         return hasEnoughTimePassed = true;
                     }
                     oldCurrentMilliseconds = currentMilliseconds;
-//                   }
+                }
             }
         } else {
             calculateDistance(oldLatitude, oldLongitude, currentLatitude, currentLongitude);

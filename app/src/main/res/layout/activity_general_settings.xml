@@ -213,6 +213,20 @@
                     android:inputType="numberSigned" />
 
                 <TextView
+                    android:id="@+id/textViewThresholdSpeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/threshold_speed" />
+
+                <EditText
+                    android:id="@+id/editTextNumberSignedThresholdSpeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/speed"
+                    android:inputType="numberDecimal" />
+
+                <TextView
                     android:id="@+id/textViewPerson"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

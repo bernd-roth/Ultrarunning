@@ -435,6 +435,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private void createCheckerFlag(List<LatLng> polylinePoints, boolean isColouredTrack, List<Run> allEntries) {
         int height = 100;
         int width = 100;
+        int alreadyCovered = 0;
         boolean isStart = true;
         HashSet<Integer> hashArray = new HashSet<Integer>();
         List<Marker> lMarker = new ArrayList<>();
@@ -446,7 +447,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         if(allEntries != null && allEntries.size() > 0) {
             for(int i = 0; i<allEntries.size(); i++) {
                 double meters_covered = allEntries.get(i).getMeters_covered() / 1000;
-                int alreadyCovered = (int) meters_covered;
+                alreadyCovered = (int) meters_covered;
 
                 if (alreadyCovered > 0 && ! hashArray.contains(alreadyCovered)) {
                     marker = mMap.addMarker(new MarkerOptions().position(

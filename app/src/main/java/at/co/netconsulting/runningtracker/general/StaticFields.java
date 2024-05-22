@@ -12,4 +12,5 @@ public class StaticFields {
     public final static boolean STATIC_BOOLEAN_DISTANCE_COVERED = false;
     public final static double TIME_INTERVAL = 1.0;
     public final static long ONE_DAY_IN_MILLISECONDS = 86400000;
+    public static final float STATIC_FLOAT_THRESHOLD_SPEED = 3.5f;
 }

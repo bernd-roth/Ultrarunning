@@ -26,7 +26,7 @@ import at.co.netconsulting.runningtracker.general.StaticFields;
 public class GeneralSettings extends BaseActivity {
     private SharedPreferences sharedpreferences;
     private EditText editTextNumberSignedMinimumDistanceMeter, editTextPerson,
-            editTextNumberSignedMinimumTimeMs;
+            editTextNumberSignedMinimumTimeMs, editTextNumberSignedThresholdSpeed;
     private Button buttonSave;
     private String mapType, recordingProfil;
     private RadioButton radioButtonNormal,
@@ -69,6 +69,7 @@ public class GeneralSettings extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_AUTOMATED_RECORDING);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -105,6 +106,11 @@ public class GeneralSettings extends BaseActivity {
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 minTimeMs = sh.getLong(sharedPrefKey, StaticFields.STATIC_LONG_MIN_TIME_MS);
                 editTextNumberSignedMinimumTimeMs.setText(String.valueOf(minTimeMs));
+                break;
+            case SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                float thresholdSpeed = sh.getFloat(sharedPrefKey, StaticFields.STATIC_FLOAT_THRESHOLD_SPEED);
+                editTextNumberSignedThresholdSpeed.setText(String.valueOf(thresholdSpeed));
                 break;
             case SharedPref.STATIC_SHARED_PREF_RECORDING_PROFIL:
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
@@ -178,6 +184,7 @@ public class GeneralSettings extends BaseActivity {
         editTextNumberSignedMinimumTimeMs = findViewById(R.id.editTextNumberSignedMinimumTimeMs);
         editTextNumberSignedMinimumDistanceMeter = findViewById(R.id.editTextNumberSignedMinimumDistanceMeter);
         editTextPerson = findViewById(R.id.editTextPerson);
+        editTextNumberSignedThresholdSpeed = findViewById(R.id.editTextNumberSignedThresholdSpeed);
 
         buttonSave = findViewById(R.id.buttonSave);
         buttonSave.setTransformationMethod(null);
@@ -342,6 +349,13 @@ public class GeneralSettings extends BaseActivity {
             boolean isAutomatedRecording = switchAutomatedRecording.isChecked();
             editor.putBoolean(SharedPref.STATIC_SHARED_PREF_AUTOMATED_RECORDING, isAutomatedRecording);
             editor.commit();
+        } else if(sharedPreference.equals("THRESHOLD_SPEED")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            float speed = Float.parseFloat(editTextNumberSignedThresholdSpeed.getText().toString());
+            editor.putFloat(SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED, speed);
+            editor.commit();
         }
     }
     public void onClickRadioButtonBatteryGroup(View view) {
@@ -435,6 +449,7 @@ public class GeneralSettings extends BaseActivity {
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_PERSON);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_SCHEDULE_SAVE);
         saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
+        saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED);
         Toast.makeText(getApplicationContext(), R.string.save_settings_map_type_rec_profil_runners_name, Toast.LENGTH_LONG).show();
     }
     public void onClickRadioButtonNormal(View view) {
