@@ -12,9 +12,10 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
-
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -25,10 +26,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
-
 import at.co.netconsulting.runningtracker.MapsActivity;
 import at.co.netconsulting.runningtracker.R;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
+import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
+import at.co.netconsulting.runningtracker.pojo.ProgressDialogEventBus;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
 public class GpxForegroundService extends Service {
@@ -67,7 +69,7 @@ public class GpxForegroundService extends Service {
     }
     private void initializeObject() {
         this.sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        this.db = new DatabaseHandler(getApplicationContext());
+        this.db = new DatabaseHandler(GpxForegroundService.this);
     }
     private void initializeThread() {
         if (mWatchdogThread == null || !mWatchdogThread.isAlive()) {
@@ -113,6 +115,7 @@ public class GpxForegroundService extends Service {
         stopForeground(STOP_FOREGROUND_REMOVE);
         stopSelf();
         mWatchdogRunner.stop();
+        EventBus.getDefault().post(new ProgressDialogEventBus(false));
         super.onDestroy();
     }
     private void cancelNotification() {
@@ -139,6 +142,7 @@ public class GpxForegroundService extends Service {
             this.db = db;
             this.sdf = sdf;
         }
+
         @Override
         public void run() {
             try {
@@ -150,6 +154,7 @@ public class GpxForegroundService extends Service {
                 e.printStackTrace();
             }
         }
+
         public void stop() {
             exporting = false;
         }
@@ -158,6 +163,7 @@ public class GpxForegroundService extends Service {
             String notificationService = Context.NOTIFICATION_SERVICE;
             NotificationManager nMgr = (NotificationManager) context.getApplicationContext().getSystemService(notificationService);
             nMgr.cancel(NOTIFICATION_ID);
+            EventBus.getDefault().post(new ProgressDialogEventBus(false));
         }
         private void generateGfx(List<Run> run, int countOfRun) throws IOException, ParseException {
             FileWriter writer = null;

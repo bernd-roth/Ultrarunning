@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.metrics.Event;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,6 +31,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.BufferedReader;
@@ -58,6 +62,7 @@ import java.util.TreeMap;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
+import at.co.netconsulting.runningtracker.pojo.ProgressDialogEventBus;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.service.GpxForegroundService;
 import at.co.netconsulting.runningtracker.util.StaticVariables;
@@ -240,6 +245,15 @@ public class DatabaseActivity extends AppCompatActivity {
         Intent intentForegroundService = new Intent(getApplicationContext(), GpxForegroundService.class);
         intentForegroundService.setAction("ACTION_START_GPXFOREGROUNDSERVICE");
         context.startForegroundService(intentForegroundService);
+
+        if(!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+        progressDialog = new ProgressDialog(DatabaseActivity.this);
+        progressDialog.setTitle("Exporting recorded runs"); // Setting Title
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
+        progressDialog.setCancelable(false);
+        progressDialog.show();
     }
     public void generateGfx(List<Run> run, int countOfRun, ProgressBar progressBar) throws IOException, ParseException {
         FileWriter writer = null;
@@ -495,10 +509,18 @@ public class DatabaseActivity extends AppCompatActivity {
             alert.show();
     }
 
+    @Subscribe
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(this, GpxForegroundService.class));
+        progressDialog.dismiss();
+        EventBus.getDefault().unregister(this);
     }
 
     public void reorgDatabase(View view) throws ParseException {
@@ -616,5 +638,12 @@ public class DatabaseActivity extends AppCompatActivity {
         double x = oldLat * StaticVariables.d2r;
         double y = newLat * StaticVariables.d2r;
         return Math.acos( Math.sin(x) * Math.sin(y) + Math.cos(x) * Math.cos(y) * Math.cos(StaticVariables.d2r * (oldLng - newLon))) * StaticVariables.d2km;
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onExportingToGPXFile(ProgressDialogEventBus progressDialogEventBus) {
+        if(!progressDialogEventBus.isProgressDialogRunning) {
+            progressDialog.dismiss();
+            EventBus.getDefault().unregister(this);
+        }
     }
 }

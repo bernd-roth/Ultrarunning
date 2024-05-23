@@ -799,9 +799,9 @@ public class StatisticsActivity extends BaseActivity {
 
         if(sizeOfList!=0) {
             if(sizeOfList>StaticVariables.DISPLAY_AMOUNT_OF_POINTS_IN_GRAPH) {
-                addCoveredMeterSpeed(values, counter);
+                addCoveredMeterSpeed(values, counter, true);
             } else {
-                addCoveredMeterSpeed(values, counter);
+                addCoveredMeterSpeed(values, counter, false);
             }
         }
 
@@ -846,12 +846,22 @@ public class StatisticsActivity extends BaseActivity {
         }
     }
 
-    private void addCoveredMeterSpeed(List<Entry> values, int counter) {
-        for (Run run : listOfRun) {
-            if(counter %100==0) {
-                float coveredMeter = (float) run.getMeters_covered();
-                float speed = run.getSpeed();
-                values.add(new Entry(coveredMeter, speed));
+    private void addCoveredMeterSpeed(List<Entry> values, int counter, boolean bool) {
+        if(bool) {
+            for (Run run : listOfRun) {
+                if (counter % 100 == 0) {
+                    float coveredMeter = (float) run.getMeters_covered();
+                    float speed = run.getSpeed();
+                    values.add(new Entry(coveredMeter, speed));
+                }
+            }
+        } else {
+            for (Run run : listOfRun) {
+                if (counter % 100 == 0) {
+                    float coveredMeter = (float) run.getMeters_covered();
+                    float speed = run.getSpeed();
+                    values.add(new Entry(coveredMeter, speed));
+                }
             }
         }
     }
@@ -863,9 +873,9 @@ public class StatisticsActivity extends BaseActivity {
 
         if(sizeOfList!=0) {
             if(sizeOfList>StaticVariables.DISPLAY_AMOUNT_OF_POINTS_IN_GRAPH) {
-                addCoveredMeterAltitude(values, counter);
+                addCoveredMeterAltitude(values, counter, true);
             } else {
-                addCoveredMeterAltitude(values, counter);
+                addCoveredMeterAltitude(values, counter, false);
             }
         }
 
@@ -909,9 +919,17 @@ public class StatisticsActivity extends BaseActivity {
         }
     }
 
-    private void addCoveredMeterAltitude(List<Entry> values, int counter) {
-        for (Run run : listOfRun) {
-            if (counter % 100 == 0) {
+    private void addCoveredMeterAltitude(List<Entry> values, int counter, boolean bool) {
+        if(bool) {
+            for (Run run : listOfRun) {
+                if (counter % 100 == 0) {
+                    float coveredMeter = (float) run.getMeters_covered();
+                    double altitude = run.getAltitude();
+                    values.add(new Entry(coveredMeter, (float) altitude));
+                }
+            }
+        } else {
+            for (Run run : listOfRun) {
                 float coveredMeter = (float) run.getMeters_covered();
                 double altitude = run.getAltitude();
                 values.add(new Entry(coveredMeter, (float) altitude));
