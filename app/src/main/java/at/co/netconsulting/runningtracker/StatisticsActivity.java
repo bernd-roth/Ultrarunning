@@ -839,7 +839,6 @@ public class StatisticsActivity extends BaseActivity {
             ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(set1);
             LineData data = new LineData(dataSets);
-            //mChart.setVisibleXRangeMaximum(50);
             mChart.setData(data);
             mChart.notifyDataSetChanged();
             mChart.invalidate();
@@ -854,14 +853,13 @@ public class StatisticsActivity extends BaseActivity {
                     float speed = run.getSpeed();
                     values.add(new Entry(coveredMeter, speed));
                 }
+                counter++;
             }
         } else {
             for (Run run : listOfRun) {
-                if (counter % 100 == 0) {
-                    float coveredMeter = (float) run.getMeters_covered();
-                    float speed = run.getSpeed();
-                    values.add(new Entry(coveredMeter, speed));
-                }
+                float coveredMeter = (float) run.getMeters_covered();
+                float speed = run.getSpeed();
+                values.add(new Entry(coveredMeter, speed));
             }
         }
     }
@@ -927,6 +925,7 @@ public class StatisticsActivity extends BaseActivity {
                     double altitude = run.getAltitude();
                     values.add(new Entry(coveredMeter, (float) altitude));
                 }
+                counter++;
             }
         } else {
             for (Run run : listOfRun) {
