@@ -134,4 +134,7 @@
     <string name="threshold_speed">Threshold speed</string>
     <string name="speed">Speed</string>
     <string name="button_discard_run">Discard run</string>
+    <string name="live_export_to_server">Live export to server\t</string>
+    <string name="save_live_url">Save URL for live export</string>
+    <string name="export_selected_to_gpx_file">Export selected run to GPX file</string>
 </resources>

@@ -30,7 +30,6 @@ public class RestAPI {
     private String httpUrl;
     private Context context;
     private RequestQueue queue;
-
     public RestAPI(Context context, String httpUrl) {
         this.gson = new Gson();
         this.context = context;
@@ -38,7 +37,6 @@ public class RestAPI {
         this.queue = Volley.newRequestQueue(context);
         addNotification();
     }
-
     private JSONObject convertToJson(Run run) {
         String jsonInString = gson.toJson(run);
         try {
@@ -48,11 +46,9 @@ public class RestAPI {
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-
             return null;
         }
     }
-
     @NonNull
     private JsonObjectRequest asyncEnqueue(JSONObject request, Response.Listener<JSONObject> responseListener, Response.ErrorListener errorListener) {
         return new JsonObjectRequest(
@@ -62,7 +58,6 @@ public class RestAPI {
                 responseListener,
                 errorListener);
     }
-
     public void postRequest(Response.ErrorListener errorListener, Iterator<Run> allEntries) {
         if (!allEntries.hasNext())
             return;
@@ -78,7 +73,6 @@ public class RestAPI {
         JsonObjectRequest jsonObjReq = asyncEnqueue(jsonObject, responseListener, errorListener);
         queue.add(jsonObjReq);
     }
-
     private void addNotification() {
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this.context)

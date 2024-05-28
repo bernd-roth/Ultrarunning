@@ -9,14 +9,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.metrics.Event;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -30,27 +31,26 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-
+import android.content.DialogInterface.OnMultiChoiceClickListener;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -68,7 +68,6 @@ import at.co.netconsulting.runningtracker.service.GpxForegroundService;
 import at.co.netconsulting.runningtracker.util.StaticVariables;
 import at.co.netconsulting.runningtracker.view.RestAPI;
 import io.ticofab.androidgpxparser.parser.GPXParser;
-import io.ticofab.androidgpxparser.parser.domain.Extensions;
 import io.ticofab.androidgpxparser.parser.domain.Gpx;
 import io.ticofab.androidgpxparser.parser.domain.Track;
 import io.ticofab.androidgpxparser.parser.domain.TrackPoint;
@@ -82,7 +81,7 @@ public class DatabaseActivity extends AppCompatActivity {
     private Long nextBackInMilliseconds;
     private ProgressDialog progressDialog, progressDialogImportingGPXFile;
     private DatabaseHandler db;
-    private EditText editTextNumber, editTextURL;
+    private EditText editTextNumber, editTextURL, editTextLiveURL;
     private String httpUrl;
     private TextView textViewExportToServer, textViewExportDatabase;
     private LinearLayout linearlayout;
@@ -128,6 +127,7 @@ public class DatabaseActivity extends AppCompatActivity {
         editTextNumber.setText(String.valueOf(numberInDays));
 
         editTextURL = new EditText(DatabaseActivity.this);
+        editTextLiveURL = new EditText(DatabaseActivity.this);
 
         linearlayout = findViewById(R.id.ll);
 
@@ -241,78 +241,69 @@ public class DatabaseActivity extends AppCompatActivity {
         }).start();
     }
     public void exportGPXFile(View view) {
-        Context context = getApplicationContext();
-        Intent intentForegroundService = new Intent(getApplicationContext(), GpxForegroundService.class);
-        intentForegroundService.setAction("ACTION_START_GPXFOREGROUNDSERVICE");
-        context.startForegroundService(intentForegroundService);
+        if(((TextView) view ).getText().toString().equals(getResources().getString(R.string.export_selected_to_gpx_file))) {
+            List<Run> allEntriesGroupedByRun = db.getAllEntriesGroupedByRun();
+            boolean[] checkedItems = new boolean[allEntriesGroupedByRun.size()];
+            CharSequence[] dateList = new CharSequence[allEntriesGroupedByRun.size()];
 
-        if(!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this);
-        }
-        progressDialog = new ProgressDialog(DatabaseActivity.this);
-        progressDialog.setTitle("Exporting recorded runs"); // Setting Title
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-    }
-    public void generateGfx(List<Run> run, int countOfRun, ProgressBar progressBar) throws IOException, ParseException {
-        FileWriter writer = null;
-        File download_folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        int lastRun = 0;
-        int currentRun;
-        boolean start = true;
-        int counter = 0;
-        double result = 0;
-
-        if(!run.isEmpty()) {
-            ListIterator<Run> iterator = run.listIterator();
-
-            while (iterator.hasNext()) {
-                Run curInt = iterator.next();
-                currentRun = curInt.getNumber_of_run();
-
-                if(currentRun != lastRun) {
-                    if(start) {
-                        if(lastRun!=0) {
-                            String footer = "\t\t</trkseg>\n\t</trk>\n</gpx>";
-                            writer.append(footer);
-                            writer.flush();
-                            writer.close();
-                        }
-                        writer = createFileName(download_folder, curInt);
-                        createHeader(writer, curInt.getDateTime());
-                        lastRun = curInt.getNumber_of_run();
-                        start = false;
-                        counter++;
-                        result = Math.ceil((counter*100)/countOfRun);
-                        progressBar.setProgress((int) result);
-                        textViewPercentage.setText(String.format("%d%%", (int) result));
-                    } else {
-                        String footer = "\t\t</trkseg>\n\t</trk>\n</gpx>";
-                        writer.append(footer);
-                        writer.flush();
-                        writer.close();
-                        writer = createFileName(download_folder, curInt);
-                        createHeader(writer, curInt.getDateTime());
-                        lastRun = curInt.getNumber_of_run();
-                        start = true;
-                        counter++;
-                        result = Math.ceil((counter*100)/countOfRun);
-                        progressBar.setProgress((int) result);
-                        textViewPercentage.setText(String.format("%d%%", (int) result));
-                    }
-                } else {
-                    createBody(writer, curInt);
-                }
+            for(int i = 0; i<allEntriesGroupedByRun.size(); i++) {
+                dateList[i] = allEntriesGroupedByRun.get(i).getDateTime();
             }
-            String footer = "\t\t</trkseg>\n\t</trk>\n</gpx>";
-            writer.append(footer);
-            writer.flush();
-            writer.close();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Choose run to export");
+            builder.setMultiChoiceItems(dateList, checkedItems, new OnMultiChoiceClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton, boolean isChecked) {
+                }
+            });
+            builder.setCancelable(false);
+            builder.setPositiveButton("Done", (dialog, which) -> {
+                List<Run> selectedRun = new ArrayList<>();
+                for (int i = 0; i < checkedItems.length; i++) {
+                    if (checkedItems[i]) {
+                        Log.d("CHECKED_ITEM", "Checked item: " + i + " - Item: " + checkedItems[i]);
+                        selectedRun.add(allEntriesGroupedByRun.get(i));
+                    }
+                }
+                if(selectedRun.size()>0) {
+                    Context context = getApplicationContext();
+                    Intent intentForegroundService = new Intent(getApplicationContext(), GpxForegroundService.class);
+                    intentForegroundService.putExtra("SELECTED_RUN", (Serializable) selectedRun);
+                    intentForegroundService.setAction("ACTION_START_GPXFOREGROUNDSERVICE");
+                    context.startForegroundService(intentForegroundService);
+
+                    if (!EventBus.getDefault().isRegistered(this)) {
+                        EventBus.getDefault().register(this);
+                    }
+                    progressDialog = new ProgressDialog(DatabaseActivity.this);
+                    progressDialog.setTitle("Exporting recorded runs"); // Setting Title
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please, choose at least one run to export!", Toast.LENGTH_LONG).show();
+                }
+            });
+            builder.setNegativeButton("Cancel", (dialog, which) -> {
+                dialog.dismiss();
+            });
+            builder.create();
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         } else {
-            progressBar.setVisibility(View.GONE);
-            textViewPercentage.setVisibility(View.GONE);
-            cancelNotification();
+            Context context = getApplicationContext();
+            Intent intentForegroundService = new Intent(getApplicationContext(), GpxForegroundService.class);
+            intentForegroundService.setAction("ACTION_START_GPXFOREGROUNDSERVICE");
+            context.startForegroundService(intentForegroundService);
+
+            if (!EventBus.getDefault().isRegistered(this)) {
+                EventBus.getDefault().register(this);
+            }
+            progressDialog = new ProgressDialog(DatabaseActivity.this);
+            progressDialog.setTitle("Exporting recorded runs"); // Setting Title
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
     }
     private void cancelNotification() {
@@ -320,55 +311,6 @@ public class DatabaseActivity extends AppCompatActivity {
         NotificationManager nMgr = (NotificationManager) getApplicationContext().getSystemService(notificationService);
         nMgr.cancel(NOTIFICATION_ID);
     }
-    @NonNull
-    private static FileWriter createFileName(File download_folder, Run curInt) throws IOException {
-        FileWriter writer;
-        String[] sDateTime = curInt.getDateTime().split(" ");
-        String[] sTime = sDateTime[1].split(":");
-        String fileName = sDateTime[0] + "_" + sTime[0] + "_" + sTime[1] + "_" + sTime[2];
-        writer = new FileWriter(new File(download_folder, "" + fileName + ".gpx"), false);
-        return writer;
-    }
-
-    private void createBody(FileWriter writer, Run curInt) throws IOException {
-        String segments = "";
-        Date date = new Date(curInt.getDateTimeInMs());
-        String mobileDateTime = getFormatTimeWithTZ(date);
-
-        segments += "\t\t\t<trkpt lat=\"" + curInt.getLat()
-                + "\" lon=\""
-                + curInt.getLng()
-                + "\">\n\t\t\t\t<time>"
-                + mobileDateTime
-                + "</time>\n"
-                + "\t\t\t\t<ele>"
-                + curInt.getAltitude()
-                + "</ele>\n"
-                + "\t\t\t\t<run>"
-                + curInt.getNumber_of_run()
-                + "</run>\n"
-                + "\t\t\t</trkpt>\n";
-        writer.append(segments);
-
-        try {
-            writer.flush();
-        } catch (IOException e) {
-            Log.e("generateGfx", "Error Writting Path", e);
-        }
-    }
-
-    public static String getFormatTimeWithTZ(Date currentTime) {
-        SimpleDateFormat timeZoneDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        return timeZoneDate.format(currentTime);
-    }
-
-    private void createHeader(FileWriter writer, String name) throws IOException {
-        String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"MapSource 6.15.5\" version=\"1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\">\n\t<trk>\n";
-        writer.append(header);
-        name = "\t\t<name>" + name + "</name>\n\t\t<trkseg>\n";
-        writer.append(name);
-    }
-
     public void importGPX(View view) {
         Intent data = new Intent(Intent.ACTION_GET_CONTENT);
         data.setType("*/*");
@@ -645,5 +587,33 @@ public class DatabaseActivity extends AppCompatActivity {
             progressDialog.dismiss();
             EventBus.getDefault().unregister(this);
         }
+    }
+    public void liveExportToServer(View view) {
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_URL_SAVE);
+        if(editTextLiveURL.getParent()!=null) {
+            ((ViewGroup)editTextLiveURL.getParent()).removeView(editTextLiveURL);
+        }
+        AlertDialog.Builder alert = new AlertDialog.Builder(DatabaseActivity.this);
+        alert.setTitle(R.string.please_type_your_url);
+        alert.setView(editTextLiveURL);
+        editTextLiveURL.setText(editTextLiveURL.getText().toString().toUpperCase());
+
+        alert.setCancelable(false);
+        alert.setPositiveButton(R.string.save_live_url, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_LIVE_URL_SAVE, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+
+                String httpUrl = editTextLiveURL.getText().toString();
+                editor.putString(SharedPref.STATIC_SHARED_PREF_URL_SAVE, httpUrl);
+                editor.commit();
+            }
+        });
+        alert.setNegativeButton(getResources().getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.cancel();
+            }
+        });
+        alert.show();
     }
 }

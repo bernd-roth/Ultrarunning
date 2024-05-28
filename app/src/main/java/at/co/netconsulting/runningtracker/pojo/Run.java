@@ -1,6 +1,8 @@
 package at.co.netconsulting.runningtracker.pojo;
 
-public class Run {
+import java.io.Serializable;
+
+public class Run implements Serializable {
     private int id;
     private String dateTime;
     private double lat;

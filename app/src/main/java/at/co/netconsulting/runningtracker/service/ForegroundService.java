@@ -22,11 +22,15 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.android.gms.maps.model.LatLng;
 import org.greenrobot.eventbus.EventBus;
 import java.time.Duration;
@@ -45,6 +49,7 @@ import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
 import at.co.netconsulting.runningtracker.pojo.Run;
+import at.co.netconsulting.runningtracker.view.RestAPI;
 
 public class ForegroundService extends Service implements LocationListener {
     private static final int NOTIFICATION_ID = 1;
@@ -79,7 +84,7 @@ public class ForegroundService extends Service implements LocationListener {
     private Instant starts, ends;
     private TextToSpeech tts;
     private List<Integer> listOfKm;
-
+    private String live_url;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -98,6 +103,7 @@ public class ForegroundService extends Service implements LocationListener {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_SHOW_DISTANCE_COVERED);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_LIVE_URL_SAVE);
     }
 
     private void initializeWatchdog() {
@@ -159,6 +165,22 @@ public class ForegroundService extends Service implements LocationListener {
         run.setAltitude(altitude);
         run.setPerson(person);
         db.addRun(run);
+    }
+    private void saveToRemoteDatabase() {
+        if(live_url != null &&
+                (live_url.toLowerCase().startsWith("http") ||
+                live_url.toUpperCase().startsWith("http"))) {
+            List<Run> allEntries = new ArrayList<>();
+            allEntries.add(run);
+
+            RestAPI restAPI = new RestAPI(getApplicationContext(), live_url);
+            restAPI.postRequest(new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+                }
+            }, allEntries.iterator());
+        }
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -297,6 +319,10 @@ public class ForegroundService extends Service implements LocationListener {
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 threshold_speed = sh.getFloat(SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED, StaticFields.STATIC_FLOAT_THRESHOLD_SPEED);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_LIVE_URL_SAVE:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                live_url = sh.getString(SharedPref.STATIC_SHARED_PREF_LIVE_URL_SAVE, null);
+                break;
         }
     }
 
@@ -345,6 +371,7 @@ public class ForegroundService extends Service implements LocationListener {
                             }
                             latLngs.add(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
                             saveToDatabase(mLocation.getLatitude(), mLocation.getLongitude());
+                            saveToRemoteDatabase();
                             EventBus.getDefault().post(new LocationChangeEvent(latLngs));
                             hasEnoughTimePassed = false;
                         }

@@ -46,6 +46,7 @@ public class GpxForegroundService extends Service {
     private String notificationService;
     private NotificationManager nMgr;
     private SimpleDateFormat sdf;
+    private List<Run> selectedRun;
 
     //own implementations
     private void createNotificationChannel() {
@@ -65,13 +66,13 @@ public class GpxForegroundService extends Service {
         super.onCreate();
         initializeObject();
         createNotificationChannel();
-        initializeThread();
     }
     private void initializeObject() {
         this.sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         this.db = new DatabaseHandler(GpxForegroundService.this);
     }
     private void initializeThread() {
+        List<Run> selRun = selectedRun;
         if (mWatchdogThread == null || !mWatchdogThread.isAlive()) {
             mWatchdogRunner = new WatchDogRunner(getApplicationContext(), this.db, this.sdf);
             mWatchdogThread = new Thread(mWatchdogRunner, "WorkoutWatchdog");
@@ -82,6 +83,8 @@ public class GpxForegroundService extends Service {
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        selectedRun = (List<Run>) intent.getSerializableExtra("SELECTED_RUN");
+        initializeThread();
         createPendingIntent();
 
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
@@ -146,8 +149,16 @@ public class GpxForegroundService extends Service {
         @Override
         public void run() {
             try {
-                List<Run> run = db.getAllEntries();
-                int countOfRun = db.getCountOfRuns();
+                List<Run> run;
+                int countOfRun;
+
+                if(selectedRun.size()>0) {
+                    run = selectedRun;
+                    countOfRun = run.size();
+                } else {
+                    run = db.getAllEntries();
+                    countOfRun = db.getCountOfRuns();
+                }
                 createNotification(context);
                 generateGfx(run, countOfRun);
             } catch (Exception e) {
