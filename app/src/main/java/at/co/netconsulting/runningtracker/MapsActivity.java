@@ -105,7 +105,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private Polyline polyline;
     private List<LatLng> mPolylinePoints, mPolylinePointsTemp;
     private boolean isDisableZoomCamera, isDayNightModusActive, isTrafficEnabled, isRecording,
-            gps_enabled, startingPoint, isAutomatedRecording;
+            gps_enabled, startingPoint, isAutomatedRecording, isFirstStart;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks, fabResetMap;
     private String mapType;
     private SupportMapFragment mapFragment;
@@ -221,8 +221,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             marker.showInfoWindow();
             startingPoint = false;
         } else {
-            if(polyline!=null) {
+            if(polyline!=null && isFirstStart==false) {
                 polyline.remove();
+                isFirstStart=true;
             }
             polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
         }
@@ -553,6 +554,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                 showAlertDialogWithComment();
                 startingPoint=true;
                 isRecording = false;
+                isFirstStart=false;
                 fabStopRecording.setEnabled(false);
                 fabStartRecording.setEnabled(true);
                 break;
@@ -596,6 +598,16 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             dialog.cancel();
                         }
                     });
+
+            builder.setNeutralButton(getResources().getString(R.string.button_discard_run), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+                    int id = db.getLastEntry();
+                    db.deleteSingleEntry(id);
+                    dialog.cancel();
+                }
+            });
 
             AlertDialog alert = builder.create();
             alert.show();

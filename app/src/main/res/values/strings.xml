@@ -133,4 +133,5 @@
     <string name="altitude">Altitude</string>
     <string name="threshold_speed">Threshold speed</string>
     <string name="speed">Speed</string>
+    <string name="button_discard_run">Discard run</string>
 </resources>
