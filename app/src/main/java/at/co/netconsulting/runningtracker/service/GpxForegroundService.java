@@ -20,6 +20,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
@@ -146,18 +148,24 @@ public class GpxForegroundService extends Service {
         @Override
         public void run() {
             try {
-                List<Run> run;
-                int countOfRun;
+                List<Run> runEntries = new ArrayList<>();
+                int numberOfRun = -1;
 
-                if(selectedRun.size()>0) {
-                    run = selectedRun;
-                    countOfRun = run.size();
-                } else {
-                    run = db.getAllEntries();
-                    countOfRun = db.getCountOfRuns();
+                if(selectedRun == null) {
+                    runEntries = db.getAllEntries();
+                } else if(selectedRun.size()>0) {
+                    for(int i = 0; i<selectedRun.size(); i++) {
+                        numberOfRun = selectedRun.get(i).getNumber_of_run();
+
+                        List<Run> tmpRun = db.getSingleEntryForStatistics(numberOfRun);
+                        for(int j = 0; j<tmpRun.size(); j++) {
+                            Run run = tmpRun.get(j);
+                            runEntries.add(run);
+                        }
+                    }
                 }
                 createNotification(context);
-                generateGfx(run, countOfRun);
+                generateGfx(runEntries);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -173,13 +181,12 @@ public class GpxForegroundService extends Service {
             nMgr.cancel(NOTIFICATION_ID);
             EventBus.getDefault().post(new ProgressDialogEventBus(false));
         }
-        private void generateGfx(List<Run> run, int countOfRun) throws IOException, ParseException {
+        private void generateGfx(List<Run> run) throws IOException, ParseException {
             FileWriter writer = null;
             File download_folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             int lastRun = 0;
             int currentRun;
             boolean start = true;
-            int counter = 0;
 
             if (!run.isEmpty()) {
                 ListIterator<Run> iterator = run.listIterator();
@@ -205,14 +212,12 @@ public class GpxForegroundService extends Service {
                             createHeader(writer, curInt.getDateTime());
                             lastRun = curInt.getNumber_of_run();
                             start = false;
-                            counter++;
                         } else {
                             writeFooter(writer);
                             writer = createFileName(download_folder, curInt);
                             createHeader(writer, curInt.getDateTime());
                             lastRun = curInt.getNumber_of_run();
                             start = true;
-                            counter++;
                         }
                     } else {
                         createBody(writer, curInt);
