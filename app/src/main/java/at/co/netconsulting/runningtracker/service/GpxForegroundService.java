@@ -14,9 +14,7 @@ import android.os.IBinder;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-
 import org.greenrobot.eventbus.EventBus;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -29,7 +27,6 @@ import java.util.Locale;
 import at.co.netconsulting.runningtracker.MapsActivity;
 import at.co.netconsulting.runningtracker.R;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
-import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
 import at.co.netconsulting.runningtracker.pojo.ProgressDialogEventBus;
 import at.co.netconsulting.runningtracker.pojo.Run;
 
