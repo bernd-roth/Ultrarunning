@@ -3,6 +3,7 @@ package at.co.netconsulting.runningtracker;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.POST_NOTIFICATIONS;
+
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -40,6 +41,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -47,6 +49,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import com.github.pengrad.mapscaleview.MapScaleView;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -63,6 +66,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -95,17 +99,19 @@ import at.co.netconsulting.runningtracker.pojo.ColoredPoint;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.service.ForegroundService;
+import at.co.netconsulting.runningtracker.util.StaticVariables;
 import at.co.netconsulting.runningtracker.view.DrawView;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
-public class MapsActivity extends BaseActivity implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraIdleListener {
+public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     private Polyline polyline;
     private List<LatLng> mPolylinePoints, mPolylinePointsTemp;
-    private boolean isDisableZoomCamera, isDayNightModusActive, isTrafficEnabled, isRecording,
-            gps_enabled, startingPoint, isAutomatedRecording, isFirstStart;
+    private boolean isDayNightModusActive, isTrafficEnabled, isRecording,
+            gps_enabled, startingPoint, isAutomatedRecording, isFirstStart,
+            enabledAutomaticCamera, isOnMyLocationButtonClicked;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks, fabResetMap;
     private String mapType;
     private SupportMapFragment mapFragment;
@@ -124,6 +130,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private List<Integer> intArray;
     private ListView alertdialog_Listview;
     private AlertDialog alert;
+    private float zoomLevel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +155,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     }
 
     private void startAutomatedRecording() {
-        if(isAutomatedRecording) {
+        if (isAutomatedRecording) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -185,7 +192,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         if (this.getIntent().getExtras() != null) {
             Bundle bundle = this.getIntent().getExtras();
             boolean isStopButtonVisible = bundle.getBoolean("StopButtonIsVisible");
-            if(isStopButtonVisible) {
+            if (isStopButtonVisible) {
                 fabStartRecording.setVisibility(View.INVISIBLE);
                 fabStopRecording.setVisibility(View.VISIBLE);
             }
@@ -221,9 +228,14 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
             marker.showInfoWindow();
             startingPoint = false;
         } else {
-            if(polyline!=null && isFirstStart==false) {
+            if (polyline != null && isFirstStart == false) {
                 polyline.remove();
-                isFirstStart=true;
+                isFirstStart = true;
+            }
+            if(enabledAutomaticCamera) {
+                LatLng lastLocation = polylinePoints.get(polylinePoints.size() - 1);
+                CameraUpdate update = CameraUpdateFactory.newLatLngZoom(lastLocation, zoomLevel);
+                mMap.moveCamera(update);
             }
             polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
         }
@@ -262,6 +274,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         }
         return serviceRunning;
     }
+
     private void initObjects() {
         fabStartRecording = findViewById(R.id.fabRecording);
         fabStartRecording.setVisibility(View.VISIBLE);
@@ -283,10 +296,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         scaleView.metersOnly();
 
         mPolylinePoints = new ArrayList<>();
-        mPolylinePointsTemp= new ArrayList<>();
+        mPolylinePointsTemp = new ArrayList<>();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        isDisableZoomCamera = true;
         startingPoint = true;
         //draw speed scale and set visibility
         drawView = new DrawView(this);
@@ -298,9 +310,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     private void checkIfLocationIsEnabled() {
         try {
             gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch(Exception ex) {}
+        } catch (Exception ex) {
+        }
 
-        if(!gps_enabled) {
+        if (!gps_enabled) {
             new AlertDialog.Builder(MapsActivity.this)
                     .setMessage(getResources().getString(R.string.location_service))
                     .setPositiveButton(getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
@@ -309,7 +322,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
                             MapsActivity.this.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                         }
                     })
-                    .setNegativeButton(getResources().getString(R.string.button_cancel),null)
+                    .setNegativeButton(getResources().getString(R.string.button_cancel), null)
                     .setCancelable(false)
                     .show();
         }
@@ -319,7 +332,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         //if map is moved around, automatic camera movement is disabled
-        mMap.setOnCameraMoveListener(this);
+        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+            @Override
+            public void onCameraMove() {
+                zoomLevel = mMap.getCameraPosition().zoom;
+            }
+        });
         if (mapType.equals("MAP_TYPE_NORMAL"))
             mMap.setMapType(mMap.MAP_TYPE_NORMAL);
         else if (mapType.equals("MAP_TYPE_HYBRID"))
@@ -361,18 +379,56 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         mMap.getUiSettings().setTiltGesturesEnabled(true);
         mMap.setPadding(0, 0, 0, 90);
         mMap.getUiSettings().setMapToolbarEnabled(true);
-        if(isTrafficEnabled) {
+        if (isTrafficEnabled) {
             mMap.setTrafficEnabled(true);
         } else {
             mMap.setTrafficEnabled(false);
         }
         camPos = mMap.getCameraPosition();
         scaleView.update(camPos.zoom, camPos.target.latitude);
+
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                enabledAutomaticCamera = true;
+
+                if (ActivityCompat.checkSelfPermission(MapsActivity.this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(MapsActivity.this,
+                                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return true;
+                }
+                Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                Location location = new Location(loc);
+                LatLng currentLatLng = new LatLng(location.getLatitude(),
+                        location.getLongitude());
+                CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, StaticVariables.DEFAULT_ZOOM_LEVEL);
+                mMap.moveCamera(update);
+                isOnMyLocationButtonClicked=true;
+                return enabledAutomaticCamera=true;
+            }
+        });
+
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                if(isOnMyLocationButtonClicked) {
+                    enabledAutomaticCamera=true;
+                } else {
+                    enabledAutomaticCamera=false;
+                }
+                zoomLevel = mMap.getCameraPosition().zoom;
+                scaleView.update(zoomLevel, camPos.target.latitude);
+            }
+        });
+
         mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
             @Override
             public void onCameraMoveStarted(int reason) {
-                int mCameraMoveReason = reason;
-                scaleView.update(camPos.zoom, camPos.target.latitude);
+                if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+                    enabledAutomaticCamera=false;
+                    isOnMyLocationButtonClicked=false;
+                }
             }
         });
 
@@ -517,13 +573,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
     public void onBackPressed() {
         super.onBackPressed();
         this.finish();
-    }
-
-    @Override
-    public void onCameraMove() {
-        isDisableZoomCamera=false;
-        camPos = mMap.getCameraPosition();
-        scaleView.update(camPos.zoom, camPos.target.latitude);
     }
 
     @Override
@@ -847,12 +896,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback, Go
         List<LatLng> mPolylinePoints = event.latLngs;
         mPolylinePointsTemp = mPolylinePoints;
         createPolypoints(mPolylinePoints);
-    }
-
-    @Override
-    public void onCameraIdle() {
-        camPos = mMap.getCameraPosition();
-        scaleView.update(camPos.zoom, camPos.target.latitude);
     }
 
     public void showTrack(View view) {
