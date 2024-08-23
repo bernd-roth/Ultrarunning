@@ -400,27 +400,28 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                 }
                 Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 Location location = new Location(loc);
-                LatLng currentLatLng = new LatLng(location.getLatitude(),
-                        location.getLongitude());
+                LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                 CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, StaticVariables.DEFAULT_ZOOM_LEVEL);
+                zoomLevel = mMap.getCameraPosition().zoom;
                 mMap.moveCamera(update);
+                scaleView.update(zoomLevel, camPos.target.latitude);
                 isOnMyLocationButtonClicked=true;
-                return enabledAutomaticCamera=true;
+                return enabledAutomaticCamera;
             }
         });
 
-        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-            @Override
-            public void onCameraIdle() {
-                if(isOnMyLocationButtonClicked) {
-                    enabledAutomaticCamera=true;
-                } else {
-                    enabledAutomaticCamera=false;
-                }
-                zoomLevel = mMap.getCameraPosition().zoom;
-                scaleView.update(zoomLevel, camPos.target.latitude);
-            }
-        });
+//        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+//            @Override
+//            public void onCameraIdle() {
+//                if(isOnMyLocationButtonClicked) {
+//                    enabledAutomaticCamera=true;
+//                } else {
+//                    enabledAutomaticCamera=false;
+//                }
+//                zoomLevel = mMap.getCameraPosition().zoom;
+//                scaleView.update(zoomLevel, camPos.target.latitude);
+//            }
+//        });
 
         mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
             @Override
