@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Google Maps with Polyline</title>
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+    let map;
+    let websocket;
+    let polyline;
+    let path = [];  // Array to store lat/lng coordinates for the polyline
+    let markers = [];  // Array to store marker references
+
+    // Initialize and add the map
+    function initMap() {
+        const initialLocation = { lat: 48.1818798, lng: 16.3607528 };  // Example location
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 3,
+            center: initialLocation,
+        });
+
+        // Initialize the polyline with an empty path
+        polyline = new google.maps.Polyline({
+            path: path,
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+        });
+
+        // Add the polyline to the map
+        polyline.setMap(map);
+
+        // Initialize WebSocket connection
+        connectToWebSocket();
+    }
+
+    // Function to connect to the WebSocket
+    function connectToWebSocket() {
+        websocket = new WebSocket('ws://WEBSOCKET_SERVER_IP_ADDRESS:PORT/runningtracker');
+
+        websocket.onopen = function(event) {
+            console.log('Connected to WebSocket server');
+        };
+
+        websocket.onmessage = function(event) {
+            console.log('Message from server:', event.data);
+
+            // Parse the JSON message
+            const data = JSON.parse(event.data);
+
+            // Extract latitude and longitude
+            const lat = parseFloat(data.latitude);
+            const lng = parseFloat(data.longitude);
+
+            if (lat && lng) {
+                updateMapWithNewCoordinate(lat, lng);
+            }
+        };
+
+        websocket.onclose = function(event) {
+            console.log('WebSocket connection closed');
+            setTimeout(connectToWebSocket, 5000);  // Try to reconnect every 5 seconds
+        };
+
+        websocket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+        };
+    }
+
+    // Function to update the map and polyline with a new coordinate
+    function updateMapWithNewCoordinate(lat, lng) {
+        const newPosition = { lat: lat, lng: lng };
+
+        // Add a new point to the path
+        path.push(newPosition);
+
+        // Update the polyline's path
+        polyline.setPath(path);
+
+        // Create marker and add to the map
+        const marker = new google.maps.Marker({
+            position: newPosition,
+            map: map,
+        });
+
+        // Store marker
+        markers.push(marker);
+
+        // Clear previous info windows
+        clearInfoWindows();
+
+        // Add info windows to the first and last markers
+        if (markers.length === 1) {
+            addInfoWindow(marker, "Start");
+        } else if (markers.length > 1) {
+            addInfoWindow(markers[0], "Start");
+            addInfoWindow(markers[markers.length - 1], "Current position");
+        }
+
+        // Center the map on the new position
+        map.setCenter(newPosition);
+    }
+
+    // Function to clear previous info windows
+    function clearInfoWindows() {
+        markers.forEach(marker => {
+            // Remove any existing info window by creating a new one with an empty content
+            google.maps.event.clearListeners(marker, 'click');
+        });
+    }
+
+    // Function to add an info window to a marker
+    function addInfoWindow(marker, content) {
+        const infoWindow = new google.maps.InfoWindow({
+            content: content
+        });
+
+        marker.addListener('click', function() {
+            infoWindow.open(map, marker);
+        });
+    }
+</script>
+
+<!-- Load Google Maps API (Replace YOUR_GOOGLE_MAPS_API_KEY with your API key) -->
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+
+</body>
+</html>
