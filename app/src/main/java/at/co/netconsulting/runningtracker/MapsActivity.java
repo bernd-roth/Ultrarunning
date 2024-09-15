@@ -46,6 +46,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.github.pengrad.mapscaleview.MapScaleView;
@@ -72,12 +73,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.shredzone.commons.suncalc.SunTimes;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoLocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -97,10 +96,15 @@ import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.pojo.ColoredPoint;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
+import at.co.netconsulting.runningtracker.pojo.LocationChangeEventFellowRunner;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.service.ForegroundService;
-import at.co.netconsulting.runningtracker.util.StaticVariables;
 import at.co.netconsulting.runningtracker.view.DrawView;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
@@ -131,6 +135,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     private ListView alertdialog_Listview;
     private AlertDialog alert;
     private float zoomLevel;
+    private OkHttpClient client;
+    private WebSocket webSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +158,46 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         permissionLauncherMultiple.launch(permissions);
         checkIfLocationIsEnabled();
         startAutomatedRecording();
+        createWebSocket();
+    }
+
+    private void createWebSocket() {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder().url("ws://192.168.0.19:6789/runningtracker").build();
+        webSocket = client.newWebSocket(request, new WebSocketListener() {
+            @Override
+            public void onMessage(@NonNull WebSocket webSocket, @NonNull ByteString bytes) {
+                super.onMessage(webSocket, bytes);
+                Toast.makeText(getApplicationContext(),"Message received",   Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
+                super.onMessage(webSocket, text);
+            }
+
+            @Override
+            public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable okhttp3.Response response) {
+                super.onFailure(webSocket, t, response);
+            }
+
+            @Override
+            public void onClosing(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
+                super.onClosing(webSocket, code, reason);
+            }
+
+            @Override
+            public void onClosed(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
+                super.onClosed(webSocket, code, reason);
+            }
+
+            @Override
+            public void onOpen(WebSocket webSocket, okhttp3.Response response) {
+                super.onOpen(webSocket, response);
+                Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void startAutomatedRecording() {
@@ -232,7 +278,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                 polyline.remove();
                 isFirstStart = true;
             }
-            if(enabledAutomaticCamera) {
+            if (enabledAutomaticCamera) {
                 LatLng lastLocation = polylinePoints.get(polylinePoints.size() - 1);
                 CameraUpdate update = CameraUpdateFactory.newLatLngZoom(lastLocation, zoomLevel);
                 mMap.moveCamera(update);
@@ -331,13 +377,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        //if map is moved around, automatic camera movement is disabled
-        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-            @Override
-            public void onCameraMove() {
-                zoomLevel = mMap.getCameraPosition().zoom;
-            }
-        });
+
         if (mapType.equals("MAP_TYPE_NORMAL"))
             mMap.setMapType(mMap.MAP_TYPE_NORMAL);
         else if (mapType.equals("MAP_TYPE_HYBRID"))
@@ -357,6 +397,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         mapView = mapFragment.getView();
         View location_button = mapView.findViewWithTag("GoogleMapMyLocationButton");
         View zoom_in_button = mapView.findViewWithTag("GoogleMapZoomInButton");
+        View zomm_out_button = mapView.findViewWithTag("GoogleMapZoomOutButton");
         View zoom_layout = (View) zoom_in_button.getParent();
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)
                 location_button.getLayoutParams();
@@ -392,49 +433,52 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
             public boolean onMyLocationButtonClick() {
                 enabledAutomaticCamera = true;
 
-                if (ActivityCompat.checkSelfPermission(MapsActivity.this,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                        ActivityCompat.checkSelfPermission(MapsActivity.this,
-                                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return true;
-                }
-                Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                Location location = new Location(loc);
-                LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, StaticVariables.DEFAULT_ZOOM_LEVEL);
-                zoomLevel = mMap.getCameraPosition().zoom;
-                mMap.moveCamera(update);
-                scaleView.update(zoomLevel, camPos.target.latitude);
-                isOnMyLocationButtonClicked=true;
+                updateZoomLevel(null, zoomLevel);
+
+                isOnMyLocationButtonClicked = true;
                 return enabledAutomaticCamera;
             }
         });
 
-//        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-//            @Override
-//            public void onCameraIdle() {
-//                if(isOnMyLocationButtonClicked) {
-//                    enabledAutomaticCamera=true;
-//                } else {
-//                    enabledAutomaticCamera=false;
-//                }
-//                zoomLevel = mMap.getCameraPosition().zoom;
-//                scaleView.update(zoomLevel, camPos.target.latitude);
-//            }
-//        });
+        zoom_in_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                zoomLevel += 1;
+                // Retrieve the details from the CameraPosition object
+                CameraPosition camPos = mMap.getCameraPosition();
+                LatLng targetLocation = camPos.target; // Latitude and Longitude
+                updateZoomLevel(targetLocation, zoomLevel);
+            }
+        });
+
+        zomm_out_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                zoomLevel -= 1;
+                // Retrieve the details from the CameraPosition object
+                CameraPosition camPos = mMap.getCameraPosition();
+                LatLng targetLocation = camPos.target; // Latitude and Longitude
+                updateZoomLevel(targetLocation, zoomLevel);
+            }
+        });
 
         mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
             @Override
             public void onCameraMoveStarted(int reason) {
                 if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
-                    enabledAutomaticCamera=false;
-                    isOnMyLocationButtonClicked=false;
+                    enabledAutomaticCamera = false;
+                    isOnMyLocationButtonClicked = false;
+                    // Retrieve the details from the CameraPosition object
+                    CameraPosition camPos = mMap.getCameraPosition();
+                    LatLng targetLocation = camPos.target; // Latitude and Longitude
+                    zoomLevel = camPos.zoom;
+                    updateZoomLevel(targetLocation, zoomLevel);
                 }
             }
         });
 
         //if true, day/night modus switches automatically depending on sunrise/sunset
-        if(isDayNightModusActive) {
+        if (isDayNightModusActive) {
             Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             Location location = new Location(loc);
 
@@ -455,6 +499,59 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
             mMap.setMapStyle(null);
         }
     }
+
+    private void updateZoomLevel(LatLng targetLocation, float zoomLevel) {
+        if (ActivityCompat.checkSelfPermission(MapsActivity.this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(MapsActivity.this,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        Location loc, location;
+        if(targetLocation==null) {
+            loc = this.locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            location = new Location(loc);
+            targetLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        } else {
+            camPos = mMap.getCameraPosition();
+        }
+
+        float maximumZoomLevel = mMap.getMaxZoomLevel();
+        float minimumZoomLevel = mMap.getMinZoomLevel();
+
+        if(zoomLevel <= minimumZoomLevel) {
+            zoomLevel = minimumZoomLevel;
+        }
+
+        if(zoomLevel > maximumZoomLevel) {
+            if(targetLocation==null) {
+                CameraPosition camPos = mMap.getCameraPosition();
+                scaleView.update(maximumZoomLevel, camPos.target.latitude);
+            } else {
+                scaleView.update(maximumZoomLevel, camPos.target.latitude);
+            }
+        } else if(zoomLevel == maximumZoomLevel) {
+            if(targetLocation==null) {
+                CameraPosition camPos = mMap.getCameraPosition();
+                scaleView.update(maximumZoomLevel, camPos.target.latitude);
+            } else {
+                scaleView.update(maximumZoomLevel, camPos.target.latitude);
+            }
+        } else if(this.zoomLevel < maximumZoomLevel) {
+            if(targetLocation==null) {
+                CameraPosition camPos = mMap.getCameraPosition();
+                scaleView.update(zoomLevel, camPos.target.latitude);
+            } else {
+                scaleView.update(zoomLevel, camPos.target.latitude);
+            }
+        }
+
+        if(targetLocation!=null) {
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetLocation, this.zoomLevel);
+            // Alternatively, to animate the camera to the new position smoothly
+            mMap.animateCamera(cameraUpdate);
+        }
+    }
+
     private boolean isCurrentTimeBetweenSunriseSunset(Location location) {
         ZonedDateTime zdtNow = ZonedDateTime.now();
 
@@ -897,6 +994,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         List<LatLng> mPolylinePoints = event.latLngs;
         mPolylinePointsTemp = mPolylinePoints;
         createPolypoints(mPolylinePoints);
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(LocationChangeEventFellowRunner event) {
+        List<LatLng> mPolylinePoints = event.latLngs;
+        createPolypointsForFellowRunner(mPolylinePoints);
+    }
+
+    private void createPolypointsForFellowRunner(List<LatLng> mPolylinePoints) {
+        polyline = mMap.addPolyline(new PolylineOptions().addAll(mPolylinePoints).color(Color.RED).jointType(JointType.ROUND).width(15.0f));
     }
 
     public void showTrack(View view) {

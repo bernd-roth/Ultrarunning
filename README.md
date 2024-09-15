@@ -45,6 +45,10 @@ Eventually, click the save button!
  * Reorg
  * * Reorg database
 
+ * Websocket server
+ * * establishing a connection to a websocket server, 
+ * * providing a websocket server written in Python
+
 ## API
 
 EventBus

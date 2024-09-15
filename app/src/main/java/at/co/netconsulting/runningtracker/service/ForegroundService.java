@@ -22,16 +22,17 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
+
 import org.greenrobot.eventbus.EventBus;
 import java.time.Duration;
 import java.time.Instant;
@@ -47,9 +48,17 @@ import at.co.netconsulting.runningtracker.R;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
+import at.co.netconsulting.runningtracker.pojo.FellowRunner;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
+import at.co.netconsulting.runningtracker.pojo.LocationChangeEventFellowRunner;
 import at.co.netconsulting.runningtracker.pojo.Run;
 import at.co.netconsulting.runningtracker.view.RestAPI;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
+import timber.log.Timber;
 
 public class ForegroundService extends Service implements LocationListener {
     private static final int NOTIFICATION_ID = 1;
@@ -64,7 +73,10 @@ public class ForegroundService extends Service implements LocationListener {
             currentLongitude,
             altitude,
             oldLatitude,
-            oldLongitude;
+            oldLongitude,
+            fellowRunnerLatitude,
+            fellowRunnerLongitude,
+            fellowRunnerCurrentSpeed;
     private LocationManager locationManager;
     private float[] result;
     private DateTimeFormatter formatDateTime;
@@ -73,7 +85,7 @@ public class ForegroundService extends Service implements LocationListener {
     private Timer timer;
     private boolean isFirstEntry, hasEnoughTimePassed, isVoiceMessage, isSpoken;
     private int laps, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
-    private float lapCounter, coveredDistance, accuracy, currentSpeed, threshold_speed;
+    private float lapCounter, coveredDistance, accuracy, currentSpeed, threshold_speed, fellowRunnerCoveredDistance;
     private String notificationService;
     private NotificationManager nMgr;
     private NotificationChannel serviceChannel;
@@ -85,6 +97,11 @@ public class ForegroundService extends Service implements LocationListener {
     private TextToSpeech tts;
     private List<Integer> listOfKm;
     private String live_url;
+    private OkHttpClient client;
+    private WebSocket webSocket;
+    private static final String TAG = "WebSocketService";
+    private Gson gson;
+    private List<LatLng> fellowRunnerLatLngs;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -93,6 +110,8 @@ public class ForegroundService extends Service implements LocationListener {
         initializeWatchdog();
         getLastKnownLocation(locationManager);
         initCallbacks();
+        //Create WebSocket connection
+        createWebSocket();
 
         lastRun = db.getLastEntry();
         lastRun += 1;
@@ -104,6 +123,62 @@ public class ForegroundService extends Service implements LocationListener {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_LIVE_URL_SAVE);
+    }
+
+    private void createWebSocket() {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder().url("ws://62.178.111.184:6789/runningtracker").build();
+        webSocket = client.newWebSocket(request, new WebSocketListener() {
+            @Override
+            public void onMessage(@NonNull WebSocket webSocket, @NonNull ByteString bytes) {
+                super.onMessage(webSocket, bytes);
+                Log.d(TAG, "Received binary message: " + bytes.hex());
+            }
+
+            @Override
+            public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
+                super.onMessage(webSocket, text);
+
+                fellowRunnerLatitude = new Gson().fromJson(text, FellowRunner.class).getLatitude();
+                fellowRunnerLongitude = new Gson().fromJson(text, FellowRunner.class).getLongitude();
+                fellowRunnerCoveredDistance = new Gson().fromJson(text, FellowRunner.class).getDistance();
+                fellowRunnerCurrentSpeed  = new Gson().fromJson(text, FellowRunner.class).getCurrentSpeed();
+
+                Timber.d("Fellow runner: \n"
+                        + "Latitude: " + new Gson().fromJson(text, FellowRunner.class).getLatitude() + "\n"
+                        + "Longitude: " + new Gson().fromJson(text, FellowRunner.class).getLongitude() + "\n"
+                        + "Distance: " + new Gson().fromJson(text, FellowRunner.class).getDistance() + "\n"
+                        + "Current Speed: " + new Gson().fromJson(text, FellowRunner.class).getCurrentSpeed());
+            }
+
+            @Override
+            public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable okhttp3.Response response) {
+                super.onFailure(webSocket, t, response);
+                Log.e(TAG, "WebSocket connection failed", t);
+            }
+
+            @Override
+            public void onClosing(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
+                super.onClosing(webSocket, code, reason);
+                Log.d(TAG, "WebSocket connection closing: " + reason);
+                webSocket.close(1000, null);
+            }
+
+            @Override
+            public void onClosed(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
+                super.onClosed(webSocket, code, reason);
+                Log.d(TAG, "WebSocket connection closed: " + reason);
+            }
+
+            @Override
+            public void onOpen(WebSocket webSocket, okhttp3.Response response) {
+                super.onOpen(webSocket, response);
+                Log.d(TAG, "WebSocket connection opened");
+            }
+        });
+        // Client will clean up when WebSocket service stops
+        client.dispatcher().executorService().shutdown();
     }
 
     private void initializeWatchdog() {
@@ -149,6 +224,7 @@ public class ForegroundService extends Service implements LocationListener {
             }
         });
         listOfKm = new ArrayList<>();
+        fellowRunnerLatLngs = new ArrayList<>();
     }
     private void saveToDatabase(double latitude, double longitude) {
         //format date and time
@@ -353,6 +429,7 @@ public class ForegroundService extends Service implements LocationListener {
         boolean running = true;
         int hours, minutes, seconds = 0;
         List<LatLng> latLngs = new ArrayList<>();
+        List<LatLng> fellowRunnerLatLngs = new ArrayList<>();
         @Override
         public void run() {
             running = true;
@@ -370,9 +447,19 @@ public class ForegroundService extends Service implements LocationListener {
                                 listOfKm.add((int) (coveredDistance / 1000));
                             }
                             latLngs.add(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
+                            fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
                             saveToDatabase(mLocation.getLatitude(), mLocation.getLongitude());
+
+                            //transform data to json
+                            String json = new Gson().toJson(new FellowRunner(mLocation.getLatitude(), mLocation.getLongitude(), coveredDistance, currentSpeed));
+                            Timber.d("Foregroundservice: Json: " + json);
+
+                            //send json via websocket to server
+                            webSocket.send(json);
+
                             saveToRemoteDatabase();
                             EventBus.getDefault().post(new LocationChangeEvent(latLngs));
+                            EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
                             hasEnoughTimePassed = false;
                         }
                     }
@@ -393,7 +480,6 @@ public class ForegroundService extends Service implements LocationListener {
                         }
                         starts = Instant.now();
                     }
-
                     updateNotification(hours, minutes, seconds);
                     Thread.sleep(1000);
                 }
@@ -456,10 +542,12 @@ public class ForegroundService extends Service implements LocationListener {
     private void updateNotification(int hours, int minutes, int seconds) {
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(String.format("%02d:%02d:%02d", hours, minutes, seconds))
-                .setContentText("Distance: " + String.format("%.2f Km", coveredDistance / 1000)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText("Distance: " + String.format("%.2f Km", coveredDistance / 1000)
                         + " Velocity: " + String.format("%.2f Km/h", currentSpeed)
                         + " Satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
-                        + " Altitude: " + String.format("%.2f Meter", altitude))
+                        + " Altitude: " + String.format("%.2f Meter", altitude)
+                        + " Fellow runner: Distance: " + String.format("%.2f Km", fellowRunnerCoveredDistance)
+                        + " Fellow runner: Velocity: " + String.format("%.2f Km/h", fellowRunnerCurrentSpeed)))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
@@ -468,16 +556,21 @@ public class ForegroundService extends Service implements LocationListener {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 //without FOREGROUND_SERVICE_IMMEDIATE, notification can take up to 10 secs to be shown
                 .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE);
-
         notification = notificationBuilder.build();
 
         manager.notify(NOTIFICATION_ID, notificationBuilder
                 .setContentTitle(String.format("%02d:%02d:%02d", hours, minutes, seconds))
-                .setContentText("Distance: " + String.format("%.2f Km", coveredDistance / 1000)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(
+                "Distance: " + String.format("%.2f Km", coveredDistance / 1000)
                                 + " Velocity: " + String.format("%.2f Km/h", currentSpeed)
                                 + " Satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
-                                + " Altitude: " + String.format("%.2f Meter", altitude))
+                                + " Altitude: " + String.format("%.2f Meter", altitude)
+                                + " Fellow runner: Distance: " + String.format("%.2f Km", fellowRunnerCoveredDistance)
+                                + " Fellow runner: Velocity: " + String.format("%.2f Km/h", fellowRunnerCurrentSpeed)))
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_notification))
                 .build());
+
+        fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
+        EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
     }
 }
