@@ -20,7 +20,8 @@
     let websocket;
     let polyline;
     let path = [];  // Array to store lat/lng coordinates for the polyline
-    let markers = [];  // Array to store marker references
+    let startMarker = null;  // To store the start marker
+    let endMarker = null;    // To store the end marker
 
     // Initialize and add the map
     function initMap() {
@@ -48,7 +49,7 @@
 
     // Function to connect to the WebSocket
     function connectToWebSocket() {
-        websocket = new WebSocket('ws://WEBSOCKET_SERVER_IP_ADDRESS:PORT/runningtracker');
+        websocket = new WebSocket('ws://MY_IP_ADDRESS:MY_PORT/runningtracker');
 
         websocket.onopen = function(event) {
             console.log('Connected to WebSocket server');
@@ -89,36 +90,36 @@
         // Update the polyline's path
         polyline.setPath(path);
 
-        // Create marker and add to the map
-        const marker = new google.maps.Marker({
-            position: newPosition,
-            map: map,
-        });
+        // Place the "Start" marker only for the first point
+        if (path.length === 1 && !startMarker) {
+            startMarker = new google.maps.Marker({
+                position: newPosition,
+                map: map,
+                label: "S",  // Label for the start marker
+                title: "Start Position"
+            });
 
-        // Store marker
-        markers.push(marker);
+            // Add an info window to the start marker
+            addInfoWindow(startMarker, "Start");
+        }
 
-        // Clear previous info windows
-        clearInfoWindows();
+        // Update the "end" marker to the new position (or create it if it doesn't exist yet)
+        if (!endMarker) {
+            endMarker = new google.maps.Marker({
+                position: newPosition,
+                map: map,
+                label: "E",  // Label for the end marker
+                title: "Current Position"
+            });
 
-        // Add info windows to the first and last markers
-        if (markers.length === 1) {
-            addInfoWindow(marker, "Start");
-        } else if (markers.length > 1) {
-            addInfoWindow(markers[0], "Start");
-            addInfoWindow(markers[markers.length - 1], "Current position");
+            // Add an info window to the end marker
+            addInfoWindow(endMarker, "Current position");
+        } else {
+            endMarker.setPosition(newPosition);  // Move the existing end marker to the new position
         }
 
         // Center the map on the new position
         map.setCenter(newPosition);
-    }
-
-    // Function to clear previous info windows
-    function clearInfoWindows() {
-        markers.forEach(marker => {
-            // Remove any existing info window by creating a new one with an empty content
-            google.maps.event.clearListeners(marker, 'click');
-        });
     }
 
     // Function to add an info window to a marker
@@ -134,7 +135,7 @@
 </script>
 
 <!-- Load Google Maps API (Replace YOUR_GOOGLE_MAPS_API_KEY with your API key) -->
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=MY_API_KEY&callback=initMap" async defer></script>
 
 </body>
 </html>
