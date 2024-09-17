@@ -34,7 +34,7 @@ Eventually, click the save button!
  * * Recording will be done automatically after a delay of 5 seconds
 
  * Database settings
- * * Backup intervall
+ * * Backup interval
  * * Export to REST server
  * * Import database
  * * Export database

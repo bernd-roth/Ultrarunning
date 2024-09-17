@@ -102,6 +102,10 @@ public class ForegroundService extends Service implements LocationListener {
     private static final String TAG = "WebSocketService";
     private Gson gson;
     private List<LatLng> fellowRunnerLatLngs;
+    private LocalDateTime now;
+    private DateTimeFormatter formatter;
+    private String formattedTimestamp;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -450,8 +454,10 @@ public class ForegroundService extends Service implements LocationListener {
                             fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
                             saveToDatabase(mLocation.getLatitude(), mLocation.getLongitude());
 
+                            String formattedTimestamp = formatCurrentTimestamp();
+
                             //transform data to json
-                            String json = new Gson().toJson(new FellowRunner(mLocation.getLatitude(), mLocation.getLongitude(), coveredDistance, currentSpeed));
+                            String json = new Gson().toJson(new FellowRunner(person, mLocation.getLatitude(), mLocation.getLongitude(), coveredDistance, currentSpeed, formattedTimestamp));
                             Timber.d("Foregroundservice: Json: " + json);
 
                             //send json via websocket to server
@@ -486,6 +492,16 @@ public class ForegroundService extends Service implements LocationListener {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+
+        private String formatCurrentTimestamp() {
+            // Get the current date and time
+            now = LocalDateTime.now();
+            // Define the desired format
+            formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+            // Format the timestamp
+            formattedTimestamp = now.format(formatter);
+            return formattedTimestamp;
         }
 
         private int getExactStopWatch(Instant starts) {

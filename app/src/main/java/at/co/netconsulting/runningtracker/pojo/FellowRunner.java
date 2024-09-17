@@ -5,12 +5,32 @@ public class FellowRunner {
     private double longitude;
     private float distance;
     private double currentSpeed;
+    private String sessionId;
+    private String formattedTimestamp;
 
-    public FellowRunner(double latitude, double longitude, float distance, double currentSpeed) {
+    public FellowRunner(String sessionId, double latitude, double longitude, float distance, double currentSpeed, String formattedTimestamp) {
+        this.sessionId = sessionId;
         this.latitude = latitude;
         this.longitude = longitude;
         this.distance = distance;
         this.currentSpeed = currentSpeed;
+        this.formattedTimestamp = formattedTimestamp;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public String getFormattedTimestamp() {
+        return formattedTimestamp;
+    }
+
+    public void setFormattedTimestamp(String formattedTimestamp) {
+        this.formattedTimestamp = formattedTimestamp;
     }
 
     public double getLatitude() {

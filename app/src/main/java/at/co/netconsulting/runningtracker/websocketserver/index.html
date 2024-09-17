@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Google Maps with Polyline</title>
+    <title>RunningTracker</title>
     <style>
         #map {
             height: 100vh;
@@ -18,10 +18,9 @@
 <script>
     let map;
     let websocket;
-    let polyline;
-    let path = [];  // Array to store lat/lng coordinates for the polyline
-    let startMarker = null;  // To store the start marker
-    let endMarker = null;    // To store the end marker
+    let polylines = {};  // Object to store polylines by session ID
+    let startMarkers = {};  // Object to store start markers by session ID
+    let endMarkers = {};    // Object to store end markers by session ID
 
     // Initialize and add the map
     function initMap() {
@@ -31,25 +30,13 @@
             center: initialLocation,
         });
 
-        // Initialize the polyline with an empty path
-        polyline = new google.maps.Polyline({
-            path: path,
-            geodesic: true,
-            strokeColor: '#FF0000',
-            strokeOpacity: 1.0,
-            strokeWeight: 2,
-        });
-
-        // Add the polyline to the map
-        polyline.setMap(map);
-
         // Initialize WebSocket connection
         connectToWebSocket();
     }
 
     // Function to connect to the WebSocket
     function connectToWebSocket() {
-        websocket = new WebSocket('ws://MY_IP_ADDRESS:MY_PORT/runningtracker');
+        websocket = new WebSocket('ws://SERVER_IP_ADDRESS:SERVER_PORT/runningtracker');
 
         websocket.onopen = function(event) {
             console.log('Connected to WebSocket server');
@@ -61,12 +48,13 @@
             // Parse the JSON message
             const data = JSON.parse(event.data);
 
-            // Extract latitude and longitude
+            // Extract latitude, longitude, timestamp, and session ID
             const lat = parseFloat(data.latitude);
             const lng = parseFloat(data.longitude);
+            const sessionId = data.sessionId || "default";  // Use sessionId if available, else "default"
 
             if (lat && lng) {
-                updateMapWithNewCoordinate(lat, lng);
+                updateMapWithNewCoordinate(lat, lng, sessionId, data.timestamp);
             }
         };
 
@@ -81,51 +69,73 @@
     }
 
     // Function to update the map and polyline with a new coordinate
-    function updateMapWithNewCoordinate(lat, lng) {
-        const newPosition = { lat: lat, lng: lng };
+    function updateMapWithNewCoordinate(lat, lng, sessionId, timestamp) {
+        const newPosition = new google.maps.LatLng(lat, lng);  // Make sure the new position is a LatLng object
 
-        // Add a new point to the path
-        path.push(newPosition);
+        // If this sessionId doesn't have a polyline yet, create one
+        if (!polylines[sessionId]) {
+            // Assign a random color to this session's polyline
+            const polylineColor = getRandomColor();
 
-        // Update the polyline's path
-        polyline.setPath(path);
+            // Create a new polyline for this session
+            polylines[sessionId] = new google.maps.Polyline({
+                path: [newPosition],  // Initialize with the first position
+                geodesic: true,
+                strokeColor: polylineColor,
+                strokeOpacity: 1.0,
+                strokeWeight: 2,
+            });
 
-        // Place the "Start" marker only for the first point
-        if (path.length === 1 && !startMarker) {
-            startMarker = new google.maps.Marker({
+            // Add the polyline to the map
+            polylines[sessionId].setMap(map);
+
+            // Create a start marker for this session
+            startMarkers[sessionId] = new google.maps.Marker({
                 position: newPosition,
                 map: map,
                 label: "S",  // Label for the start marker
-                title: "Start Position"
+                title: "Start Position (" + timestamp + ")",
             });
 
-            // Add an info window to the start marker
-            addInfoWindow(startMarker, "Start");
+            addInfoWindow(startMarkers[sessionId], "Start Position");
+        } else {
+            // If the polyline exists, just add a new point to its path
+            const path = polylines[sessionId].getPath();
+            path.push(newPosition);  // Push new position to the path
         }
 
-        // Update the "end" marker to the new position (or create it if it doesn't exist yet)
-        if (!endMarker) {
-            endMarker = new google.maps.Marker({
+        // Update or place the end marker to the new position
+        if (!endMarkers[sessionId]) {
+            endMarkers[sessionId] = new google.maps.Marker({
                 position: newPosition,
                 map: map,
                 label: "E",  // Label for the end marker
-                title: "Current Position"
+                title: "Current Position (" + timestamp + ")",
             });
 
-            // Add an info window to the end marker
-            addInfoWindow(endMarker, "Current position");
+            addInfoWindow(endMarkers[sessionId], "Current Position");
         } else {
-            endMarker.setPosition(newPosition);  // Move the existing end marker to the new position
+            endMarkers[sessionId].setPosition(newPosition);  // Move the existing end marker to the new position
         }
 
         // Center the map on the new position
         map.setCenter(newPosition);
     }
 
+    // Function to generate a random hex color
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
     // Function to add an info window to a marker
     function addInfoWindow(marker, content) {
         const infoWindow = new google.maps.InfoWindow({
-            content: content
+            content: content,
         });
 
         marker.addListener('click', function() {
@@ -135,7 +145,7 @@
 </script>
 
 <!-- Load Google Maps API (Replace YOUR_GOOGLE_MAPS_API_KEY with your API key) -->
-<script src="https://maps.googleapis.com/maps/api/js?key=MY_API_KEY&callback=initMap" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
 
 </body>
 </html>
