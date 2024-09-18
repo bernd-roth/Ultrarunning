@@ -7,14 +7,24 @@ public class FellowRunner {
     private double currentSpeed;
     private String sessionId;
     private String formattedTimestamp;
+    private String person;
 
-    public FellowRunner(String sessionId, double latitude, double longitude, float distance, double currentSpeed, String formattedTimestamp) {
+    public FellowRunner(String person, String sessionId, double latitude, double longitude, float distance, double currentSpeed, String formattedTimestamp) {
+        this.person = person;
         this.sessionId = sessionId;
         this.latitude = latitude;
         this.longitude = longitude;
         this.distance = distance;
         this.currentSpeed = currentSpeed;
         this.formattedTimestamp = formattedTimestamp;
+    }
+
+    public String getPerson() {
+        return person;
+    }
+
+    public void setPerson(String person) {
+        this.person = person;
     }
 
     public String getSessionId() {

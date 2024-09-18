@@ -63,7 +63,7 @@ import timber.log.Timber;
 public class ForegroundService extends Service implements LocationListener {
     private static final int NOTIFICATION_ID = 1;
     private String NOTIFICATION_CHANNEL_ID = "co.at.netconsulting.runningtracker",
-            person;
+            person, sessionId;
     private Notification notification;
     private NotificationCompat.Builder notificationBuilder;
     private NotificationManager manager;
@@ -104,7 +104,7 @@ public class ForegroundService extends Service implements LocationListener {
     private List<LatLng> fellowRunnerLatLngs;
     private LocalDateTime now;
     private DateTimeFormatter formatter;
-    private String formattedTimestamp;
+    private String fellowRunnerPerson, fellowRunnerSessionId, formattedTimestamp;
 
     @Override
     public void onCreate() {
@@ -144,16 +144,21 @@ public class ForegroundService extends Service implements LocationListener {
             public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
                 super.onMessage(webSocket, text);
 
+                fellowRunnerPerson = new Gson().fromJson(text, FellowRunner.class).getPerson();
+                fellowRunnerSessionId = new Gson().fromJson(text, FellowRunner.class).getSessionId();
                 fellowRunnerLatitude = new Gson().fromJson(text, FellowRunner.class).getLatitude();
                 fellowRunnerLongitude = new Gson().fromJson(text, FellowRunner.class).getLongitude();
                 fellowRunnerCoveredDistance = new Gson().fromJson(text, FellowRunner.class).getDistance();
                 fellowRunnerCurrentSpeed  = new Gson().fromJson(text, FellowRunner.class).getCurrentSpeed();
 
                 Timber.d("Fellow runner: \n"
-                        + "Latitude: " + new Gson().fromJson(text, FellowRunner.class).getLatitude() + "\n"
-                        + "Longitude: " + new Gson().fromJson(text, FellowRunner.class).getLongitude() + "\n"
-                        + "Distance: " + new Gson().fromJson(text, FellowRunner.class).getDistance() + "\n"
-                        + "Current Speed: " + new Gson().fromJson(text, FellowRunner.class).getCurrentSpeed());
+                    + "Person: " + new Gson().fromJson(text, FellowRunner.class).getPerson()
+                    + "sessionId: " + new Gson().fromJson(text, FellowRunner.class).getSessionId()
+                    + "Latitude: " + new Gson().fromJson(text, FellowRunner.class).getLatitude() + "\n"
+                    + "Longitude: " + new Gson().fromJson(text, FellowRunner.class).getLongitude() + "\n"
+                    + "Distance: " + new Gson().fromJson(text, FellowRunner.class).getDistance() + "\n"
+                    + "Current Speed: " + new Gson().fromJson(text, FellowRunner.class).getCurrentSpeed() + "\n"
+                );
             }
 
             @Override
@@ -454,10 +459,9 @@ public class ForegroundService extends Service implements LocationListener {
                             fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
                             saveToDatabase(mLocation.getLatitude(), mLocation.getLongitude());
 
-                            String formattedTimestamp = formatCurrentTimestamp();
-
                             //transform data to json
-                            String json = new Gson().toJson(new FellowRunner(person, mLocation.getLatitude(), mLocation.getLongitude(), coveredDistance, currentSpeed, formattedTimestamp));
+                            String formattedTimestamp = formatCurrentTimestamp();
+                            String json = new Gson().toJson(new FellowRunner(person, sessionId=person, mLocation.getLatitude(), mLocation.getLongitude(), coveredDistance, currentSpeed, formattedTimestamp));
                             Timber.d("Foregroundservice: Json: " + json);
 
                             //send json via websocket to server
