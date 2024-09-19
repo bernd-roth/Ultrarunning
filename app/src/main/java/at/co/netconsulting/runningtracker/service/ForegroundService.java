@@ -74,8 +74,8 @@ public class ForegroundService extends Service implements LocationListener {
             altitude,
             oldLatitude,
             oldLongitude,
-            fellowRunnerLatitude,
-            fellowRunnerLongitude,
+            fellowRunnerLatitude = 999,
+            fellowRunnerLongitude = 999,
             fellowRunnerCurrentSpeed;
     private LocationManager locationManager;
     private float[] result;
@@ -152,8 +152,8 @@ public class ForegroundService extends Service implements LocationListener {
                 fellowRunnerCurrentSpeed  = new Gson().fromJson(text, FellowRunner.class).getCurrentSpeed();
 
                 Timber.d("Fellow runner: \n"
-                    + "Person: " + new Gson().fromJson(text, FellowRunner.class).getPerson()
-                    + "sessionId: " + new Gson().fromJson(text, FellowRunner.class).getSessionId()
+                    + "Person: " + new Gson().fromJson(text, FellowRunner.class).getPerson() + "\n"
+                    + "sessionId: " + new Gson().fromJson(text, FellowRunner.class).getSessionId() + "\n"
                     + "Latitude: " + new Gson().fromJson(text, FellowRunner.class).getLatitude() + "\n"
                     + "Longitude: " + new Gson().fromJson(text, FellowRunner.class).getLongitude() + "\n"
                     + "Distance: " + new Gson().fromJson(text, FellowRunner.class).getDistance() + "\n"
@@ -438,7 +438,7 @@ public class ForegroundService extends Service implements LocationListener {
         boolean running = true;
         int hours, minutes, seconds = 0;
         List<LatLng> latLngs = new ArrayList<>();
-        List<LatLng> fellowRunnerLatLngs = new ArrayList<>();
+        //List<LatLng> fellowRunnerLatLngs = new ArrayList<>();
         @Override
         public void run() {
             running = true;
@@ -590,7 +590,11 @@ public class ForegroundService extends Service implements LocationListener {
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_notification))
                 .build());
 
-        fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
-        EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
+        //fellowRunnerLatitude and fellowRunnerLongitude default values are 0.0, so we need to
+        //ignore that in the beginning
+        if(fellowRunnerLatitude!=999 && fellowRunnerLongitude!=999) {
+            fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
+            EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
+        }
     }
 }
