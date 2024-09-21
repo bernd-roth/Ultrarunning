@@ -53,8 +53,8 @@
             const lng = parseFloat(data.longitude);
             const sessionId = data.sessionId || "default";  // Use sessionId if available, else "default"
             const person = data.person || "Unknown";  // Assuming person info is in the data
-            const currentSpeed = data.currentSpeed || "0 km/h";  // Assuming currentSpeed info is in the data
-            const distance = data.distance || "0 km";  // Assuming distance info is in the data
+            const currentSpeed = (data.currentSpeed).toFixed(2) || "0 km/h";  // Assuming currentSpeed info is in the data
+            const distance = (data.distance / 1000).toFixed(2) || "0 Km";  // Convert to kilometers and format to two decimal places
 
             if (lat && lng) {
                 updateMapWithNewCoordinate(lat, lng, sessionId, data.timestamp, person, currentSpeed, distance);
