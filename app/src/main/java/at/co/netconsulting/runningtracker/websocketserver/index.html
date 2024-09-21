@@ -36,7 +36,7 @@
 
     // Function to connect to the WebSocket
     function connectToWebSocket() {
-        websocket = new WebSocket('ws://SERVER_IP_ADDRESS:SERVER_PORT/runningtracker');
+        websocket = new WebSocket('ws://MY_IP_ADDRESS:MY_PORT/runningtracker');
 
         websocket.onopen = function(event) {
             console.log('Connected to WebSocket server');
@@ -52,9 +52,12 @@
             const lat = parseFloat(data.latitude);
             const lng = parseFloat(data.longitude);
             const sessionId = data.sessionId || "default";  // Use sessionId if available, else "default"
+            const person = data.person || "Unknown";  // Assuming person info is in the data
+            const currentSpeed = data.currentSpeed || "0 km/h";  // Assuming currentSpeed info is in the data
+            const distance = data.distance || "0 km";  // Assuming distance info is in the data
 
             if (lat && lng) {
-                updateMapWithNewCoordinate(lat, lng, sessionId, data.timestamp);
+                updateMapWithNewCoordinate(lat, lng, sessionId, data.timestamp, person, currentSpeed, distance);
             }
         };
 
@@ -69,7 +72,7 @@
     }
 
     // Function to update the map and polyline with a new coordinate
-    function updateMapWithNewCoordinate(lat, lng, sessionId, timestamp) {
+    function updateMapWithNewCoordinate(lat, lng, sessionId, timestamp, person, currentSpeed, distance) {
         const newPosition = new google.maps.LatLng(lat, lng);  // Make sure the new position is a LatLng object
 
         // If this sessionId doesn't have a polyline yet, create one
@@ -83,7 +86,7 @@
                 geodesic: true,
                 strokeColor: polylineColor,
                 strokeOpacity: 1.0,
-                strokeWeight: 2,
+                strokeWeight: 10,
             });
 
             // Add the polyline to the map
@@ -97,27 +100,52 @@
                 title: "Start Position (" + timestamp + ")",
             });
 
-            addInfoWindow(startMarkers[sessionId], "Start Position");
+            addInfoWindow(startMarkers[sessionId], "Start Position: " + timestamp);
         } else {
             // If the polyline exists, just add a new point to its path
             const path = polylines[sessionId].getPath();
             path.push(newPosition);  // Push new position to the path
         }
 
-        // Update or place the end marker to the new position
-        if (!endMarkers[sessionId]) {
-            endMarkers[sessionId] = new google.maps.Marker({
-                position: newPosition,
-                map: map,
-                label: "E",  // Label for the end marker
-                title: "Current Position (" + timestamp + ")",
-            });
+                // Update or place the end marker to the new position
+                if (!endMarkers[sessionId]) {
+                        endMarkers[sessionId] = new google.maps.Marker({
+                                position: newPosition,
+                                map: map,
+                                label: "E",  // Label for the end marker
+                                title: "Current Position (" + timestamp + ")",
+                        });
 
-            addInfoWindow(endMarkers[sessionId], "Current Position");
-        } else {
-            endMarkers[sessionId].setPosition(newPosition);  // Move the existing end marker to the new position
-        }
+                        const contentString = "Person: " + person + " - " + "Current Speed: " + currentSpeed;
 
+                        // Create the info window
+                        const infoWindow = new google.maps.InfoWindow({
+                                content: contentString
+                        });
+
+                        // Open the info window on the map at the current marker's position
+                        infoWindow.open(map, endMarkers[sessionId]);
+
+                        // Store the info window if needed for later reference (optional)
+                        endMarkers[sessionId].infoWindow = infoWindow;
+                } else {
+                        endMarkers[sessionId].setPosition(newPosition);  // Move the existing end marker to the new position
+                        const contentString = "Person: " + person + " - Time and Date: " + timestamp + " - Distance: " + distance + "Km - Current Speed: " + currentSpeed + " km/h";
+                        endMarkers[sessionId].setTitle("Current Position (" + timestamp + ")");
+
+                        // Update the existing info window content
+                        if (endMarkers[sessionId].infoWindow) {
+                                endMarkers[sessionId].infoWindow.setContent(contentString);
+                                endMarkers[sessionId].infoWindow.open(map, endMarkers[sessionId]);  // Ensure it's opened
+                        } else {
+                                // If the infoWindow wasn't created before, create and open it
+                                const infoWindow = new google.maps.InfoWindow({
+                                        content: contentString
+                                });
+                                infoWindow.open(map, endMarkers[sessionId]);
+                                endMarkers[sessionId].infoWindow = infoWindow;
+                        }
+                }
         // Center the map on the new position
         map.setCenter(newPosition);
     }
