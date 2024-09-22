@@ -1,6 +1,7 @@
 package at.co.netconsulting.runningtracker;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -216,6 +217,8 @@ public class DetailedGraphActivity extends AppCompatActivity implements OnMapRea
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapDetailedGraph);
         mapFragment.getMapAsync(this);
+        //set screen orientaiton to potrait modus automatically
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override

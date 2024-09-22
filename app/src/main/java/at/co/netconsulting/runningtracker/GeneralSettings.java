@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
@@ -45,9 +46,9 @@ public class GeneralSettings extends BaseActivity {
     private ProgressDialog progressDialog;
     private String person;
     private boolean isBatteryOptimization, isDayNightModus, isTrafficEnabled, isVoiceMessage,
-                    isAutomatedRecording;
+                    isAutomatedRecording, isTransmitDataToWebsocket;
     private Switch switchBatteryOptimization, switchDayNightModus, switchEnableTraffic, switchVoiceMessage,
-                    switchAutomatedRecording;
+                    switchAutomatedRecording, switchTransmitDataToWebsocket;
     private PendingIntent pendingIntent;
     private Long nextBackInMilliseconds;
     @Override
@@ -70,6 +71,7 @@ public class GeneralSettings extends BaseActivity {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_AUTOMATED_RECORDING);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_TRANSMIT_DATA_TO_WEBSOCKET);
     }
 
     private void loadSharedPreferences(String sharedPrefKey) {
@@ -171,6 +173,11 @@ public class GeneralSettings extends BaseActivity {
                 isAutomatedRecording = sh.getBoolean(sharedPrefKey, false);
                 switchAutomatedRecording.setChecked(isAutomatedRecording);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_TRANSMIT_DATA_TO_WEBSOCKET:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isTransmitDataToWebsocket = sh.getBoolean(sharedPrefKey, false);
+                switchTransmitDataToWebsocket.setChecked(isTransmitDataToWebsocket);
+                break;
         }
     }
 
@@ -223,7 +230,17 @@ public class GeneralSettings extends BaseActivity {
             }
         });
 
+        switchTransmitDataToWebsocket = findViewById(R.id.switchTransmitDataWebsocket);
+        switchTransmitDataToWebsocket.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                saveSharedPreferences(SharedPref.STATIC_SHARED_PREF_TRANSMIT_DATA_TO_WEBSOCKET);
+            }
+        });
+
         db = new DatabaseHandler(this);
+        //set screen orientaiton to potrait modus automatically
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     private void saveSharedPreferences(String sharedPreference) {
@@ -355,6 +372,13 @@ public class GeneralSettings extends BaseActivity {
 
             float speed = Float.parseFloat(editTextNumberSignedThresholdSpeed.getText().toString());
             editor.putFloat(SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED, speed);
+            editor.commit();
+        } else if(sharedPreference.equals("TRANSMIT_DATA_TO_WEBSOCKET")) {
+            sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_TRANSMIT_DATA_TO_WEBSOCKET, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+
+            boolean isTransmitDataToWebsocket = switchTransmitDataToWebsocket.isChecked();
+            editor.putBoolean(SharedPref.STATIC_SHARED_PREF_TRANSMIT_DATA_TO_WEBSOCKET, isTransmitDataToWebsocket);
             editor.commit();
         }
     }

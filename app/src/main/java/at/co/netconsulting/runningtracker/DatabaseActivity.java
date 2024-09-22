@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -124,6 +125,8 @@ public class DatabaseActivity extends AppCompatActivity {
         textViewPercentage.setVisibility(View.INVISIBLE);
 
         db = new DatabaseHandler(this);
+        //set screen orientaiton to potrait modus automatically
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
     private void loadSharedPreferences(String sharedPrefKey) {
         SharedPreferences sh;

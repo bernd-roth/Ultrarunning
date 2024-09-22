@@ -83,7 +83,7 @@ public class ForegroundService extends Service implements LocationListener {
     private LocalDateTime dateObj;
     private long currentMilliseconds, oldCurrentMilliseconds = 0, currentSeconds, minTimeMs;
     private Timer timer;
-    private boolean isFirstEntry, hasEnoughTimePassed, isVoiceMessage, isSpoken;
+    private boolean isFirstEntry, hasEnoughTimePassed, isVoiceMessage, isSpoken, isTransmitDataToWebsocket;
     private int laps, satelliteCount, minDistanceMeter, numberOfsatellitesInUse, lastRun;
     private float lapCounter, coveredDistance, accuracy, currentSpeed, threshold_speed, fellowRunnerCoveredDistance;
     private String notificationService;
@@ -114,8 +114,6 @@ public class ForegroundService extends Service implements LocationListener {
         initializeWatchdog();
         getLastKnownLocation(locationManager);
         initCallbacks();
-        //Create WebSocket connection
-        createWebSocket();
 
         lastRun = db.getLastEntry();
         lastRun += 1;
@@ -127,6 +125,13 @@ public class ForegroundService extends Service implements LocationListener {
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_VOICE_MESSAGE);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_FLOAT_THRESHOLD_SPEED);
         loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_LIVE_URL_SAVE);
+        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_TRANSMIT_DATA_TO_WEBSOCKET);
+
+        //Create WebSocket connection
+        //websocket is created at the end because person is loaded just a second before
+        if(isTransmitDataToWebsocket) {
+            createWebSocket();
+        }
     }
 
     private void createWebSocket() {
@@ -410,6 +415,10 @@ public class ForegroundService extends Service implements LocationListener {
                 sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
                 live_url = sh.getString(SharedPref.STATIC_SHARED_PREF_LIVE_URL_SAVE, null);
                 break;
+            case SharedPref.STATIC_SHARED_PREF_TRANSMIT_DATA_TO_WEBSOCKET:
+                sh = getSharedPreferences(sharedPrefKey, Context.MODE_PRIVATE);
+                isTransmitDataToWebsocket = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_TRANSMIT_DATA_TO_WEBSOCKET, false);
+                break;
         }
     }
 
@@ -468,8 +477,10 @@ public class ForegroundService extends Service implements LocationListener {
                             String json = new Gson().toJson(new FellowRunner(person, sessionId=person, mLocation.getLatitude(), mLocation.getLongitude(), coveredDistance, currentSpeed, formattedTimestamp));
                             Timber.d("Foregroundservice: Json: " + json);
 
-                            //send json via websocket to server
-                            webSocket.send(json);
+                            if(isTransmitDataToWebsocket) {
+                                //send json via websocket to server
+                                webSocket.send(json);
+                            }
 
                             saveToRemoteDatabase();
                             EventBus.getDefault().post(new LocationChangeEvent(latLngs));
@@ -570,7 +581,7 @@ public class ForegroundService extends Service implements LocationListener {
                         + " Velocity: " + String.format("%.2f Km/h", currentSpeed)
                         + " Satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
                         + " Altitude: " + String.format("%.2f Meter", altitude)
-                        + " Fellow runner: Distance: " + String.format("%.2f Km", fellowRunnerCoveredDistance)
+                        + " Fellow runner: Distance: " + String.format("%.2f Km", fellowRunnerCoveredDistance / 1000)
                         + " Fellow runner: Velocity: " + String.format("%.2f Km/h", fellowRunnerCurrentSpeed)))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
                 //.setContentIntent(pendingIntent)
@@ -589,7 +600,7 @@ public class ForegroundService extends Service implements LocationListener {
                                 + " Velocity: " + String.format("%.2f Km/h", currentSpeed)
                                 + " Satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
                                 + " Altitude: " + String.format("%.2f Meter", altitude)
-                                + " Fellow runner: Distance: " + String.format("%.2f Km", fellowRunnerCoveredDistance)
+                                + " Fellow runner: Distance: " + String.format("%.2f Km", fellowRunnerCoveredDistance / 1000)
                                 + " Fellow runner: Velocity: " + String.format("%.2f Km/h", fellowRunnerCurrentSpeed)))
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_notification))
                 .build());

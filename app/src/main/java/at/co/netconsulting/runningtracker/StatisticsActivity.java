@@ -2,6 +2,7 @@ package at.co.netconsulting.runningtracker;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.Drawable;
@@ -554,6 +555,8 @@ public class StatisticsActivity extends BaseActivity {
 
         linearLayout = findViewById(R.id.ll);
         db = new DatabaseHandler(this);
+        //set screen orientaiton to potrait modus automatically
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     private void showTableLayoutYear(TreeMap<Integer, Double> year) {

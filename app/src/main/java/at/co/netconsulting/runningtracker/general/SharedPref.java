@@ -17,4 +17,5 @@ public class SharedPref {
     public static final String STATIC_SHARED_PREF_AUTOMATED_RECORDING = "AUTOMATED_RECORDING";
     public static final String STATIC_SHARED_PREF_URL_SAVE = "URL_SAVE";
     public static final String STATIC_SHARED_PREF_LIVE_URL_SAVE = "LIVE_URL_SAVE";
+    public static final String STATIC_SHARED_PREF_TRANSMIT_DATA_TO_WEBSOCKET = "TRANSMIT_DATA_TO_WEBSOCKET";
 }

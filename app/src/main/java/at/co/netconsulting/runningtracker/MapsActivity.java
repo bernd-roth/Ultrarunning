@@ -160,7 +160,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         permissionLauncherMultiple.launch(permissions);
         checkIfLocationIsEnabled();
         startAutomatedRecording();
-        createWebSocket();
+        //createWebSocket();
     }
 
     private void createWebSocket() {
