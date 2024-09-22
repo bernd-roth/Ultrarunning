@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -111,8 +112,8 @@ import timber.log.Timber.DebugTree;
 public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
-    private Polyline polyline;
-    private List<LatLng> mPolylinePoints, mPolylinePointsTemp;
+    private Polyline polylineMain, polylineFellowRunner;
+    private List<LatLng> mPolylinePoints, mPolylinePointsTemp, mPolylinePointsFellowRunner;
     private boolean isDayNightModusActive, isTrafficEnabled, isRecording,
             gps_enabled, startingPoint, isAutomatedRecording, isFirstStart,
             enabledAutomaticCamera, isOnMyLocationButtonClicked;
@@ -144,6 +145,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         if (BuildConfig.DEBUG) {
             Timber.plant(new DebugTree());
         }
+
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -265,28 +267,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         isAutomatedRecording = sh.getBoolean(SharedPref.STATIC_SHARED_PREF_AUTOMATED_RECORDING, false);
     }
 
-    private void createPolypoints(List<LatLng> polylinePoints) {
-        boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
-
-        if (!isServiceRunning) {
-        } else if (startingPoint) {
-            marker = mMap.addMarker(new MarkerOptions().position(new LatLng(polylinePoints.get(0).latitude, polylinePoints.get(0).longitude)).title(getResources().getString(R.string.starting_position)));
-            marker.showInfoWindow();
-            startingPoint = false;
-        } else {
-            if (polyline != null && isFirstStart == false) {
-                polyline.remove();
-                isFirstStart = true;
-            }
-            if (enabledAutomaticCamera) {
-                LatLng lastLocation = polylinePoints.get(polylinePoints.size() - 1);
-                CameraUpdate update = CameraUpdateFactory.newLatLngZoom(lastLocation, zoomLevel);
-                mMap.moveCamera(update);
-            }
-            polyline = mMap.addPolyline(new PolylineOptions().addAll(polylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
-        }
-    }
-
     private static List<LatLng> groupPoints(List<LatLng> polylinePoints, Projection projection) {
         ArrayList<LatLng> result = new ArrayList<LatLng>();
         Map<Point, LatLng> groupedPoints = new HashMap<Point, LatLng>();
@@ -343,6 +323,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
 
         mPolylinePoints = new ArrayList<>();
         mPolylinePointsTemp = new ArrayList<>();
+        mPolylinePointsFellowRunner = new ArrayList<>();
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         startingPoint = true;
@@ -351,6 +332,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         RelativeLayout myRelativeLayout = (RelativeLayout) findViewById(R.id.relLayout);
         myRelativeLayout.addView(drawView);
         drawView.setVisibility(View.INVISIBLE);
+        //set screen orientaiton to potrait modus automatically
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     private void checkIfLocationIsEnabled() {
@@ -910,7 +893,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         drawView.setVisibility(View.VISIBLE);
         textViewSlow.setVisibility(View.VISIBLE);
         textViewFast.setVisibility(View.VISIBLE);
-        polyline = mMap.addPolyline(new PolylineOptions().addAll(currentSegment).color(currentColor).jointType(JointType.ROUND).width(15.0f));
+        polylineMain = mMap.addPolyline(new PolylineOptions().addAll(currentSegment).color(currentColor).jointType(JointType.ROUND).width(15.0f));
         createCheckerFlag(mPolylinePoints, true, allEntries);
     }
 
@@ -991,18 +974,71 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(LocationChangeEvent event) {
-        List<LatLng> mPolylinePoints = event.latLngs;
+        List<LatLng> mPolylinePoints = new ArrayList<>(event.latLngs); // Use a new list to avoid references
         mPolylinePointsTemp = mPolylinePoints;
+        Log.d("PolylinePointsMain", "Main Polyline Points: " + mPolylinePoints); // Log for debugging
         createPolypoints(mPolylinePoints);
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(LocationChangeEventFellowRunner event) {
-        List<LatLng> mPolylinePoints = event.latLngs;
-        createPolypointsForFellowRunner(mPolylinePoints);
+        List<LatLng> mPolylinePointsFellowRunner = new ArrayList<>(event.latLngs); // Use a new list to avoid references
+        Log.d("PolylinePointsFellow", "Fellow Runner Polyline Points: " + mPolylinePointsFellowRunner); // Log for debugging
+        createPolypointsForFellowRunner(mPolylinePointsFellowRunner);
+    }
+
+    private void createPolypoints(List<LatLng> polylinePoints) {
+        boolean isServiceRunning = isServiceRunning(getString(R.string.serviceName));
+        if (!isServiceRunning || polylinePoints == null || polylinePoints.isEmpty()) {
+            return;
+        }
+
+        // Check for starting point condition
+        if (startingPoint) {
+            marker = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(polylinePoints.get(0).latitude, polylinePoints.get(0).longitude))
+                    .title(getResources().getString(R.string.starting_position)));
+            marker.showInfoWindow();
+            startingPoint = false;
+        } else {
+            // Remove existing polyline if present
+            if (polylineMain != null && !isFirstStart) {
+                polylineMain.remove();
+                isFirstStart = true;
+            }
+            // Update camera position if enabled
+            if (enabledAutomaticCamera) {
+                LatLng lastLocation = polylinePoints.get(polylinePoints.size() - 1);
+                CameraUpdate update = CameraUpdateFactory.newLatLngZoom(lastLocation, zoomLevel);
+                mMap.moveCamera(update);
+            }
+            // Draw the polyline on the map
+            polylineMain = mMap.addPolyline(new PolylineOptions()
+                    .addAll(new ArrayList<>(polylinePoints)) // Ensure a new list
+                    .color(Color.MAGENTA)
+                    .jointType(JointType.ROUND)
+                    .width(15.0f));
+        }
     }
 
     private void createPolypointsForFellowRunner(List<LatLng> mPolylinePoints) {
-        polyline = mMap.addPolyline(new PolylineOptions().addAll(mPolylinePoints).color(Color.RED).jointType(JointType.ROUND).width(15.0f));
+        if (mPolylinePoints == null || mPolylinePoints.isEmpty()) {
+            return;
+        }
+
+        // Remove previous fellow runner polyline if it exists
+        if (polylineFellowRunner != null) {
+            polylineFellowRunner.remove();
+        }
+
+        // Add a new polyline for fellow runner
+        polylineFellowRunner = mMap.addPolyline(new PolylineOptions()
+                .addAll(new ArrayList<>(mPolylinePoints)) // Ensure a new list
+                .color(Color.BLUE)
+                .jointType(JointType.ROUND)
+                .width(15.0f));
+
+        Log.d("PolylinePointsFellow", "Fellow Runner Polyline Created with Points: " + mPolylinePoints);
     }
 
     public void showTrack(View view) {
@@ -1044,7 +1080,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                             mMap.addMarker(new MarkerOptions()
                                     .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude))
                                     .title(getString(R.string.starting_position)));
-                            polyline = mMap.addPolyline(new PolylineOptions().addAll(mPolylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
+                            polylineMain = mMap.addPolyline(new PolylineOptions().addAll(mPolylinePoints).color(Color.MAGENTA).jointType(JointType.ROUND).width(15.0f));
                             createCheckerFlag(mPolylinePoints, false, null);
                             dialog_data.cancel();
                             fabResetMap.setVisibility(View.VISIBLE);

@@ -145,11 +145,13 @@ public class ForegroundService extends Service implements LocationListener {
                 super.onMessage(webSocket, text);
 
                 fellowRunnerPerson = new Gson().fromJson(text, FellowRunner.class).getPerson();
-                fellowRunnerSessionId = new Gson().fromJson(text, FellowRunner.class).getSessionId();
-                fellowRunnerLatitude = new Gson().fromJson(text, FellowRunner.class).getLatitude();
-                fellowRunnerLongitude = new Gson().fromJson(text, FellowRunner.class).getLongitude();
-                fellowRunnerCoveredDistance = new Gson().fromJson(text, FellowRunner.class).getDistance();
-                fellowRunnerCurrentSpeed  = new Gson().fromJson(text, FellowRunner.class).getCurrentSpeed();
+                if(!fellowRunnerPerson.equals(person)) {
+                    fellowRunnerSessionId = new Gson().fromJson(text, FellowRunner.class).getSessionId();
+                    fellowRunnerLatitude = new Gson().fromJson(text, FellowRunner.class).getLatitude();
+                    fellowRunnerLongitude = new Gson().fromJson(text, FellowRunner.class).getLongitude();
+                    fellowRunnerCoveredDistance = new Gson().fromJson(text, FellowRunner.class).getDistance();
+                    fellowRunnerCurrentSpeed = new Gson().fromJson(text, FellowRunner.class).getCurrentSpeed();
+                }
 
                 Timber.d("Fellow runner: \n"
                     + "Person: " + new Gson().fromJson(text, FellowRunner.class).getPerson() + "\n"
@@ -456,7 +458,9 @@ public class ForegroundService extends Service implements LocationListener {
                                 listOfKm.add((int) (coveredDistance / 1000));
                             }
                             latLngs.add(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
-                            fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
+                            if(fellowRunnerPerson!=person) {
+                                fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
+                            }
                             saveToDatabase(mLocation.getLatitude(), mLocation.getLongitude());
 
                             //transform data to json
@@ -593,8 +597,10 @@ public class ForegroundService extends Service implements LocationListener {
         //fellowRunnerLatitude and fellowRunnerLongitude default values are 0.0, so we need to
         //ignore that in the beginning
         if(fellowRunnerLatitude!=999 && fellowRunnerLongitude!=999) {
-            fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
-            EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
+            if(fellowRunnerPerson!=null && person!=null && (!fellowRunnerPerson.equals(person))) {
+                fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
+                EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
+            }
         }
     }
 }
