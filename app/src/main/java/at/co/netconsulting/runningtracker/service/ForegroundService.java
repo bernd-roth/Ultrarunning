@@ -601,8 +601,21 @@ public class ForegroundService extends Service implements LocationListener {
         //ignore that in the beginning
         if(fellowRunnerLatitude!=999 && fellowRunnerLongitude!=999) {
             if(fellowRunnerPerson!=null && person!=null && (!fellowRunnerPerson.equals(person))) {
-                fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
-                EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
+                if(fellowRunnerLatLngs.size()==0) {
+                    fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
+                    EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
+                } else if(fellowRunnerLatLngs.size()>0) {
+                    double lastLatitude = fellowRunnerLatLngs.get(fellowRunnerLatLngs.size()-1).latitude;
+                    double lastLongitude = fellowRunnerLatLngs.get(fellowRunnerLatLngs.size()-1).longitude;
+
+                    int comparisonLatitude = Double.compare(lastLatitude, fellowRunnerLatitude);
+                    int comparisonLongitude = Double.compare(lastLongitude, fellowRunnerLongitude);
+
+                    if(comparisonLatitude!=0 || comparisonLongitude!=0) {
+                        fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
+                        EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
+                    }
+                }
             }
         }
     }

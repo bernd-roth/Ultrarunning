@@ -997,7 +997,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                     .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude))
                     .title(getResources().getString(R.string.starting_fellow_runner_position)));
             marker.showInfoWindow();
-            startingPoint = false;
+            startingPointFellowRunner = false;
         } else {
             // Add a new polyline for fellow runner
             polylineFellowRunner = mMap.addPolyline(new PolylineOptions()
