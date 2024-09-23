@@ -105,6 +105,7 @@ public class ForegroundService extends Service implements LocationListener {
     private LocalDateTime now;
     private DateTimeFormatter formatter;
     private String fellowRunnerPerson, fellowRunnerSessionId, formattedTimestamp;
+    private long startNanoTime;
 
     @Override
     public void onCreate() {
@@ -454,6 +455,7 @@ public class ForegroundService extends Service implements LocationListener {
         public void run() {
             running = true;
             starts = Instant.now();
+            startNanoTime = System.nanoTime();
 
             try {
                 while (running) {
@@ -487,26 +489,16 @@ public class ForegroundService extends Service implements LocationListener {
                             EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
                             hasEnoughTimePassed = false;
                         }
+                    } else {
+                        currentSpeed = 0;
                     }
 
-                    ends = Instant.now();
-                    Duration diffBetweenStartEnd = Duration.between(starts, ends);
+                    // Calculate elapsed time using nanoTime
+                    long elapsedNanos = System.nanoTime() - startNanoTime;
+                    long elapsedSeconds = TimeUnit.NANOSECONDS.toSeconds(elapsedNanos);
 
-                    long secl = diffBetweenStartEnd.getSeconds();
-                    seconds = Math.toIntExact(Long.valueOf(secl));
-
-                    if (seconds >= 60) {
-                        minutes += 1;
-                        seconds = 0;
-                        if (minutes >= 60) {
-                            hours += 1;
-                            minutes = 0;
-                            seconds = 0;
-                        }
-                        starts = Instant.now();
-                    }
-                    updateNotification(hours, minutes, seconds);
-                    Thread.sleep(1000);
+                    updateNotification((int) (elapsedSeconds / 3600), (int) ((elapsedSeconds % 3600) / 60), (int) (elapsedSeconds % 60));
+                    Thread.sleep(500);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

@@ -160,46 +160,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         permissionLauncherMultiple.launch(permissions);
         checkIfLocationIsEnabled();
         startAutomatedRecording();
-        //createWebSocket();
-    }
-
-    private void createWebSocket() {
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder().url("ws://192.168.0.19:6789/runningtracker").build();
-        webSocket = client.newWebSocket(request, new WebSocketListener() {
-            @Override
-            public void onMessage(@NonNull WebSocket webSocket, @NonNull ByteString bytes) {
-                super.onMessage(webSocket, bytes);
-                Toast.makeText(getApplicationContext(),"Message received",   Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
-                super.onMessage(webSocket, text);
-            }
-
-            @Override
-            public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable okhttp3.Response response) {
-                super.onFailure(webSocket, t, response);
-            }
-
-            @Override
-            public void onClosing(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
-                super.onClosing(webSocket, code, reason);
-            }
-
-            @Override
-            public void onClosed(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
-                super.onClosed(webSocket, code, reason);
-            }
-
-            @Override
-            public void onOpen(WebSocket webSocket, okhttp3.Response response) {
-                super.onOpen(webSocket, response);
-                Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
     private void startAutomatedRecording() {
