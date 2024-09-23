@@ -116,7 +116,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     private List<LatLng> mPolylinePoints, mPolylinePointsTemp, mPolylinePointsFellowRunner;
     private boolean isDayNightModusActive, isTrafficEnabled, isRecording,
             gps_enabled, startingPoint, isAutomatedRecording, isFirstStart,
-            enabledAutomaticCamera, isOnMyLocationButtonClicked;
+            enabledAutomaticCamera, isOnMyLocationButtonClicked, startingPointFellowRunner;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks, fabResetMap;
     private String mapType;
     private SupportMapFragment mapFragment;
@@ -287,6 +287,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         startingPoint = true;
+        startingPointFellowRunner = true;
         //draw speed scale and set visibility
         drawView = new DrawView(this);
         RelativeLayout myRelativeLayout = (RelativeLayout) findViewById(R.id.relLayout);
@@ -991,13 +992,20 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
             polylineFellowRunner.remove();
         }
 
-        // Add a new polyline for fellow runner
-        polylineFellowRunner = mMap.addPolyline(new PolylineOptions()
-                .addAll(new ArrayList<>(mPolylinePoints)) // Ensure a new list
-                .color(Color.BLUE)
-                .jointType(JointType.ROUND)
-                .width(15.0f));
-
+        if(startingPointFellowRunner) {
+            marker = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude))
+                    .title(getResources().getString(R.string.starting_fellow_runner_position)));
+            marker.showInfoWindow();
+            startingPoint = false;
+        } else {
+            // Add a new polyline for fellow runner
+            polylineFellowRunner = mMap.addPolyline(new PolylineOptions()
+                    .addAll(new ArrayList<>(mPolylinePoints)) // Ensure a new list
+                    .color(Color.BLUE)
+                    .jointType(JointType.ROUND)
+                    .width(15.0f));
+        }
         Log.d("PolylinePointsFellow", "Fellow Runner Polyline Created with Points: " + mPolylinePoints);
     }
 
