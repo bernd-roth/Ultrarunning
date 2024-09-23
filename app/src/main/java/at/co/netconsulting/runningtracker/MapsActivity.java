@@ -991,6 +991,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
             polylineFellowRunner.remove();
         }
 
+        if(mPolylinePoints.size()==1) {
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude)));
+        }
+
         // Add a new polyline for fellow runner
         polylineFellowRunner = mMap.addPolyline(new PolylineOptions()
                 .addAll(new ArrayList<>(mPolylinePoints)) // Ensure a new list
