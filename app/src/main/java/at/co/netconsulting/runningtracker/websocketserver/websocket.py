@@ -6,6 +6,7 @@ import websockets
 import json
 import logging
 
+# add the username`s home directory
 USER = USERNAME
 
 # Configure logging
