@@ -3,7 +3,6 @@ package at.co.netconsulting.runningtracker;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.POST_NOTIFICATIONS;
-
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -74,6 +73,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.shredzone.commons.suncalc.SunTimes;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -95,6 +95,8 @@ import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
+import at.co.netconsulting.runningtracker.general.StaticFields;
+import at.co.netconsulting.runningtracker.logger.FileLogger;
 import at.co.netconsulting.runningtracker.pojo.ColoredPoint;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEventFellowRunner;
@@ -116,7 +118,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     private List<LatLng> mPolylinePoints, mPolylinePointsTemp, mPolylinePointsFellowRunner;
     private boolean isDayNightModusActive, isTrafficEnabled, isRecording,
             gps_enabled, startingPoint, isAutomatedRecording, isFirstStart,
-            enabledAutomaticCamera, isOnMyLocationButtonClicked;
+            enabledAutomaticCamera, isOnMyLocationButtonClicked, startingPointFellowRunner;
     private FloatingActionButton fabStartRecording, fabStopRecording, fabStatistics, fabSettings, fabTracks, fabResetMap;
     private String mapType;
     private SupportMapFragment mapFragment;
@@ -160,6 +162,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         permissionLauncherMultiple.launch(permissions);
         checkIfLocationIsEnabled();
         startAutomatedRecording();
+        File logFile = new File(getApplicationContext().getExternalFilesDir(null), StaticFields.FILE_NAME);
     }
 
     private void startAutomatedRecording() {
@@ -287,6 +290,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         permissions = new String[]{ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, POST_NOTIFICATIONS};
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         startingPoint = true;
+        startingPointFellowRunner = true;
         //draw speed scale and set visibility
         drawView = new DrawView(this);
         RelativeLayout myRelativeLayout = (RelativeLayout) findViewById(R.id.relLayout);
@@ -991,18 +995,20 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
             polylineFellowRunner.remove();
         }
 
-        if(mPolylinePoints.size()==1) {
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude)));
+        if(startingPointFellowRunner) {
+            marker = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(mPolylinePoints.get(0).latitude, mPolylinePoints.get(0).longitude))
+                    .title(getResources().getString(R.string.starting_fellow_runner_position)));
+            marker.showInfoWindow();
+            startingPointFellowRunner = false;
+        } else {
+            // Add a new polyline for fellow runner
+            polylineFellowRunner = mMap.addPolyline(new PolylineOptions()
+                    .addAll(new ArrayList<>(mPolylinePoints)) // Ensure a new list
+                    .color(Color.BLUE)
+                    .jointType(JointType.ROUND)
+                    .width(15.0f));
         }
-
-        // Add a new polyline for fellow runner
-        polylineFellowRunner = mMap.addPolyline(new PolylineOptions()
-                .addAll(new ArrayList<>(mPolylinePoints)) // Ensure a new list
-                .color(Color.BLUE)
-                .jointType(JointType.ROUND)
-                .width(15.0f));
-
         Log.d("PolylinePointsFellow", "Fellow Runner Polyline Created with Points: " + mPolylinePoints);
     }
 

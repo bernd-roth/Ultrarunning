@@ -137,4 +137,5 @@
     <string name="live_export_to_server">Live export to server\t</string>
     <string name="save_live_url">Save URL for live export</string>
     <string name="export_selected_to_gpx_file">Export selected run to GPX file</string>
+    <string name="starting_fellow_runner_position">Fellow runners starting position</string>
 </resources>
