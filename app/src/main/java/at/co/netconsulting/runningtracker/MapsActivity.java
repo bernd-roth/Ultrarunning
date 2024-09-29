@@ -3,7 +3,6 @@ package at.co.netconsulting.runningtracker;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.POST_NOTIFICATIONS;
-
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -74,6 +73,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.shredzone.commons.suncalc.SunTimes;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -95,6 +95,8 @@ import at.co.netconsulting.runningtracker.databinding.ActivityMapsBinding;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.BaseActivity;
 import at.co.netconsulting.runningtracker.general.SharedPref;
+import at.co.netconsulting.runningtracker.general.StaticFields;
+import at.co.netconsulting.runningtracker.logger.FileLogger;
 import at.co.netconsulting.runningtracker.pojo.ColoredPoint;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEventFellowRunner;
@@ -160,6 +162,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         permissionLauncherMultiple.launch(permissions);
         checkIfLocationIsEnabled();
         startAutomatedRecording();
+        File logFile = new File(getApplicationContext().getExternalFilesDir(null), StaticFields.FILE_NAME);
     }
 
     private void startAutomatedRecording() {
