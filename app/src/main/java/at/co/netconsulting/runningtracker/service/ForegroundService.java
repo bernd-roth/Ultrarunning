@@ -32,11 +32,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
-
 import org.greenrobot.eventbus.EventBus;
-
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -51,11 +48,11 @@ import at.co.netconsulting.runningtracker.R;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
 import at.co.netconsulting.runningtracker.general.SharedPref;
 import at.co.netconsulting.runningtracker.general.StaticFields;
-import at.co.netconsulting.runningtracker.logger.FileLogger;
 import at.co.netconsulting.runningtracker.pojo.FellowRunner;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEventFellowRunner;
 import at.co.netconsulting.runningtracker.pojo.Run;
+import at.co.netconsulting.runningtracker.util.StaticVariables;
 import at.co.netconsulting.runningtracker.view.RestAPI;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -142,7 +139,7 @@ public class ForegroundService extends Service implements LocationListener {
     private void createWebSocket() {
         OkHttpClient client = new OkHttpClient();
 
-        Request request = new Request.Builder().url("ws://WEBSOCKET_SERVER_IP:PORT/runningtracker").build();
+        Request request = new Request.Builder().url("ws://62.178.111.184:6789/runningtracker").build();
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
             public void onMessage(@NonNull WebSocket webSocket, @NonNull ByteString bytes) {
@@ -454,6 +451,7 @@ public class ForegroundService extends Service implements LocationListener {
         boolean running = true;
         int hours, minutes, seconds = 0;
         List<LatLng> latLngs = new ArrayList<>();
+
         //List<LatLng> fellowRunnerLatLngs = new ArrayList<>();
         @Override
         public void run() {
@@ -463,39 +461,37 @@ public class ForegroundService extends Service implements LocationListener {
 
             try {
                 while (running) {
-                    if(mLocation!=null) {
+                    if (mLocation != null) {
                         hasEnoughTimePassed = hasEnoughTimePassed();
-                        if(hasEnoughTimePassed) {
+                        if (hasEnoughTimePassed) {
                             int alreadyCoveredDistance = (int) (coveredDistance / 1000) % 10;
-                            if(isVoiceMessage && (int) (coveredDistance / 1000) > 0 && alreadyCoveredDistance == 0 && !listOfKm.contains((int) (coveredDistance / 1000))) {
+                            if (isVoiceMessage && (int) (coveredDistance / 1000) > 0 && alreadyCoveredDistance == 0 && !listOfKm.contains((int) (coveredDistance / 1000))) {
                                 tts.setSpeechRate((float) 0.8);
                                 tts.speak(((int) coveredDistance / 1000) + " Kilometers have already passed by!", TextToSpeech.QUEUE_FLUSH, null, null);
                                 listOfKm.add((int) (coveredDistance / 1000));
                             }
                             latLngs.add(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
-                            if(fellowRunnerPerson!=null && fellowRunnerPerson!=person) {
-                                fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
-                            }
+                            addLatitudeLongitudeFellowRunner();
                             saveToDatabase(mLocation.getLatitude(), mLocation.getLongitude());
 
                             //transform data to json
                             String formattedTimestamp = formatCurrentTimestamp();
-                            String json = new Gson().toJson(new FellowRunner(person, sessionId=person, mLocation.getLatitude(), mLocation.getLongitude(), coveredDistance, currentSpeed, formattedTimestamp));
+                            String json = new Gson().toJson(new FellowRunner(person, sessionId = person, mLocation.getLatitude(), mLocation.getLongitude(), coveredDistance, currentSpeed, formattedTimestamp));
                             Timber.d("Foregroundservice: Json: " + json);
 
-                            if(isTransmitDataToWebsocket) {
+                            if (isTransmitDataToWebsocket) {
                                 //send json via websocket to server
                                 webSocket.send(json);
                             }
 
                             saveToRemoteDatabase();
                             EventBus.getDefault().post(new LocationChangeEvent(latLngs));
-                            //EventBus gets already fired in updateNotification for fellowRunner
-                            //EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
+                            addLatitudeLongitudeFellowRunner();
                             hasEnoughTimePassed = false;
                         }
                     } else {
                         currentSpeed = 0;
+                        addLatitudeLongitudeFellowRunner();
                     }
 
                     // Calculate elapsed time using nanoTime
@@ -510,6 +506,35 @@ public class ForegroundService extends Service implements LocationListener {
             }
         }
 
+        private void addLatitudeLongitudeFellowRunner() {
+            //people must be different
+            if (fellowRunnerPerson != null && fellowRunnerPerson != person) {
+                //fellowRunner arraylist must not be empty
+                if (fellowRunnerLatLngs.isEmpty()) {
+                    fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
+                } else {
+                    if (!compareOldNewLatLng()) {
+                        fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
+                    }
+                }
+            }
+        }
+
+        private boolean compareOldNewLatLng() {
+            //do not add the same lat/lng to arraylist
+            double oldLatitude = fellowRunnerLatLngs.get(fellowRunnerLatLngs.size() - 1).latitude;
+            double oldLongitude = fellowRunnerLatLngs.get(fellowRunnerLatLngs.size() - 1).longitude;
+
+            int comparisonLat = Double.compare(oldLatitude, fellowRunnerLatitude);
+            int comparisonLng = Double.compare(oldLongitude, fellowRunnerLongitude);
+
+            if (comparisonLat == 0 || comparisonLng == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         private String formatCurrentTimestamp() {
             // Get the current date and time
             now = LocalDateTime.now();
@@ -520,9 +545,6 @@ public class ForegroundService extends Service implements LocationListener {
             return formattedTimestamp;
         }
 
-        private int getExactStopWatch(Instant starts) {
-            return seconds;
-        }
         public void stop() {
             running = false;
         }
@@ -603,42 +625,11 @@ public class ForegroundService extends Service implements LocationListener {
                 .build());
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-//        FileLogger.logToFile(getApplicationContext(),"ForegroundService",
-//                timeStamp
-//                        + " - In updateNotification: "
-//                        + "fellowRunnerLatitude: " + fellowRunnerLatitude
-//                        + " - fellowRunnerLongitude: " + fellowRunnerLongitude);
         //fellowRunnerLatitude and fellowRunnerLongitude default values are 0.0, so we need to
         //ignore that in the beginning
-        if(fellowRunnerPerson!=null) {
-//            FileLogger.logToFile(getApplicationContext(),"ForegroundService",
-//                    timeStamp
-//                            + " - In updateNotification: "
-//                            + "fellowRunnerLatitude: " + fellowRunnerLatitude
-//                            + " - fellowRunnerLongitude: " + fellowRunnerLongitude
-//                            + " - fellowRunnerPerson: " + fellowRunnerPerson
-//                            + " - person: " + person
-//                            + " - size: " + fellowRunnerLatLngs.size());
-            if(person!=null && (!fellowRunnerPerson.equals(person))) {
-                if(fellowRunnerLatLngs.isEmpty()) {
-                    EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
-                    //fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
-                } else if(!fellowRunnerLatLngs.isEmpty()) {
-                    double lastLatitude = fellowRunnerLatLngs.get(fellowRunnerLatLngs.size()-1).latitude;
-                    double lastLongitude = fellowRunnerLatLngs.get(fellowRunnerLatLngs.size()-1).longitude;
-
-                    int comparisonLatitude = Double.compare(lastLatitude, fellowRunnerLatitude);
-                    int comparisonLongitude = Double.compare(lastLongitude, fellowRunnerLongitude);
-
-//                    FileLogger.logToFile(getApplicationContext(),"ForegroundService",
-//                            timeStamp + " - In updateNotification: "
-//                                    + "comparisonLatitude: " + comparisonLatitude
-//                                    + "comparisonLongitude: " + comparisonLongitude);
-                    if(comparisonLatitude!=0 || comparisonLongitude!=0) {
-                        //fellowRunnerLatLngs.add(new LatLng(fellowRunnerLatitude, fellowRunnerLongitude));
-                        EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
-                    }
-                }
+        if((fellowRunnerPerson!=null && person!=null) && (!fellowRunnerPerson.equals(person))) {
+            if(fellowRunnerLatitude!=0 && fellowRunnerLongitude!=0) {
+                EventBus.getDefault().post(new LocationChangeEventFellowRunner(fellowRunnerLatLngs));
             }
         }
     }

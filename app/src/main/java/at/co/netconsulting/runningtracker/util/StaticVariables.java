@@ -10,4 +10,6 @@ public class StaticVariables {
     public static final int DAYS_PER_YEAR = 365;
     public static final float CAMERA_ZOOM = 15f;
     public static final int DISPLAY_AMOUNT_OF_POINTS_IN_GRAPH = 5000;
+    public static final String WEBSOCKET_SERVER_IP_ADDRESS = "";
+    public static final String WEBSOCKET_SERVER_PORT = "";
 }

@@ -68,7 +68,7 @@
             android:foregroundServiceType="location" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAXBy5Xv5mlFS3CxHDP4IsNb53JzH2Wsh0" />
+            android:value="GOOGLE_API_KEY" />
 
         <activity
             android:name=".MapsActivity"
