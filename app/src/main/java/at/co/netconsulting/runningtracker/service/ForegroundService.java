@@ -22,7 +22,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
-import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,12 +32,10 @@ import com.android.volley.VolleyError;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import org.greenrobot.eventbus.EventBus;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -99,8 +96,8 @@ public class ForegroundService extends Service implements LocationListener {
     private String live_url;
     private OkHttpClient client;
     private WebSocket webSocket;
-    private static final String TAG = "WebSocketService";
-    private Gson gson;
+    private static final String TAG_WEBSOCKET = "WebSocketService";
+    private static final String TAG_SAVE_TO_DATABASE = "saveToDatabase()";
     private List<LatLng> fellowRunnerLatLngs;
     private LocalDateTime now;
     private DateTimeFormatter formatter;
@@ -150,7 +147,7 @@ public class ForegroundService extends Service implements LocationListener {
             @Override
             public void onMessage(@NonNull WebSocket webSocket, @NonNull ByteString bytes) {
                 super.onMessage(webSocket, bytes);
-                Log.d(TAG, "Received binary message: " + bytes.hex());
+                Timber.tag(TAG_WEBSOCKET).d("Received binary message: " + bytes.hex());
             }
 
             @Override
@@ -166,7 +163,7 @@ public class ForegroundService extends Service implements LocationListener {
                     fellowRunnerCurrentSpeed = new Gson().fromJson(text, FellowRunner.class).getCurrentSpeed();
                 }
 
-                Timber.d("Fellow runner: \n"
+                Timber.tag(TAG_WEBSOCKET).d("Fellow runner: \n"
                     + "Person: " + new Gson().fromJson(text, FellowRunner.class).getPerson() + "\n"
                     + "sessionId: " + new Gson().fromJson(text, FellowRunner.class).getSessionId() + "\n"
                     + "Latitude: " + new Gson().fromJson(text, FellowRunner.class).getLatitude() + "\n"
@@ -179,26 +176,26 @@ public class ForegroundService extends Service implements LocationListener {
             @Override
             public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable okhttp3.Response response) {
                 super.onFailure(webSocket, t, response);
-                Log.e(TAG, "WebSocket connection failed", t);
+                Timber.tag(TAG_WEBSOCKET).e(t, "WebSocket connection failed");
             }
 
             @Override
             public void onClosing(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
                 super.onClosing(webSocket, code, reason);
-                Log.d(TAG, "WebSocket connection closing: " + reason);
+                Timber.tag(TAG_WEBSOCKET).d("WebSocket connection closing: " + reason);
                 webSocket.close(1000, null);
             }
 
             @Override
             public void onClosed(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
                 super.onClosed(webSocket, code, reason);
-                Log.d(TAG, "WebSocket connection closed: " + reason);
+                Timber.tag(TAG_WEBSOCKET).d("WebSocket connection closed: " + reason);
             }
 
             @Override
             public void onOpen(WebSocket webSocket, okhttp3.Response response) {
                 super.onOpen(webSocket, response);
-                Log.d(TAG, "WebSocket connection opened");
+                Timber.tag(TAG_WEBSOCKET).d("WebSocket connection opened");
             }
         });
         // Client will clean up when WebSocket service stops
@@ -531,7 +528,7 @@ public class ForegroundService extends Service implements LocationListener {
                 run.setPerson(person);
                 db.addRun(run);
             } else {
-                Log.d("Database", "Duplicate entry found. Skipping insert.");
+                Timber.tag(TAG_SAVE_TO_DATABASE).d("ForegroundService: Duplicate entry found. Skipping insert.");
             }
         }
 
@@ -681,8 +678,6 @@ public class ForegroundService extends Service implements LocationListener {
                                 + " Fellow runner: Velocity: " + String.format("%.2f Km/h", fellowRunnerCurrentSpeed)))
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon_notification))
                 .build());
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
         //fellowRunnerLatitude and fellowRunnerLongitude default values are 0.0, so we need to
         //ignore that in the beginning
         if((fellowRunnerPerson!=null && person!=null) && (!fellowRunnerPerson.equals(person))) {
