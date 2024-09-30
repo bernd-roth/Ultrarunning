@@ -136,6 +136,13 @@ public class ForegroundService extends Service implements LocationListener {
         }
     }
 
+    /**
+     * <p>
+     * Establishing a websocket connection to specified server and port
+     * </p>
+     * @since 2.0
+     *
+     */
     private void createWebSocket() {
         OkHttpClient client = new OkHttpClient();
 
@@ -244,22 +251,41 @@ public class ForegroundService extends Service implements LocationListener {
         listOfKm = new ArrayList<>();
         fellowRunnerLatLngs = new ArrayList<>();
     }
-    private void saveToDatabase(double latitude, double longitude) {
-        //format date and time
-        dateObj = LocalDateTime.now();
+    private void saveToDatabase(double latitude, double longitude, double tempOldLatitude, double tempOldLongitude) {
+        // Check whether similar data already exists
+        boolean isDuplicate = isDuplicateRun(latitude, longitude, tempOldLatitude, tempOldLongitude);
 
-        run.setDateTime(dateObj.format(formatDateTime));
-        run.setLat(latitude);
-        run.setLng(longitude);
-        run.setNumber_of_run(lastRun);
-        run.setMeters_covered(coveredDistance);
-        run.setSpeed(currentSpeed);
-        run.setDateTimeInMs(currentMilliseconds);
-        run.setLaps(laps);
-        run.setAltitude(altitude);
-        run.setPerson(person);
-        db.addRun(run);
+        if (!isDuplicate) {
+            //format date and time
+            dateObj = LocalDateTime.now();
+
+            run.setDateTime(dateObj.format(formatDateTime));
+            run.setLat(latitude);
+            run.setLng(longitude);
+            run.setNumber_of_run(lastRun);
+            run.setMeters_covered(coveredDistance);
+            run.setSpeed(currentSpeed);
+            run.setDateTimeInMs(currentMilliseconds);
+            run.setLaps(laps);
+            run.setAltitude(altitude);
+            run.setPerson(person);
+            db.addRun(run);
+        } else {
+            Log.d("Database", "Duplicate entry found. Skipping insert.");
+        }
     }
+
+    private boolean isDuplicateRun(double latitude, double longitude, double oldLatitude, double oldLongitude) {
+        int diffLatitude = Double.compare(latitude, oldLatitude);
+        int diffLongitude = Double.compare(longitude, oldLongitude);
+
+        if(diffLatitude==0 || diffLongitude==0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private void saveToRemoteDatabase() {
         if(live_url != null &&
                 (live_url.toLowerCase().startsWith("http") ||
@@ -451,6 +477,7 @@ public class ForegroundService extends Service implements LocationListener {
         boolean running = true;
         int hours, minutes, seconds = 0;
         List<LatLng> latLngs = new ArrayList<>();
+        double tempOldLatitude = -999.0, tempOldLongitude = -999.0;
 
         //List<LatLng> fellowRunnerLatLngs = new ArrayList<>();
         @Override
@@ -472,7 +499,9 @@ public class ForegroundService extends Service implements LocationListener {
                             }
                             latLngs.add(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
                             addLatitudeLongitudeFellowRunner();
-                            saveToDatabase(mLocation.getLatitude(), mLocation.getLongitude());
+                            saveToDatabase(mLocation.getLatitude(), mLocation.getLongitude(), tempOldLatitude, tempOldLongitude);
+                            tempOldLatitude = mLocation.getLatitude();
+                            tempOldLongitude = mLocation.getLongitude();
 
                             //transform data to json
                             String formattedTimestamp = formatCurrentTimestamp();
@@ -561,9 +590,6 @@ public class ForegroundService extends Service implements LocationListener {
             currentLongitude = mLocation.getLongitude();
         }
 
-        //number of satellites
-        numberOfsatellitesInUse = mLocation.getExtras().getInt("satellites");
-
         altitude = mLocation.getAltitude();
         accuracy = mLocation.getAccuracy();
         currentSpeed = (mLocation.getSpeed() / 1000) * 3600;
@@ -593,12 +619,28 @@ public class ForegroundService extends Service implements LocationListener {
         }
         return false;
     }
+    /**
+     *
+     * @return number of satellites in use
+     * @since 1.0
+     *
+     */
+    private int getNumberOfSatellites() {
+        //number of satellites
+        if(mLocation!=null) {
+            numberOfsatellitesInUse = mLocation.getExtras().getInt("satellites");
+            return numberOfsatellitesInUse;
+        } else {
+            return numberOfsatellitesInUse = 0;
+        }
+    }
+
     private void updateNotification(int hours, int minutes, int seconds) {
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(String.format("%02d:%02d:%02d", hours, minutes, seconds))
                 .setStyle(new NotificationCompat.BigTextStyle().bigText("Distance: " + String.format("%.2f Km", coveredDistance / 1000)
                         + " Velocity: " + String.format("%.2f Km/h", currentSpeed)
-                        + " Satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
+                        + " Satellites: " + getNumberOfSatellites() + "/" + satelliteCount
                         + " Altitude: " + String.format("%.2f Meter", altitude)
                         + " Fellow runner: Distance: " + String.format("%.2f Km", fellowRunnerCoveredDistance / 1000)
                         + " Fellow runner: Velocity: " + String.format("%.2f Km/h", fellowRunnerCurrentSpeed)))
@@ -617,7 +659,7 @@ public class ForegroundService extends Service implements LocationListener {
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(
                 "Distance: " + String.format("%.2f Km", coveredDistance / 1000)
                                 + " Velocity: " + String.format("%.2f Km/h", currentSpeed)
-                                + " Satellites: " + numberOfsatellitesInUse + "/" + satelliteCount
+                                + " Satellites: " + getNumberOfSatellites() + "/" + satelliteCount
                                 + " Altitude: " + String.format("%.2f Meter", altitude)
                                 + " Fellow runner: Distance: " + String.format("%.2f Km", fellowRunnerCoveredDistance / 1000)
                                 + " Fellow runner: Velocity: " + String.format("%.2f Km/h", fellowRunnerCurrentSpeed)))
