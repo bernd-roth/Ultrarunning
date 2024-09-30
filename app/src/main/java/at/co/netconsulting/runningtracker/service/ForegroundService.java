@@ -52,7 +52,6 @@ import at.co.netconsulting.runningtracker.pojo.FellowRunner;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEvent;
 import at.co.netconsulting.runningtracker.pojo.LocationChangeEventFellowRunner;
 import at.co.netconsulting.runningtracker.pojo.Run;
-import at.co.netconsulting.runningtracker.util.StaticVariables;
 import at.co.netconsulting.runningtracker.view.RestAPI;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -250,29 +249,6 @@ public class ForegroundService extends Service implements LocationListener {
         });
         listOfKm = new ArrayList<>();
         fellowRunnerLatLngs = new ArrayList<>();
-    }
-    private void saveToDatabase(double latitude, double longitude, double tempOldLatitude, double tempOldLongitude) {
-        // Check whether similar data already exists
-        boolean isDuplicate = isDuplicateRun(latitude, longitude, tempOldLatitude, tempOldLongitude);
-
-        if (!isDuplicate) {
-            //format date and time
-            dateObj = LocalDateTime.now();
-
-            run.setDateTime(dateObj.format(formatDateTime));
-            run.setLat(latitude);
-            run.setLng(longitude);
-            run.setNumber_of_run(lastRun);
-            run.setMeters_covered(coveredDistance);
-            run.setSpeed(currentSpeed);
-            run.setDateTimeInMs(currentMilliseconds);
-            run.setLaps(laps);
-            run.setAltitude(altitude);
-            run.setPerson(person);
-            db.addRun(run);
-        } else {
-            Log.d("Database", "Duplicate entry found. Skipping insert.");
-        }
     }
 
     private boolean isDuplicateRun(double latitude, double longitude, double oldLatitude, double oldLongitude) {
@@ -535,6 +511,30 @@ public class ForegroundService extends Service implements LocationListener {
             }
         }
 
+        private void saveToDatabase(double latitude, double longitude, double tempOldLatitude, double tempOldLongitude) {
+            // Check whether similar data already exists
+            boolean isDuplicate = isDuplicateRun(latitude, longitude, tempOldLatitude, tempOldLongitude);
+
+            if (!isDuplicate) {
+                //format date and time
+                dateObj = LocalDateTime.now();
+
+                run.setDateTime(dateObj.format(formatDateTime));
+                run.setLat(latitude);
+                run.setLng(longitude);
+                run.setNumber_of_run(lastRun);
+                run.setMeters_covered(coveredDistance);
+                run.setSpeed(currentSpeed);
+                run.setDateTimeInMs(currentMilliseconds);
+                run.setLaps(laps);
+                run.setAltitude(getAltitudeFromLocation());
+                run.setPerson(person);
+                db.addRun(run);
+            } else {
+                Log.d("Database", "Duplicate entry found. Skipping insert.");
+            }
+        }
+
         private void addLatitudeLongitudeFellowRunner() {
             //people must be different
             if (fellowRunnerPerson != null && fellowRunnerPerson != person) {
@@ -590,8 +590,6 @@ public class ForegroundService extends Service implements LocationListener {
             currentLongitude = mLocation.getLongitude();
         }
 
-        altitude = mLocation.getAltitude();
-        accuracy = mLocation.getAccuracy();
         currentSpeed = (mLocation.getSpeed() / 1000) * 3600;
 
         if(minDistanceMeter==1 && minTimeMs==1) {
@@ -619,6 +617,21 @@ public class ForegroundService extends Service implements LocationListener {
         }
         return false;
     }
+    public float getAccuracyFromLocation() {
+        if(mLocation!=null) {
+            return accuracy = mLocation.getAccuracy();
+        } else {
+            return 0;
+        }
+    }
+
+    public double getAltitudeFromLocation() {
+        if(mLocation!=null) {
+            return altitude = mLocation.getAltitude();
+        } else {
+            return 0;
+        }
+    }
     /**
      *
      * @return number of satellites in use
@@ -638,12 +651,14 @@ public class ForegroundService extends Service implements LocationListener {
     private void updateNotification(int hours, int minutes, int seconds) {
         notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(String.format("%02d:%02d:%02d", hours, minutes, seconds))
-                .setStyle(new NotificationCompat.BigTextStyle().bigText("Distance: " + String.format("%.2f Km", coveredDistance / 1000)
-                        + " Velocity: " + String.format("%.2f Km/h", currentSpeed)
-                        + " Satellites: " + getNumberOfSatellites() + "/" + satelliteCount
-                        + " Altitude: " + String.format("%.2f Meter", altitude)
-                        + " Fellow runner: Distance: " + String.format("%.2f Km", fellowRunnerCoveredDistance / 1000)
-                        + " Fellow runner: Velocity: " + String.format("%.2f Km/h", fellowRunnerCurrentSpeed)))
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(
+                        "Distance: " + String.format("%.2f Km", coveredDistance / 1000)
+                                + " Accuracy: " + String.format("%.2f meter", getAccuracyFromLocation())
+                                + " Velocity: " + String.format("%.2f Km/h", currentSpeed)
+                                + " Satellites: " + getNumberOfSatellites() + "/" + satelliteCount
+                                + " Altitude: " + String.format("%.2f Meter", altitude)
+                                + " Fellow runner: Distance: " + String.format("%.2f Km", fellowRunnerCoveredDistance / 1000)
+                                + " Fellow runner: Velocity: " + String.format("%.2f Km/h", fellowRunnerCurrentSpeed)))
                 .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_notification))
                 //.setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
@@ -657,7 +672,8 @@ public class ForegroundService extends Service implements LocationListener {
         manager.notify(NOTIFICATION_ID, notificationBuilder
                 .setContentTitle(String.format("%02d:%02d:%02d", hours, minutes, seconds))
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(
-                "Distance: " + String.format("%.2f Km", coveredDistance / 1000)
+                        "Distance: " + String.format("%.2f Km", coveredDistance / 1000)
+                                + " Accuracy: " + String.format("%.2f meter", getAccuracyFromLocation())
                                 + " Velocity: " + String.format("%.2f Km/h", currentSpeed)
                                 + " Satellites: " + getNumberOfSatellites() + "/" + satelliteCount
                                 + " Altitude: " + String.format("%.2f Meter", altitude)
