@@ -1,77 +1,18 @@
 package at.co.netconsulting.runningtracker.pojo;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@AllArgsConstructor
+@Getter
+@Setter
 public class FellowRunner {
+    private String person;
+    private String sessionId;
     private double latitude;
     private double longitude;
     private float distance;
     private double currentSpeed;
-    private String sessionId;
     private String formattedTimestamp;
-    private String person;
-
-    public FellowRunner(String person, String sessionId, double latitude, double longitude, float distance, double currentSpeed, String formattedTimestamp) {
-        this.person = person;
-        this.sessionId = sessionId;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.distance = distance;
-        this.currentSpeed = currentSpeed;
-        this.formattedTimestamp = formattedTimestamp;
-    }
-
-    public String getPerson() {
-        return person;
-    }
-
-    public void setPerson(String person) {
-        this.person = person;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public String getFormattedTimestamp() {
-        return formattedTimestamp;
-    }
-
-    public void setFormattedTimestamp(String formattedTimestamp) {
-        this.formattedTimestamp = formattedTimestamp;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public float getDistance() {
-        return distance;
-    }
-
-    public void setDistance(float distance) {
-        this.distance = distance;
-    }
-
-    public double getCurrentSpeed() {
-        return currentSpeed;
-    }
-
-    public void setCurrentSpeed(double currentSpeed) {
-        this.currentSpeed = currentSpeed;
-    }
 }
