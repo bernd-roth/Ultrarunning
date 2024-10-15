@@ -14,5 +14,6 @@ public class FellowRunner {
     private double longitude;
     private float distance;
     private double currentSpeed;
+    private double altitude;
     private String formattedTimestamp;
 }

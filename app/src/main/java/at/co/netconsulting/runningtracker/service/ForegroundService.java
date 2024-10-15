@@ -478,7 +478,7 @@ public class ForegroundService extends Service implements LocationListener {
 
                             //transform data to json
                             String formattedTimestamp = formatCurrentTimestamp();
-                            String json = new Gson().toJson(new FellowRunner(person, sessionId = person, mLocation.getLatitude(), mLocation.getLongitude(), coveredDistance, currentSpeed, formattedTimestamp));
+                            String json = new Gson().toJson(new FellowRunner(person, sessionId = person, mLocation.getLatitude(), mLocation.getLongitude(), coveredDistance, currentSpeed, altitude, formattedTimestamp));
                             Timber.d("Foregroundservice: Json: " + json);
 
                             if (isTransmitDataToWebsocket) {
