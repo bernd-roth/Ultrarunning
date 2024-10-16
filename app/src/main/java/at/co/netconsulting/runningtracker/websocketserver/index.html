@@ -3,24 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RunningTracker</title>
+    <title>Running Tracker</title>
     <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Remove scrollbars */
+        }
+
         #map {
-            height: 100vh;
+            height: 67vh; /* Take up 2/3 of the visible height */
+            width: 100%;
+        }
+
+        #altitudeChartContainer {
+            height: 33vh; /* Take up 1/3 of the visible height */
+            width: 100%;
+            padding: 0;
+        }
+
+        #altitudeChart {
+            height: 100%;
             width: 100%;
         }
     </style>
 </head>
 <body>
 
+<!-- Google Map -->
 <div id="map"></div>
 
+<!-- Altitude Graph Container -->
+<div id="altitudeChartContainer">
+    <canvas id="altitudeChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     let map;
     let websocket;
     let polylines = {};  // Object to store polylines by session ID
     let startMarkers = {};  // Object to store start markers by session ID
     let endMarkers = {};    // Object to store end markers by session ID
+    let altitudeChart;  // Altitude chart instance
+    let altitudeData = {};  // Store altitude data by session ID
 
     // Initialize and add the map
     function initMap() {
@@ -34,9 +61,47 @@
         connectToWebSocket();
     }
 
+    // Initialize the altitude chart using Chart.js
+    function initAltitudeChart() {
+        const ctx = document.getElementById('altitudeChart').getContext('2d');
+        altitudeChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],  // x-axis labels for distance (same for all users)
+                datasets: []  // Datasets will be added dynamically for each person
+            },
+            options: {
+                maintainAspectRatio: false,  // Allow the chart to resize without maintaining aspect ratio
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Distance (km)'
+                        },
+                        ticks: {
+                            autoSkip: false  // Ensure all x-axis labels are shown
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Altitude (meters)'
+                        },
+                        min: 0  // Ensure the y-axis starts at 0
+                    }
+                },
+                layout: {
+                    padding: {
+                        bottom: 30  // Add padding at the bottom so the x-axis isn't cut off
+                    }
+                }
+            }
+        });
+    }
+
     // Function to connect to the WebSocket
     function connectToWebSocket() {
-        websocket = new WebSocket('ws://MY_IP_ADDRESS:MY_PORT/runningtracker');
+        websocket = new WebSocket('ws://IP_ADDRESS:PORT/runningtracker');
 
         websocket.onopen = function(event) {
             console.log('Connected to WebSocket server');
@@ -48,16 +113,17 @@
             // Parse the JSON message
             const data = JSON.parse(event.data);
 
-            // Extract latitude, longitude, timestamp, and session ID
+            // Extract latitude, longitude, timestamp, session ID, and altitude
             const lat = parseFloat(data.latitude);
             const lng = parseFloat(data.longitude);
+            const altitude = parseFloat(data.altitude); // Assume altitude is provided
             const sessionId = data.sessionId || "default";  // Use sessionId if available, else "default"
             const person = data.person || "Unknown";  // Assuming person info is in the data
-            const currentSpeed = (data.currentSpeed).toFixed(2) || "0 km/h";  // Assuming currentSpeed info is in the data
             const distance = (data.distance / 1000).toFixed(2) || "0 Km";  // Convert to kilometers and format to two decimal places
 
             if (lat && lng) {
-                updateMapWithNewCoordinate(lat, lng, sessionId, data.timestamp, person, currentSpeed, distance);
+                updateMapWithNewCoordinate(lat, lng, sessionId, data.timestamp, person, distance);
+                updateAltitudeChart(sessionId, distance, altitude);  // Update the altitude chart for this session ID
             }
         };
 
@@ -72,12 +138,11 @@
     }
 
     // Function to update the map and polyline with a new coordinate
-    function updateMapWithNewCoordinate(lat, lng, sessionId, timestamp, person, currentSpeed, distance) {
+    function updateMapWithNewCoordinate(lat, lng, sessionId, timestamp, person, distance) {
         const newPosition = new google.maps.LatLng(lat, lng);  // Make sure the new position is a LatLng object
 
         // If this sessionId doesn't have a polyline yet, create one
         if (!polylines[sessionId]) {
-            // Assign a random color to this session's polyline
             const polylineColor = getRandomColor();
 
             // Create a new polyline for this session
@@ -96,58 +161,59 @@
             startMarkers[sessionId] = new google.maps.Marker({
                 position: newPosition,
                 map: map,
-                label: "S",  // Label for the start marker
+                label: "S",
                 title: "Start Position (" + timestamp + ")",
             });
 
             addInfoWindow(startMarkers[sessionId], "Start Position: " + timestamp);
         } else {
-            // If the polyline exists, just add a new point to its path
+            // Add new point to the polyline's path
             const path = polylines[sessionId].getPath();
-            path.push(newPosition);  // Push new position to the path
+            path.push(newPosition);
         }
 
-                // Update or place the end marker to the new position
-                if (!endMarkers[sessionId]) {
-                        endMarkers[sessionId] = new google.maps.Marker({
-                                position: newPosition,
-                                map: map,
-                                label: "E",  // Label for the end marker
-                                title: "Current Position (" + timestamp + ")",
-                        });
+        // Update the end marker
+        if (!endMarkers[sessionId]) {
+            endMarkers[sessionId] = new google.maps.Marker({
+                position: newPosition,
+                map: map,
+                label: "E",
+                title: "Current Position (" + timestamp + ")",
+            });
+        } else {
+            endMarkers[sessionId].setPosition(newPosition);
+        }
 
-                        const contentString = "Person: " + person + " - " + "Current Speed: " + currentSpeed;
-
-                        // Create the info window
-                        const infoWindow = new google.maps.InfoWindow({
-                                content: contentString
-                        });
-
-                        // Open the info window on the map at the current marker's position
-                        infoWindow.open(map, endMarkers[sessionId]);
-
-                        // Store the info window if needed for later reference (optional)
-                        endMarkers[sessionId].infoWindow = infoWindow;
-                } else {
-                        endMarkers[sessionId].setPosition(newPosition);  // Move the existing end marker to the new position
-                        const contentString = "Person: " + person + " - Time and Date: " + timestamp + " - Distance: " + distance + "Km - Current Speed: " + currentSpeed + " km/h";
-                        endMarkers[sessionId].setTitle("Current Position (" + timestamp + ")");
-
-                        // Update the existing info window content
-                        if (endMarkers[sessionId].infoWindow) {
-                                endMarkers[sessionId].infoWindow.setContent(contentString);
-                                endMarkers[sessionId].infoWindow.open(map, endMarkers[sessionId]);  // Ensure it's opened
-                        } else {
-                                // If the infoWindow wasn't created before, create and open it
-                                const infoWindow = new google.maps.InfoWindow({
-                                        content: contentString
-                                });
-                                infoWindow.open(map, endMarkers[sessionId]);
-                                endMarkers[sessionId].infoWindow = infoWindow;
-                        }
-                }
-        // Center the map on the new position
         map.setCenter(newPosition);
+    }
+
+    // Function to update the altitude chart with new data for a specific sessionId
+    function updateAltitudeChart(sessionId, distance, altitude) {
+        if (!altitudeData[sessionId]) {
+            altitudeData[sessionId] = { distances: [], altitudes: [] };
+
+            const color = getRandomColor();
+
+            // Create a new dataset for this sessionId
+            altitudeChart.data.datasets.push({
+                label: `Person ${sessionId}`,
+                borderColor: color,
+                fill: false,
+                data: []
+            });
+        }
+
+        // Add new data for this sessionId
+        altitudeData[sessionId].distances.push(distance);
+        altitudeData[sessionId].altitudes.push(altitude);
+
+        const datasetIndex = altitudeChart.data.datasets.findIndex(dataset => dataset.label === `Person ${sessionId}`);
+
+        // Update the dataset
+        altitudeChart.data.labels = altitudeData[sessionId].distances;  // Set the x-axis labels (distances)
+        altitudeChart.data.datasets[datasetIndex].data = altitudeData[sessionId].altitudes;  // Set the y-axis data (altitudes)
+
+        altitudeChart.update();
     }
 
     // Function to generate a random hex color
@@ -162,18 +228,27 @@
 
     // Function to add an info window to a marker
     function addInfoWindow(marker, content) {
-        const infoWindow = new google.maps.InfoWindow({
-            content: content,
-        });
+        const infoWindow = new google.maps.InfoWindow({ content });
 
         marker.addListener('click', function() {
-            infoWindow.open(map, marker);
+            infoWindow.open(marker.getMap(), marker);
         });
     }
-</script>
 
-<!-- Load Google Maps API (Replace YOUR_GOOGLE_MAPS_API_KEY with your API key) -->
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+    // Load the map script asynchronously
+    (function loadMapScript() {
+        const script = document.createElement('script');
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap';
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
+    })();
+
+    // Initialize the altitude chart on page load
+    window.onload = function() {
+        initAltitudeChart();
+    };
+</script>
 
 </body>
 </html>
