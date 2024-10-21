@@ -65,6 +65,8 @@
     let gpxPolyline;  // Polyline for GPX file
     let altitudeChart;  // Altitude chart instance
     let altitudeData = [];  // Store altitude data from GPX
+    let altitudeCoordinates = [];  // Store coordinates corresponding to altitude data
+    let chartMarker = null;  // Marker for chart point
 
     // Initialize and add the map
     function initMap() {
@@ -76,58 +78,69 @@
     }
 
     // Initialize the altitude chart using Chart.js
-function initAltitudeChart() {
-    const ctx = document.getElementById('altitudeChart').getContext('2d');
-    altitudeChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],  // x-axis labels for distance (same for all users)
-            datasets: [{
-                label: 'Altitude',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                fill: false,
-                data: []  // Altitude data
-            }]
-        },
-        options: {
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Distance (km)'
+    function initAltitudeChart() {
+        const ctx = document.getElementById('altitudeChart').getContext('2d');
+        altitudeChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],  // x-axis labels for distance
+                datasets: [{
+                    label: 'Altitude',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    fill: false,
+                    data: []  // Altitude data
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Distance (km)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Altitude (m)'
+                        },
+                        min: 0
                     }
                 },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Altitude (m)'
-                    },
-                    min: 0
-                }
-            },
-            plugins: {
-                zoom: {
-                    pan: {
-                        enabled: true,
-                        mode: 'x',  // Allow panning on the x-axis (distance)
-                    },
+                plugins: {
                     zoom: {
-                        enabled: true,
-                        mode: 'x',  // Allow zooming on the x-axis (distance)
-                        drag: true,  // Enable drag-to-zoom
+                        pan: {
+                            enabled: true,
+                            mode: 'x',  // Allow panning on the x-axis (distance)
+                        },
+                        zoom: {
+                            enabled: true,
+                            mode: 'x',  // Allow zooming on the x-axis (distance)
+                            drag: true,  // Enable drag-to-zoom
+                        }
+                    }
+                },
+                onClick: (event) => {
+                    const points = altitudeChart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, false);
+                    if (points.length) {
+                        const firstPoint = points[0]; // Get the first point
+                        const index = firstPoint.index; // Get the index of the clicked point
+                        const coordinates = altitudeCoordinates[index]; // Get corresponding lat/lng
+                        if (coordinates) {
+                            addMarkerAtCoordinate(coordinates); // Add marker at the clicked coordinate
+                        }
                     }
                 }
             }
-        }
-    });
-}
+        });
+    }
 
     // Function to handle GPX file upload
     function loadGPX() {
         const fileInput = document.getElementById('gpxFile');
         const file = fileInput.files[0];
-        
+
         if (file) {
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -140,45 +153,35 @@ function initAltitudeChart() {
         }
     }
 
-function resetMap() {
-    resetAltitudeChart();
+    function resetMap() {
+        resetAltitudeChart();
 
-    // Clear all polylines
-    if (gpxPolyline) {
-        gpxPolyline.setMap(null);  // Remove the GPX polyline from the map
-        gpxPolyline = null;
+        // Clear all polylines
+        if (gpxPolyline) {
+            gpxPolyline.setMap(null);  // Remove the GPX polyline from the map
+            gpxPolyline = null;
+        }
+
+        // Clear all markers (start and end markers)
+        if (chartMarker) {
+            chartMarker.setMap(null);  // Remove existing chart marker
+            chartMarker = null;
+        }
+
+        // Reset the altitude chart
+        resetAltitudeChart();
     }
 
-    // Clear all WebSocket polylines
-    for (let sessionId in polylines) {
-        polylines[sessionId].setMap(null);  // Remove each polyline
-        delete polylines[sessionId];  // Delete the polyline from the object
+    function resetAltitudeChart() {
+        // Clear the altitude data
+        altitudeData = [];
+        altitudeCoordinates = [];  // Clear the coordinates array
+
+        // Clear the chart labels and data
+        altitudeChart.data.labels = [];
+        altitudeChart.data.datasets.forEach(dataset => dataset.data = []);
+        altitudeChart.update();
     }
-
-    // Clear all markers (start and end markers)
-    for (let sessionId in startMarkers) {
-        startMarkers[sessionId].setMap(null);  // Remove start markers
-        delete startMarkers[sessionId];
-    }
-
-    for (let sessionId in endMarkers) {
-        endMarkers[sessionId].setMap(null);  // Remove end markers
-        delete endMarkers[sessionId];
-    }
-
-    // Reset the altitude chart
-    resetAltitudeChart();
-}
-
-function resetAltitudeChart() {
-    // Clear the altitude data
-    altitudeData = [];
-
-    // Clear the chart labels and data
-    altitudeChart.data.labels = [];
-    altitudeChart.data.datasets.forEach(dataset => dataset.data = []);
-    altitudeChart.update();
-}
 
     // Function to parse the GPX file and plot it on the map
     function parseGPX(gpxData) {
@@ -188,7 +191,7 @@ function resetAltitudeChart() {
 
         const coordinates = [];
         altitudeData = [];
-        
+
         for (let i = 0; i < trackPoints.length; i++) {
             const lat = parseFloat(trackPoints[i].getAttribute('lat'));
             const lon = parseFloat(trackPoints[i].getAttribute('lon'));
@@ -196,6 +199,7 @@ function resetAltitudeChart() {
 
             coordinates.push({ lat, lng: lon });
             altitudeData.push(elevation);
+            altitudeCoordinates.push({ lat, lng: lon }); // Store lat/lng for each altitude point
         }
 
         // Draw the GPX polyline on the map
@@ -244,12 +248,27 @@ function resetAltitudeChart() {
         altitudeChart.update();
     }
 
+    // Function to add a marker at the clicked coordinate
+    function addMarkerAtCoordinate(coordinate) {
+        if (chartMarker) {
+            chartMarker.setMap(null);  // Remove existing marker if any
+        }
+
+        chartMarker = new google.maps.Marker({
+            position: coordinate,
+            map: map,
+            title: 'Altitude Point'
+        });
+
+        map.panTo(coordinate); // Pan the map to the marker's position
+    }
+
     // Haversine formula to calculate distance between two lat/lng points
     function calculateDistance(lat1, lon1, lat2, lon2) {
         const R = 6371; // Radius of the Earth in km
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = 
+        const a =
             Math.sin(dLat/2) * Math.sin(dLat/2) +
             Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
             Math.sin(dLon/2) * Math.sin(dLon/2);
