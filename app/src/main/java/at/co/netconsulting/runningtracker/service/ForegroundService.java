@@ -142,7 +142,7 @@ public class ForegroundService extends Service implements LocationListener {
     private void createWebSocket() {
         OkHttpClient client = new OkHttpClient();
 
-        Request request = new Request.Builder().url("ws://62.178.111.184:6789/runningtracker").build();
+        Request request = new Request.Builder().url("ws://MY_IP_ADDRESS:MY_PORT/runningtracker").build();
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
             public void onMessage(@NonNull WebSocket webSocket, @NonNull ByteString bytes) {
@@ -490,6 +490,10 @@ public class ForegroundService extends Service implements LocationListener {
                             EventBus.getDefault().post(new LocationChangeEvent(latLngs));
                             addLatitudeLongitudeFellowRunner();
                             hasEnoughTimePassed = false;
+                        } else {
+                            if(latLngs!=null || !latLngs.isEmpty()) {
+                                EventBus.getDefault().post(new LocationChangeEvent(latLngs));
+                            }
                         }
                     } else {
                         currentSpeed = 0;
@@ -601,6 +605,13 @@ public class ForegroundService extends Service implements LocationListener {
                         calculateLaps(result[0]);
                         oldLatitude = currentLatitude;
                         oldLongitude = currentLongitude;
+                        return hasEnoughTimePassed = true;
+                    }
+                    oldCurrentMilliseconds = currentMilliseconds;
+                } else {
+                    if (isFirstEntry) {
+                        isFirstEntry = false;
+                    } else {
                         return hasEnoughTimePassed = true;
                     }
                     oldCurrentMilliseconds = currentMilliseconds;
