@@ -30,20 +30,16 @@ Eventually, click the save button!
  * * Battery optimization
  * * Day/Night modus
  * * Traffic overview
- * * Voice message every ... kilometers
+ * * Voice message every 10 kilometers
  * * Recording will be done automatically after a delay of 5 seconds
 
  * Database settings
  * * Backup interval
- * * Export to REST server
- * * Import database
+  * * Import database
  * * Export database
  * * Import GPX file
  * * Export to GPX file
  * * Delete all entries from database
-
- * Reorg
- * * Reorg database
 
  * Websocket server
  * * establishing a connection to a websocket server, 
