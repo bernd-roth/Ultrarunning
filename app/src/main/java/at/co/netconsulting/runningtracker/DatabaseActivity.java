@@ -457,30 +457,30 @@ public class DatabaseActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
-    public void reorgDatabase(View view) throws ParseException {
-        SimpleDateFormat dateformatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        TreeMap<Long, Run> run = new TreeMap<>();
-        List<Run> allEntriesGroupedByRun = db.getAllEntriesGroupedByRun();
-
-        for(int i = 0; i<allEntriesGroupedByRun.size(); i++) {
-            String dateTime = allEntriesGroupedByRun.get(i).getDateTime();
-
-            Date date = dateformatter.parse(dateTime);
-            long msec = date.getTime();
-            run.put(msec, allEntriesGroupedByRun.get(i));
-        }
-
-        int newNumberOfRun = 0;
-        long key = 0;
-        for (Map.Entry<Long, Run> entry : run.entrySet()) {
-            key = entry.getKey();
-
-            int oldNumberOfRun = run.get(key).getNumber_of_run();
-            newNumberOfRun++;
-            db.updateNumberOfRun(oldNumberOfRun, newNumberOfRun);
-        }
-        db.close();
-    }
+//    public void reorgDatabase(View view) throws ParseException {
+//        SimpleDateFormat dateformatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+//        TreeMap<Long, Run> run = new TreeMap<>();
+//        List<Run> allEntriesGroupedByRun = db.getAllEntriesGroupedByRun();
+//
+//        for(int i = 0; i<allEntriesGroupedByRun.size(); i++) {
+//            String dateTime = allEntriesGroupedByRun.get(i).getDateTime();
+//
+//            Date date = dateformatter.parse(dateTime);
+//            long msec = date.getTime();
+//            run.put(msec, allEntriesGroupedByRun.get(i));
+//        }
+//
+//        int newNumberOfRun = 0;
+//        long key = 0;
+//        for (Map.Entry<Long, Run> entry : run.entrySet()) {
+//            key = entry.getKey();
+//
+//            int oldNumberOfRun = run.get(key).getNumber_of_run();
+//            newNumberOfRun++;
+//            db.updateNumberOfRun(oldNumberOfRun, newNumberOfRun);
+//        }
+//        db.close();
+//    }
 
     public void importGPXFile(View view) {
         Intent data = new Intent(Intent.ACTION_GET_CONTENT);
