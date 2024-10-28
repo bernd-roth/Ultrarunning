@@ -399,49 +399,49 @@ public class DatabaseActivity extends AppCompatActivity {
         });
         builderSingle.show();
     }
-    public void exportToServer(View v) {
-        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_URL_SAVE);
-        if(editTextURL.getParent()!=null) {
-            ((ViewGroup)editTextURL.getParent()).removeView(editTextURL);
-        }
-            AlertDialog.Builder alert = new AlertDialog.Builder(DatabaseActivity.this);
-            alert.setTitle(R.string.please_type_your_url);
-            alert.setView(editTextURL);
-            editTextURL.setText(httpUrl);
-
-            alert.setCancelable(false);
-            alert.setPositiveButton(R.string.export_positive_button, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    String httpUrl = editTextURL.getText().toString();
-                    List<Run> allEntries = new ArrayList<Run>(db.getAllEntries());
-
-                    RestAPI restAPI = new RestAPI(getApplicationContext(), httpUrl);
-                    restAPI.postRequest(new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
-                        }
-                    }, allEntries.iterator());
-                }
-            });
-            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    dialog.cancel();
-                }
-            });
-            alert.setNeutralButton("Save", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_URL_SAVE, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedpreferences.edit();
-
-                    String httpUrl = editTextURL.getText().toString();
-                    editor.putString(SharedPref.STATIC_SHARED_PREF_URL_SAVE, httpUrl);
-                    editor.commit();
-                }
-            });
-            alert.show();
-    }
+//    public void exportToServer(View v) {
+//        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_URL_SAVE);
+//        if(editTextURL.getParent()!=null) {
+//            ((ViewGroup)editTextURL.getParent()).removeView(editTextURL);
+//        }
+//            AlertDialog.Builder alert = new AlertDialog.Builder(DatabaseActivity.this);
+//            alert.setTitle(R.string.please_type_your_url);
+//            alert.setView(editTextURL);
+//            editTextURL.setText(httpUrl);
+//
+//            alert.setCancelable(false);
+//            alert.setPositiveButton(R.string.export_positive_button, new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int whichButton) {
+//                    String httpUrl = editTextURL.getText().toString();
+//                    List<Run> allEntries = new ArrayList<Run>(db.getAllEntries());
+//
+//                    RestAPI restAPI = new RestAPI(getApplicationContext(), httpUrl);
+//                    restAPI.postRequest(new Response.ErrorListener() {
+//                        @Override
+//                        public void onErrorResponse(VolleyError error) {
+//                            Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+//                        }
+//                    }, allEntries.iterator());
+//                }
+//            });
+//            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int whichButton) {
+//                    dialog.cancel();
+//                }
+//            });
+//            alert.setNeutralButton("Save", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialogInterface, int i) {
+//                    sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_URL_SAVE, Context.MODE_PRIVATE);
+//                    SharedPreferences.Editor editor = sharedpreferences.edit();
+//
+//                    String httpUrl = editTextURL.getText().toString();
+//                    editor.putString(SharedPref.STATIC_SHARED_PREF_URL_SAVE, httpUrl);
+//                    editor.commit();
+//                }
+//            });
+//            alert.show();
+//    }
 
     @Subscribe
     @Override
@@ -580,32 +580,32 @@ public class DatabaseActivity extends AppCompatActivity {
             EventBus.getDefault().unregister(this);
         }
     }
-    public void liveExportToServer(View view) {
-        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_URL_SAVE);
-        if(editTextLiveURL.getParent()!=null) {
-            ((ViewGroup)editTextLiveURL.getParent()).removeView(editTextLiveURL);
-        }
-        AlertDialog.Builder alert = new AlertDialog.Builder(DatabaseActivity.this);
-        alert.setTitle(R.string.please_type_your_url);
-        alert.setView(editTextLiveURL);
-        editTextLiveURL.setText(editTextLiveURL.getText().toString().toUpperCase());
-
-        alert.setCancelable(false);
-        alert.setPositiveButton(R.string.save_live_url, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_LIVE_URL_SAVE, Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedpreferences.edit();
-
-                String httpUrl = editTextLiveURL.getText().toString();
-                editor.putString(SharedPref.STATIC_SHARED_PREF_URL_SAVE, httpUrl);
-                editor.commit();
-            }
-        });
-        alert.setNegativeButton(getResources().getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                dialog.cancel();
-            }
-        });
-        alert.show();
-    }
+//    public void liveExportToServer(View view) {
+//        loadSharedPreferences(SharedPref.STATIC_SHARED_PREF_URL_SAVE);
+//        if(editTextLiveURL.getParent()!=null) {
+//            ((ViewGroup)editTextLiveURL.getParent()).removeView(editTextLiveURL);
+//        }
+//        AlertDialog.Builder alert = new AlertDialog.Builder(DatabaseActivity.this);
+//        alert.setTitle(R.string.please_type_your_url);
+//        alert.setView(editTextLiveURL);
+//        editTextLiveURL.setText(editTextLiveURL.getText().toString().toUpperCase());
+//
+//        alert.setCancelable(false);
+//        alert.setPositiveButton(R.string.save_live_url, new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int whichButton) {
+//                sharedpreferences = getSharedPreferences(SharedPref.STATIC_SHARED_PREF_LIVE_URL_SAVE, Context.MODE_PRIVATE);
+//                SharedPreferences.Editor editor = sharedpreferences.edit();
+//
+//                String httpUrl = editTextLiveURL.getText().toString();
+//                editor.putString(SharedPref.STATIC_SHARED_PREF_URL_SAVE, httpUrl);
+//                editor.commit();
+//            }
+//        });
+//        alert.setNegativeButton(getResources().getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int whichButton) {
+//                dialog.cancel();
+//            }
+//        });
+//        alert.show();
+//    }
 }

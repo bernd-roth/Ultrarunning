@@ -17,6 +17,12 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/textViewEmpty0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="" />
+
+                <TextView
                     android:id="@+id/textViewGeneralSettings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -26,15 +32,22 @@
                     android:textColor="#4CAF50" />
 
                 <TextView
+                    android:id="@+id/textViewEmpty1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="" />
+
+                <TextView
                     android:id="@+id/textViewDescriptionGeneralSettings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:onClick="onclick_general_settings"
                     android:text="Map type/Recording settings" />
 
                 <TextView
-                    android:id="@+id/textViewEmpty0"
+                    android:id="@+id/textViewEmpty2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="" />
@@ -45,7 +58,7 @@
                     android:background="#c0c0c0"/>
 
                 <TextView
-                    android:id="@+id/textViewEmpty1"
+                    android:id="@+id/textViewEmpty3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="" />
@@ -61,15 +74,22 @@
                     android:visibility="visible" />
 
                 <TextView
+                    android:id="@+id/textViewEmpty4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="" />
+
+                <TextView
                     android:id="@+id/textViewDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:onClick="onclick_database"
                     android:text="Backup interval/Import/Export/Delete database" />
 
                 <TextView
-                    android:id="@+id/textViewEmpty2"
+                    android:id="@+id/textViewEmpty5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="" />

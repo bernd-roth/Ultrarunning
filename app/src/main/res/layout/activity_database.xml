@@ -16,6 +16,12 @@
         tools:ignore="MissingConstraints">
 
         <TextView
+            android:id="@+id/textViewEmpty0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+        <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,7 +33,7 @@
             android:visibility="visible" />
 
         <TextView
-            android:id="@+id/textViewEmpty0"
+            android:id="@+id/textViewEmpty1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
@@ -41,12 +47,12 @@
             android:text="@string/export_database_scheduled" />
 
         <TextView
-            android:id="@+id/textViewEmpty1"
+            android:id="@+id/textViewEmpty2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
 
-        <TextView
+<!--        <TextView
             android:id="@+id/textViewBSendToServerackup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,7 +64,7 @@
             android:visibility="visible" />
 
         <TextView
-            android:id="@+id/textViewEmpty2"
+            android:id="@+id/textViewEmpty3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
@@ -73,12 +79,12 @@
             android:text="@string/export_to_server" />
 
         <TextView
-            android:id="@+id/textViewEmpty3"
+            android:id="@+id/textViewEmpty4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="" />
+            android:text="" /> -->
 
-        <TextView
+<!--        <TextView
             android:id="@+id/textViewExportToServerLive"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -88,10 +94,10 @@
             android:text="@string/live_export_to_server" />
 
         <TextView
-            android:id="@+id/textViewEmpty4"
+            android:id="@+id/textViewEmpty5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="" />
+            android:text="" /> -->
 
         <TextView
             android:id="@+id/textViewBackupDatabase"
@@ -105,7 +111,7 @@
             android:visibility="visible" />
 
         <TextView
-            android:id="@+id/textViewEmpty5"
+            android:id="@+id/textViewEmpty6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
@@ -120,7 +126,7 @@
             android:text="@string/import_database_file" />
 
         <TextView
-            android:id="@+id/textViewEmpty6"
+            android:id="@+id/textViewEmpty7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
@@ -135,7 +141,7 @@
             android:text="@string/export_database" />
 
         <TextView
-            android:id="@+id/textViewEmpty7"
+            android:id="@+id/textViewEmpty8"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
@@ -150,7 +156,7 @@
             android:text="@string/delete_all_entries_from_database" />
 
         <TextView
-            android:id="@+id/textViewEmpty8"
+            android:id="@+id/textViewEmpty9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
@@ -167,7 +173,7 @@
             android:visibility="visible" />
 
         <TextView
-            android:id="@+id/textViewEmpty9"
+            android:id="@+id/textViewEmpty10"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
@@ -182,7 +188,7 @@
             android:text="@string/import_gpx_file" />
 
         <TextView
-            android:id="@+id/textViewEmpty10"
+            android:id="@+id/textViewEmpty11"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
@@ -197,7 +203,7 @@
             android:text="@string/export_to_gpx_file" />
 
         <TextView
-            android:id="@+id/textViewEmpty11"
+            android:id="@+id/textViewEmpty12"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
@@ -212,7 +218,7 @@
             android:text="@string/export_selected_to_gpx_file" />
 
         <TextView
-            android:id="@+id/textViewEmpty12"
+            android:id="@+id/textViewEmpty13"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />
@@ -229,7 +235,7 @@
             android:visibility="visible" />
 
         <TextView
-            android:id="@+id/textViewEmpty13"
+            android:id="@+id/textViewEmpty14"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="" />

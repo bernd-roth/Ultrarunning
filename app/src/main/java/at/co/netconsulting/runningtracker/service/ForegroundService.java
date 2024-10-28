@@ -142,7 +142,7 @@ public class ForegroundService extends Service implements LocationListener {
     private void createWebSocket() {
         OkHttpClient client = new OkHttpClient();
 
-        Request request = new Request.Builder().url("ws://MY_IP_ADDRESS:MY_PORT/runningtracker").build();
+        Request request = new Request.Builder().url("ws://IP_ADDRESS:PORT/runningtracker").build();
         webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
             public void onMessage(@NonNull WebSocket webSocket, @NonNull ByteString bytes) {
