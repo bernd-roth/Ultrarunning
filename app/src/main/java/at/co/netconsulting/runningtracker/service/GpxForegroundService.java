@@ -16,6 +16,9 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import org.greenrobot.eventbus.EventBus;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
@@ -26,6 +29,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import at.co.netconsulting.runningtracker.MapsActivity;
 import at.co.netconsulting.runningtracker.R;
 import at.co.netconsulting.runningtracker.db.DatabaseHandler;
@@ -46,6 +52,7 @@ public class GpxForegroundService extends Service {
     private NotificationManager nMgr;
     private SimpleDateFormat sdf;
     private List<Run> selectedRun;
+    private File download_folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
     //own implementations
     private void createNotificationChannel() {
@@ -181,9 +188,40 @@ public class GpxForegroundService extends Service {
             nMgr.cancel(NOTIFICATION_ID);
             EventBus.getDefault().post(new ProgressDialogEventBus(false));
         }
+
+        private void zipAllGpxFiles() {
+            File zipFile = new File(download_folder, "all_runs.zip");
+            try (FileOutputStream fos = new FileOutputStream(zipFile);
+                 ZipOutputStream zos = new ZipOutputStream(fos)) {
+
+                // Filter for .gpx files in the directory
+                File[] gpxFiles = download_folder.listFiles((dir, name) -> name.endsWith(".gpx"));
+
+                if (gpxFiles != null) {
+                    for (File gpxFile : gpxFiles) {
+                        try (FileInputStream fis = new FileInputStream(gpxFile)) {
+                            ZipEntry zipEntry = new ZipEntry(gpxFile.getName());
+                            zos.putNextEntry(zipEntry);
+
+                            byte[] buffer = new byte[1024];
+                            int length;
+                            while ((length = fis.read(buffer)) > 0) {
+                                zos.write(buffer, 0, length);
+                            }
+                            zos.closeEntry();
+                        }
+                        gpxFile.delete();
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         private void generateGfx(List<Run> run) throws IOException, ParseException {
             FileWriter writer = null;
-            File download_folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             int lastRun = 0;
             int currentRun;
             boolean start = true;
@@ -224,8 +262,10 @@ public class GpxForegroundService extends Service {
                     }
                 }
                 writeFooter(writer);
+                zipAllGpxFiles();
                 cancelNotification(context);
             } else {
+                zipAllGpxFiles();
                 cancelNotification(context);
             }
         }
