@@ -239,7 +239,7 @@ public class GeneralSettings extends BaseActivity {
         });
 
         db = new DatabaseHandler(this);
-        //set screen orientaiton to potrait modus automatically
+        //set screen orientation to portrait automatically
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 

@@ -486,7 +486,7 @@ public class ForegroundService extends Service implements LocationListener {
                                 webSocket.send(json);
                             }
 
-                            saveToRemoteDatabase();
+                            //saveToRemoteDatabase();
                             EventBus.getDefault().post(new LocationChangeEvent(latLngs));
                             addLatitudeLongitudeFellowRunner();
                             hasEnoughTimePassed = false;
