@@ -320,8 +320,12 @@ public class StatisticsActivity extends BaseActivity {
                     highestElevation = listOfRun.get(i).getAltitude();
                 }
                 //lowest elevation
-                if(listOfRun.get(i).getAltitude()!=0) {
+                if(i==0) {
                     lowestElevation = listOfRun.get(i).getAltitude();
+                } else {
+                    if(listOfRun.get(i).getAltitude()<=lowestElevation) {
+                        lowestElevation = listOfRun.get(i).getAltitude();
+                    }
                 }
             }
         }

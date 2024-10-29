@@ -172,6 +172,7 @@ public class DetailedAltitudeGraphActivity extends AppCompatActivity implements 
                 double speed = 0;
                 double distance = 0;
                 long time = 0;
+                double altitude = 0;
 
                 for (int i = 0; i < run.size(); i++) {
                     if (((float) run.get(i).getMeters_covered() == x) &&
@@ -180,6 +181,7 @@ public class DetailedAltitudeGraphActivity extends AppCompatActivity implements 
                         speed = run.get(i).getSpeed();
                         distance = run.get(i).getMeters_covered() / 1000;
                         time = run.get(i).getDateTimeInMs();
+                        altitude = run.get(i).getAltitude();
                     } else if(latLng==null) {
                         latLng = new LatLng(run.get(i).getLat(), run.get(i).getLng());
                     }
@@ -197,8 +199,9 @@ public class DetailedAltitudeGraphActivity extends AppCompatActivity implements 
                         duration.toMinutes() % 60, duration.getSeconds() % 60);
                 String sSpeed = String.format("Speed: %.2f km/h", speed);
                 String sDistance = String.format("Distance: %.2f Km", distance);
+                String sAltitude = String.format("Altitude: %.2f Meter", altitude);
 
-                marker = mMap.addMarker(new MarkerOptions().position(latLng).title(sTime).snippet(sDistance + "\n" + sSpeed));
+                marker = mMap.addMarker(new MarkerOptions().position(latLng).title(sTime).snippet(sDistance + "\n" + sSpeed + "\n" + sAltitude));
                 marker.showInfoWindow();
             }
 
